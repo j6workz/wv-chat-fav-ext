@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkVivo Chat Favorites - Complete Feature Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #1f2937;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .hero .subtitle {
+            font-size: 24px;
+            opacity: 0.95;
+            margin-bottom: 32px;
+        }
+
+        .hero .version {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .hero .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            background: white;
+        }
+
+        .section {
+            margin-bottom: 80px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-header h2 {
+            font-size: 36px;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            font-size: 18px;
+            color: #6b7280;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .feature-card {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 32px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(102, 126, 234, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            font-size: 24px;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+
+        .feature-steps {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 16px;
+            border-radius: 4px;
+            margin-top: 16px;
+        }
+
+        .feature-steps h4 {
+            font-size: 14px;
+            color: #667eea;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .feature-steps ol {
+            margin-left: 20px;
+            color: #4b5563;
+            font-size: 14px;
+        }
+
+        .feature-steps li {
+            margin-bottom: 6px;
+        }
+
+        .keyboard-shortcuts {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            color: white;
+            padding: 48px;
+            border-radius: 16px;
+            margin-top: 48px;
+        }
+
+        .keyboard-shortcuts h3 {
+            font-size: 28px;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .shortcuts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .shortcut-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .shortcut-keys {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .key {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-weight: 600;
+            font-size: 14px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .plus {
+            color: rgba(255,255,255,0.6);
+            font-weight: 600;
+        }
+
+        .shortcut-description {
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+        }
+
+        .platform-note {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 24px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .tips-section {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e0f2fe 100%);
+            padding: 48px;
+            border-radius: 16px;
+            margin-top: 48px;
+        }
+
+        .tips-section h3 {
+            font-size: 28px;
+            color: #1e40af;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .tip-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .tip-card strong {
+            color: #1e40af;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .faq-section {
+            margin-top: 48px;
+        }
+
+        .faq-item {
+            background: #f9fafb;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .faq-question {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .faq-answer {
+            color: #6b7280;
+            line-height: 1.8;
+        }
+
+        .footer {
+            background: #1f2937;
+            color: white;
+            padding: 48px 20px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-info {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero .subtitle {
+                font-size: 18px;
+            }
+
+            .section-header h2 {
+                font-size: 28px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .shortcuts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 40px 20px;
+            }
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 24px;
+            border-radius: 8px;
+            margin: 32px 0;
+        }
+
+        .highlight strong {
+            color: #92400e;
+        }
+
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #be123c;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="version">v2.4.0</div>
+        <h1>📌 WorkVivo Chat Favorites</h1>
+        <p class="subtitle">The ultimate productivity extension for WorkVivo Chat</p>
+        <p style="opacity: 0.9; margin-bottom: 32px;">
+            Pin conversations, search instantly, and navigate chats with powerful keyboard shortcuts
+        </p>
+        <div class="cta-buttons">
+            <a href="#features" class="btn btn-primary">Explore Features</a>
+            <a href="privacy-policy.html" class="btn btn-secondary">Privacy Policy</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Quick Start Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🚀 Quick Start Guide</h2>
+                <p>Get up and running in seconds with WorkVivo Chat Favorites</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📍</div>
+                    <h3>Step 1: Install</h3>
+                    <p>Install the extension from Chrome Web Store and it's automatically activated on WorkVivo.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📌</div>
+                    <h3>Step 2: Pin Chats</h3>
+                    <p>Hover over any chat in your sidebar and click the pin icon to add it to favorites.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⌨️</div>
+                    <h3>Step 3: Use Shortcuts</h3>
+                    <p>Press <code>Cmd/Alt + /</code> to open search or <code>Cmd/Alt + \</code> for recent chats.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Core Features Section -->
+        <div class="section" id="features">
+            <div class="section-header">
+                <h2>✨ Core Features</h2>
+                <p>Every feature designed to supercharge your WorkVivo chat experience</p>
+            </div>
+
+            <div class="features-grid">
+                <!-- Feature 1: Pin Chats -->
+                <div class="feature-card">
+                    <div class="feature-icon">📌</div>
+                    <h3>Pin Your Favorite Chats</h3>
+                    <p>Keep your most important conversations at your fingertips. Pinned chats appear in a carousel at the top of your sidebar for instant access.</p>
+
+                    <div class="feature-steps">
+                        <h4>How to Use:</h4>
+                        <ol>
+                            <li>Navigate to WorkVivo Chat</li>
+                            <li>Hover over any chat in your sidebar</li>
+                            <li>Click the 📌 pin icon that appears</li>
+                            <li>Chat moves to the pinned carousel at the top</li>
+                            <li>Click the pin icon again to unpin</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Feature 2: Smart Search -->
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Lightning-Fast Smart Search</h3>
+                    <p>Revolutionary IndexedDB-powered search that learns from your usage. Search pinned chats, recent conversations, and find anyone in your organization instantly with zero API calls.</p>
+
+                    <div class="feature-steps">
+                        <h4>How to Use:</h4>
+                        <ol>
+                            <li>Press <code>Cmd + /</code> (Mac) or <code>Alt + /</code> (Windows)</li>
+                            <li>Type any name or keyword</li>
+                            <li>See instant results from Smart Database (&lt; 10ms)</li>
+                            <li>Results show: Pinned chats → Recent chats → All people</li>
+                            <li>Click any result to open chat immediately</li>
+                            <li>Press <code>Esc</code> to close search</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Feature 3: Recent Chat Switcher -->
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Recent Chat Switcher</h3>
+                    <p>Quickly toggle between your recent conversations with an intuitive modal interface. Perfect for multitasking across multiple chats.</p>
+
+                    <div class="feature-steps">
+                        <h4>How to Use:</h4>
+                        <ol>
+                            <li><strong>Quick Toggle:</strong> Tap <code>Cmd + \</code> (Mac) or <code>Alt + \</code> (Windows) to instantly switch to your last chat</li>
+                            <li><strong>Chat Switcher Modal:</strong> Hold <code>Cmd/Alt</code> and press <code>\</code> to open modal</li>
+                            <li>Keep holding the modifier key</li>
+                            <li>Press <code>\</code> repeatedly to cycle through recent chats</li>
+                            <li>Release the modifier key to open selected chat</li>
+                            <li>Or press <code>Esc</code> to cancel</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Feature 4: Pinned Carousel -->
+                <div class="feature-card">
+                    <div class="feature-icon">🎠</div>
+                    <h3>Pinned Chat Carousel</h3>
+                    <p>All your pinned chats displayed in a beautiful horizontal carousel at the top of your sidebar. Drag to reorder, click to open instantly.</p>
+
+                    <div class="feature-steps">
+                        <h4>How to Use:</h4>
+                        <ol>
+                            <li>Pinned chats automatically appear at the top</li>
+                            <li>Scroll horizontally or use arrow buttons</li>
+                            <li>Click any chat avatar to open conversation</li>
+                            <li>Drag chats left/right to reorder (coming soon)</li>
+                            <li>Hover to see full name and pin icon</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Feature 5: Smart User Database -->
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <h3>Self-Learning Smart Database</h3>
+                    <p>Revolutionary IndexedDB system that builds organizational intelligence. Learns from your searches and gets smarter over time, achieving 95%+ local search success rate.</p>
+
+                    <div class="feature-steps">
+                        <h4>How It Works:</h4>
+                        <ol>
+                            <li>Automatically caches user profiles as you search</li>
+                            <li>Builds keyword indexes for lightning-fast lookups</li>
+                            <li>Stores data locally for 30 days (auto-cleanup)</li>
+                            <li>Most searches served in &lt; 10ms with zero API calls</li>
+                            <li>No manual maintenance required</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Feature 6: Create New Chats -->
+                <div class="feature-card">
+                    <div class="feature-icon">➕</div>
+                    <h3>Instant Chat Creation</h3>
+                    <p>Find anyone in your organization through search and start a new conversation instantly, without leaving the search interface.</p>
+
+                    <div class="feature-steps">
+                        <h4>How to Use:</h4>
+                        <ol>
+                            <li>Open search (<code>Cmd/Alt + /</code>)</li>
+                            <li>Type someone's name</li>
+                            <li>If they appear with a ➕ icon, they're new</li>
+                            <li>Click to create and open new chat instantly</li>
+                            <li>Start messaging immediately</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Feature 7: Cross-Platform Shortcuts -->
+                <div class="feature-card">
+                    <div class="feature-icon">⌨️</div>
+                    <h3>Universal Keyboard Shortcuts</h3>
+                    <p>Consistent keyboard shortcuts across Windows, Mac, and Linux. Customizable modifier keys for Windows users.</p>
+
+                    <div class="feature-steps">
+                        <h4>How to Customize (Windows):</h4>
+                        <ol>
+                            <li>Right-click extension icon → Options</li>
+                            <li>Scroll to "Windows Modifier Key"</li>
+                            <li>Choose: Alt, Ctrl, or Both</li>
+                            <li>Settings save automatically</li>
+                            <li>Use your preferred modifier for all shortcuts</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Feature 8: Privacy Controls -->
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Privacy-First Analytics</h3>
+                    <p>Optional anonymous analytics with jurisdiction-aware consent. If you're in a strict privacy region (EU, California), analytics are disabled by default.</p>
+
+                    <div class="feature-steps">
+                        <h4>How to Control:</h4>
+                        <ol>
+                            <li>Go to extension Options page</li>
+                            <li>Scroll to "Analytics & Privacy" at the bottom</li>
+                            <li>Toggle "Usage Analytics" on/off</li>
+                            <li>Toggle "Device & Location Data" on/off</li>
+                            <li>Settings apply immediately</li>
+                            <li>Email j6workz@gmail.com for data deletion</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Keyboard Shortcuts Section -->
+        <div class="keyboard-shortcuts">
+            <h3>⌨️ Complete Keyboard Shortcuts Reference</h3>
+
+            <div class="shortcuts-grid">
+                <div class="shortcut-item">
+                    <div class="shortcut-keys">
+                        <span class="key">Cmd/Alt</span>
+                        <span class="plus">+</span>
+                        <span class="key">/</span>
+                    </div>
+                    <div class="shortcut-description">
+                        <strong>Open Smart Search</strong><br>
+                        Find pinned chats, recent conversations, and search all organization members
+                    </div>
+                </div>
+
+                <div class="shortcut-item">
+                    <div class="shortcut-keys">
+                        <span class="key">Cmd/Alt</span>
+                        <span class="plus">+</span>
+                        <span class="key">\</span>
+                        <span style="color: rgba(255,255,255,0.6); font-size: 12px; margin-left: 8px;">(tap)</span>
+                    </div>
+                    <div class="shortcut-description">
+                        <strong>Quick Toggle to Last Chat</strong><br>
+                        Instantly switch to your most recent conversation
+                    </div>
+                </div>
+
+                <div class="shortcut-item">
+                    <div class="shortcut-keys">
+                        <span class="key">Hold Cmd/Alt</span>
+                        <span class="plus">+</span>
+                        <span class="key">\</span>
+                    </div>
+                    <div class="shortcut-description">
+                        <strong>Open Recent Chat Switcher</strong><br>
+                        Hold modifier, press \ repeatedly to cycle, release to select
+                    </div>
+                </div>
+
+                <div class="shortcut-item">
+                    <div class="shortcut-keys">
+                        <span class="key">Esc</span>
+                    </div>
+                    <div class="shortcut-description">
+                        <strong>Close Any Modal</strong><br>
+                        Dismiss search, chat switcher, or consent prompts
+                    </div>
+                </div>
+
+                <div class="shortcut-item">
+                    <div class="shortcut-keys">
+                        <span class="key">↑</span>
+                        <span class="key">↓</span>
+                    </div>
+                    <div class="shortcut-description">
+                        <strong>Navigate Search Results</strong><br>
+                        Use arrow keys to move through search results
+                    </div>
+                </div>
+
+                <div class="shortcut-item">
+                    <div class="shortcut-keys">
+                        <span class="key">Enter</span>
+                    </div>
+                    <div class="shortcut-description">
+                        <strong>Select Search Result</strong><br>
+                        Open the highlighted chat or create new conversation
+                    </div>
+                </div>
+            </div>
+
+            <div class="platform-note">
+                <strong>💡 Windows Users:</strong> Customize your modifier key (Alt, Ctrl, or Both) in extension Options → Windows Modifier Key
+            </div>
+        </div>
+
+        <!-- Pro Tips Section -->
+        <div class="tips-section">
+            <h3>💡 Pro Tips & Best Practices</h3>
+
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <strong>🎯 Pin Your Top 5-10 Chats</strong>
+                    <p>Keep your most active conversations pinned for instant access. Don't overdo it - quality over quantity!</p>
+                </div>
+
+                <div class="tip-card">
+                    <strong>⚡ Use Quick Toggle for Back-and-Forth</strong>
+                    <p>Tap <code>Cmd/Alt + \</code> to quickly switch between two conversations. Perfect for coordinating tasks.</p>
+                </div>
+
+                <div class="tip-card">
+                    <strong>🔍 Search Gets Smarter</strong>
+                    <p>The Smart Database learns from your searches. The more you use it, the faster and more accurate it becomes.</p>
+                </div>
+
+                <div class="tip-card">
+                    <strong>🎨 Customize Windows Shortcuts</strong>
+                    <p>Windows users can choose Alt, Ctrl, or both as modifier keys in Options. Pick what feels natural to you.</p>
+                </div>
+
+                <div class="tip-card">
+                    <strong>💾 Database Auto-Cleanup</strong>
+                    <p>Smart Database automatically removes entries older than 30 days. No manual maintenance needed.</p>
+                </div>
+
+                <div class="tip-card">
+                    <strong>🔒 Privacy First</strong>
+                    <p>All data stays local on your device. Smart Database uses IndexedDB - nothing is sent to external servers.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Features Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🚀 Advanced Features</h2>
+                <p>Power user features for maximum productivity</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Usage Statistics</h3>
+                    <p>Track your usage patterns with detailed statistics available in the Options page.</p>
+                    <ul style="margin-top: 12px; color: #6b7280; font-size: 14px;">
+                        <li>Search widget opens</li>
+                        <li>Searches performed</li>
+                        <li>Chat clicks</li>
+                        <li>Chats pinned</li>
+                        <li>Database entries</li>
+                        <li>Cache hit rate</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚙️</div>
+                    <h3>Customization Options</h3>
+                    <p>Fine-tune the extension to match your workflow preferences.</p>
+                    <ul style="margin-top: 12px; color: #6b7280; font-size: 14px;">
+                        <li>Show/hide scrollbar in sidebar</li>
+                        <li>Show/hide pin indicators</li>
+                        <li>Auto-collapse pinned carousel</li>
+                        <li>Snackbar notifications</li>
+                        <li>Debug logging</li>
+                        <li>Floating widget behavior</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Data Management</h3>
+                    <p>Export, import, or reset your settings and data.</p>
+                    <ul style="margin-top: 12px; color: #6b7280; font-size: 14px;">
+                        <li>Export settings as JSON</li>
+                        <li>Import settings from backup</li>
+                        <li>Clear usage statistics</li>
+                        <li>Reset to defaults</li>
+                        <li>Automatic sync across devices</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section">
+            <div class="section-header">
+                <h2>❓ Frequently Asked Questions</h2>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: Why aren't my keyboard shortcuts working?</div>
+                <div class="faq-answer">
+                    <strong>A:</strong> Make sure you're on a WorkVivo chat page (URL contains workvivo.com/chat). Windows users should check their modifier key setting in Options. Try refreshing the page if shortcuts stop working.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: How do I see all my pinned chats?</div>
+                <div class="faq-answer">
+                    <strong>A:</strong> Pinned chats appear in a horizontal carousel at the very top of your WorkVivo chat sidebar. Scroll left/right or use the arrow buttons if you have many pinned chats.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: Does search work offline?</div>
+                <div class="faq-answer">
+                    <strong>A:</strong> Yes! The Smart Database stores user data locally for 30 days. You can search cached users even when offline or when WorkVivo APIs are slow. However, you need to be online to open chats.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: Is my chat content being collected?</div>
+                <div class="faq-answer">
+                    <strong>A:</strong> No, absolutely not. The extension only caches user names and IDs for search purposes. No chat messages, content, or personal information is ever collected or transmitted.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: How do I disable analytics?</div>
+                <div class="faq-answer">
+                    <strong>A:</strong> Go to Options (right-click extension icon → Options), scroll to "Analytics & Privacy" at the bottom, and toggle off "Usage Analytics" and "Device & Location Data". Changes apply immediately.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: Can I use this on mobile?</div>
+                <div class="faq-answer">
+                    <strong>A:</strong> This is a Chrome extension designed for desktop browsers (Chrome, Edge, Brave, etc.). It's not available for mobile apps. Keyboard shortcuts obviously won't work on touch devices.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: How do I report bugs or request features?</div>
+                <div class="faq-answer">
+                    <strong>A:</strong> Email the developer at <strong>j6workz@gmail.com</strong> with details about your issue or feature request. Include your extension version (found in Options) and browser information.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Q: What's the Smart Database cache hit rate mean?</div>
+                <div class="faq-answer">
+                    <strong>A:</strong> This percentage shows how many searches are served from your local database vs. API calls. Higher is better - 95%+ means almost all searches are instant (&lt; 10ms) without hitting WorkVivo servers.
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Details Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🔧 Technical Details</h2>
+                <p>For the technically curious</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <h3>Storage Architecture</h3>
+                    <p><strong>Multi-layer storage system:</strong></p>
+                    <ul style="margin-top: 12px; color: #6b7280; font-size: 14px; line-height: 1.8;">
+                        <li><strong>In-Memory Cache:</strong> Ultra-fast temporary cache (15min TTL)</li>
+                        <li><strong>IndexedDB (Smart Database):</strong> Persistent user profiles & search indexes (30-day TTL)</li>
+                        <li><strong>Chrome Storage Sync:</strong> Settings and preferences synced across devices</li>
+                        <li><strong>Chrome Storage Local:</strong> Analytics data and session info</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Performance Metrics</h3>
+                    <p><strong>Benchmark performance:</strong></p>
+                    <ul style="margin-top: 12px; color: #6b7280; font-size: 14px; line-height: 1.8;">
+                        <li>In-memory cache hit: &lt; 1ms (hot cache)</li>
+                        <li>IndexedDB (Smart Database) search: &lt; 10ms</li>
+                        <li>Combined local search: &lt; 50ms</li>
+                        <li>API search (fallback only): &lt; 2s</li>
+                        <li>95%+ searches served without API calls</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔐</div>
+                    <h3>Privacy & Security</h3>
+                    <p><strong>Data protection:</strong></p>
+                    <ul style="margin-top: 12px; color: #6b7280; font-size: 14px; line-height: 1.8;">
+                        <li>All data stored locally on your device</li>
+                        <li>No external servers for search</li>
+                        <li>HTTPS-only API calls</li>
+                        <li>CSRF token authentication</li>
+                        <li>Automatic data cleanup after 30 days</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="mailto:j6workz@gmail.com">Contact Developer</a>
+                <a href="#features">Features</a>
+                <a href="#top">Back to Top</a>
+            </div>
+            <div class="footer-info">
+                <p><strong>WorkVivo Chat Favorites v2.4.0</strong></p>
+                <p style="margin-top: 8px;">Developed by j6 | Email: j6workz@gmail.com</p>
+                <p style="margin-top: 8px; opacity: 0.6;">
+                    Privacy-first productivity extension for WorkVivo Chat
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
