@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WorkVivo Favorites Extension - Privacy Policy</title>
+    <title>WorkVivo Chat Favorites Extension - Privacy Policy</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -189,7 +189,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🔒 WorkVivo Favorites Extension - Privacy Policy</h1>
+        <h1>🔒 WorkVivo Chat Favorites Extension - Privacy Policy</h1>
 
         <div class="highlight">
             <strong>🎯 Our Commitment:</strong> We collect minimal data and prioritize your privacy above all else. This extension is built purely to enhance productivity - we have no intention to sell data, show ads, or target users with marketing.
@@ -228,9 +228,10 @@
         <h2 id="ga4-integration">📊 Google Analytics 4 Integration</h2>
         <div class="ga4-notice">
             <h3>🔍 How We Use Google Analytics 4</h3>
-            <p><strong>Purpose:</strong> Product improvement and feature optimization only - no advertising, targeting, or data sales.</p>
-            <p><strong>Google's Role:</strong> Google acts as a data processor under our instructions and is bound by data processing agreements. They process analytics data according to our specifications.</p>
-            <p><strong>Data Sharing:</strong> We share only anonymous usage patterns with Google Analytics. No personal information, chat content, or sensitive data is ever shared.</p>
+            <p><strong>Purpose:</strong> Product improvement and feature optimization only - no advertising, targeting, data sales, or any commercial use beyond making this extension better.</p>
+            <p><strong>Individual Developer:</strong> This extension is developed and maintained by an individual (not a company). Analytics data is used solely to understand how features are used and identify areas for improvement.</p>
+            <p><strong>Google Analytics:</strong> We use Google Analytics 4 as our analytics platform. Google processes the anonymous usage data we send them. We have no formal agreements or business relationships beyond using their free analytics service.</p>
+            <p><strong>Data Sharing:</strong> Only anonymous usage patterns are sent to Google Analytics. No personal information, chat content, or sensitive data is ever shared.</p>
             <p><strong>Your Control:</strong> You can opt out of GA4 data sharing at any time while still using all extension features.</p>
             <p><strong>Google's Privacy Policy:</strong> <a href="https://policies.google.com/privacy" target="_blank">https://policies.google.com/privacy</a></p>
         </div>
@@ -377,10 +378,9 @@
         <h2 id="data-transfers">📤 Data Transfers</h2>
         <p>Analytics data may be processed by Google Analytics 4 servers which may be located outside your jurisdiction. Google provides appropriate safeguards for international data transfers:</p>
         <ul>
-            <li><strong>Adequacy Decisions:</strong> Transfers to countries with adequate privacy protection</li>
-            <li><strong>Standard Contractual Clauses:</strong> EU-approved contract terms for data protection</li>
-            <li><strong>Binding Corporate Rules:</strong> Google's internal privacy rules for data transfers</li>
-            <li><strong>Data Processing Agreements:</strong> Contracts ensuring Google processes data according to our instructions</li>
+            <li><strong>Google Analytics Terms:</strong> By using Google Analytics 4, we rely on Google's standard terms of service for data processing</li>
+            <li><strong>Data Protection:</strong> Google Analytics has built-in safeguards and complies with major privacy regulations (GDPR, CCPA)</li>
+            <li><strong>Limited Scope:</strong> As an individual developer, we use Google's free analytics service under their standard terms - no custom agreements or special data processing contracts</li>
         </ul>
 
         <h2 id="contact">📧 Contact & Data Rights</h2>
@@ -424,21 +424,26 @@
 
             <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #dee2e6;">
                 <p><strong>🔄 Policy Updates:</strong> We'll notify users of material changes through the extension interface. Continued use after notification constitutes acceptance of updated terms.</p>
-                <p><strong>🌍 Multi-Language:</strong> This policy is available in multiple languages. In case of conflicts, the English version prevails.</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Set current date for effective dates
-        const today = new Date().toLocaleDateString('en-US', {
+        // Set fixed dates for privacy policy
+        const effectiveDate = new Date('2025-10-01').toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
         });
 
-        document.getElementById('effective-date').textContent = today;
-        document.getElementById('last-updated').textContent = today;
+        const lastUpdated = new Date('2025-10-02').toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        document.getElementById('effective-date').textContent = effectiveDate;
+        document.getElementById('last-updated').textContent = lastUpdated;
 
         // Smooth scrolling for table of contents
         document.querySelectorAll('.toc a[href^="#"]').forEach(anchor => {
