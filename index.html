@@ -13,14 +13,23 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background:
+                radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.7) 0%, transparent 40%),
+                radial-gradient(circle at 85% 20%, rgba(236, 72, 153, 0.6) 0%, transparent 45%),
+                radial-gradient(circle at 50% 35%, rgba(59, 130, 246, 0.5) 0%, transparent 40%),
+                radial-gradient(circle at 25% 55%, rgba(168, 85, 247, 0.6) 0%, transparent 45%),
+                radial-gradient(circle at 75% 65%, rgba(14, 165, 233, 0.5) 0%, transparent 40%),
+                radial-gradient(circle at 10% 85%, rgba(34, 197, 94, 0.5) 0%, transparent 45%),
+                radial-gradient(circle at 90% 90%, rgba(249, 115, 22, 0.4) 0%, transparent 40%),
+                radial-gradient(circle at 45% 100%, rgba(236, 72, 153, 0.5) 0%, transparent 45%),
+                linear-gradient(135deg, #4f46e5 0%, #7c3aed 30%, #2563eb 60%, #0891b2 100%);
             color: #1f2937;
             line-height: 1.6;
             min-height: 100vh;
         }
 
         .hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: transparent;
             color: white;
             padding: 80px 20px;
             text-align: center;
@@ -88,8 +97,10 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 60px 20px;
+            padding: 60px 20px 0 20px;
             background: white;
+            border-radius: 24px 24px 24px 24px;
+            margin-bottom: 40px;
         }
 
         .section {
@@ -299,14 +310,16 @@
         }
 
         .footer {
-            background: #1f2937;
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
             color: white;
-            padding: 48px 20px;
+            padding: 48px 0;
             text-align: center;
+            border-radius: 0 0 24px 24px;
+            margin: 0 -20px;
         }
 
         .footer-content {
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
         }
 
@@ -355,7 +368,7 @@
             }
 
             .container {
-                padding: 40px 20px;
+                padding: 40px 20px 0 20px;
             }
         }
 
@@ -382,7 +395,7 @@
 </head>
 <body>
     <div class="hero">
-        <div class="version">v2.4.4</div>
+        <div class="version">v2.5.5</div>
         <h1>📌 WorkVivo Chat Favorites</h1>
         <p class="subtitle">The ultimate productivity extension for WorkVivo Chat</p>
         <p style="opacity: 0.9; margin-bottom: 32px;">
@@ -395,6 +408,17 @@
     </div>
 
     <div class="container">
+        <!-- What's New Section -->
+        <div class="highlight">
+            <h3 style="margin: 0 0 16px 0; font-size: 24px; color: #92400e;">✨ What's New in v2.5.5</h3>
+            <ul style="margin: 0; padding-left: 24px; line-height: 2;">
+                <li><strong>🎯 Drag to Reorder:</strong> Organize your pinned chats exactly how you want - just drag and drop avatars in the sidebar!</li>
+                <li><strong>🎨 Custom Button Color:</strong> Personalize the floating button with any color you like in settings</li>
+                <li><strong>⚡ Double-Click Mode:</strong> Single-click floating button for recents, double-click for instant search</li>
+                <li><strong>♿ Accessibility:</strong> Automatic WCAG-compliant icon color contrast for perfect visibility</li>
+            </ul>
+        </div>
+
         <!-- Quick Start Section -->
         <div class="section">
             <div class="section-header">
@@ -418,7 +442,7 @@
                 <div class="feature-card">
                     <div class="feature-icon">⌨️</div>
                     <h3>Step 3: Use Shortcuts</h3>
-                    <p>Press <code>Cmd/Alt + /</code> to open search or <code>Cmd/Alt + \</code> for recent chats.</p>
+                    <p>Press <code>Cmd/Ctrl + /</code> to open search or <code>Cmd/Ctrl + \</code> for recent chats.</p>
                 </div>
             </div>
         </div>
@@ -440,10 +464,10 @@
                     <div class="feature-steps">
                         <h4>How to Use:</h4>
                         <ol>
-                            <li>Navigate to WorkVivo Chat</li>
-                            <li>Hover over any chat in your sidebar</li>
+                            <li>Open any chat conversation in WorkVivo</li>
+                            <li>Hover over the chat avatar in the <strong>chat header</strong> (top of the chat window)</li>
                             <li>Click the 📌 pin icon that appears</li>
-                            <li>Chat moves to the pinned carousel at the top</li>
+                            <li>Chat moves to the pinned carousel at the top of sidebar</li>
                             <li>Click the pin icon again to unpin</li>
                         </ol>
                     </div>
@@ -458,7 +482,7 @@
                     <div class="feature-steps">
                         <h4>How to Use:</h4>
                         <ol>
-                            <li>Press <code>Cmd + /</code> (Mac) or <code>Alt + /</code> (Windows)</li>
+                            <li>Press <code>Cmd + /</code> (Mac) or <code>Ctrl + /</code> (Windows)</li>
                             <li>Type any name or keyword</li>
                             <li>See instant results from Smart Database (&lt; 10ms)</li>
                             <li>Results show: Pinned chats → Recent chats → All people</li>
@@ -477,8 +501,8 @@
                     <div class="feature-steps">
                         <h4>How to Use:</h4>
                         <ol>
-                            <li><strong>Quick Toggle:</strong> Tap <code>Cmd + \</code> (Mac) or <code>Alt + \</code> (Windows) to instantly switch to your last chat</li>
-                            <li><strong>Chat Switcher Modal:</strong> Hold <code>Cmd/Alt</code> and press <code>\</code> to open modal</li>
+                            <li><strong>Quick Toggle:</strong> Tap <code>Cmd + \</code> (Mac) or <code>Ctrl + \</code> (Windows) to instantly switch to your last chat</li>
+                            <li><strong>Chat Switcher Modal:</strong> Hold <code>Cmd/Ctrl</code> and press <code>\</code> to open modal</li>
                             <li>Keep holding the modifier key</li>
                             <li>Press <code>\</code> repeatedly to cycle through recent chats</li>
                             <li>Release the modifier key to open selected chat</li>
@@ -487,11 +511,30 @@
                     </div>
                 </div>
 
-                <!-- Feature 4: Pinned Carousel -->
+                <!-- Feature 4: Floating Widget -->
+                <div class="feature-card">
+                    <div class="feature-icon">🔘</div>
+                    <h3>Floating Search Widget</h3>
+                    <p>Customizable floating button for quick access to search and recent chats. Personalize the color and choose between single-click or double-click modes.</p>
+
+                    <div class="feature-steps">
+                        <h4>How to Use:</h4>
+                        <ol>
+                            <li><strong>Single-click:</strong> Opens recent chats modal by default</li>
+                            <li><strong>Double-click:</strong> Opens search widget directly</li>
+                            <li>Drag the button anywhere on screen to reposition</li>
+                            <li><strong>Customize:</strong> Go to Options → Floating Button Color</li>
+                            <li>Choose any color - icon contrast auto-adjusts (WCAG)</li>
+                            <li>Change first-click behavior in settings</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Feature 5: Pinned Carousel -->
                 <div class="feature-card">
                     <div class="feature-icon">🎠</div>
                     <h3>Pinned Chat Carousel</h3>
-                    <p>All your pinned chats displayed in a beautiful horizontal carousel at the top of your sidebar. Drag to reorder, click to open instantly.</p>
+                    <p>All your pinned chats displayed in a beautiful horizontal carousel at the top of your sidebar. Drag avatars to reorder, click to open instantly.</p>
 
                     <div class="feature-steps">
                         <h4>How to Use:</h4>
@@ -499,13 +542,31 @@
                             <li>Pinned chats automatically appear at the top</li>
                             <li>Scroll horizontally or use arrow buttons</li>
                             <li>Click any chat avatar to open conversation</li>
-                            <li>Drag chats left/right to reorder (coming soon)</li>
+                            <li><strong>NEW:</strong> Drag avatars left/right to reorder your pinned chats</li>
                             <li>Hover to see full name and pin icon</li>
                         </ol>
                     </div>
                 </div>
 
-                <!-- Feature 5: Smart User Database -->
+                <!-- Feature 6: Create New Chats -->
+                <div class="feature-card">
+                    <div class="feature-icon">➕</div>
+                    <h3>Instant Chat Creation</h3>
+                    <p>Find anyone in your organization through search and start a new conversation instantly, without leaving the search interface.</p>
+
+                    <div class="feature-steps">
+                        <h4>How to Use:</h4>
+                        <ol>
+                            <li>Open search (<code>Cmd/Ctrl + /</code>)</li>
+                            <li>Type someone's name</li>
+                            <li>Click any search result to open their chat</li>
+                            <li>If no existing chat exists, a new one is created automatically</li>
+                            <li>Start messaging immediately</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Feature 7: Smart User Database -->
                 <div class="feature-card">
                     <div class="feature-icon">💾</div>
                     <h3>Self-Learning Smart Database</h3>
@@ -523,25 +584,7 @@
                     </div>
                 </div>
 
-                <!-- Feature 6: Create New Chats -->
-                <div class="feature-card">
-                    <div class="feature-icon">➕</div>
-                    <h3>Instant Chat Creation</h3>
-                    <p>Find anyone in your organization through search and start a new conversation instantly, without leaving the search interface.</p>
-
-                    <div class="feature-steps">
-                        <h4>How to Use:</h4>
-                        <ol>
-                            <li>Open search (<code>Cmd/Alt + /</code>)</li>
-                            <li>Type someone's name</li>
-                            <li>If they appear with a ➕ icon, they're new</li>
-                            <li>Click to create and open new chat instantly</li>
-                            <li>Start messaging immediately</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <!-- Feature 7: Cross-Platform Shortcuts -->
+                <!-- Feature 8: Cross-Platform Shortcuts -->
                 <div class="feature-card">
                     <div class="feature-icon">⌨️</div>
                     <h3>Universal Keyboard Shortcuts</h3>
@@ -559,7 +602,7 @@
                     </div>
                 </div>
 
-                <!-- Feature 8: Privacy Controls -->
+                <!-- Feature 9: Privacy Controls -->
                 <div class="feature-card">
                     <div class="feature-icon">🔒</div>
                     <h3>Privacy-First Analytics</h3>
@@ -587,7 +630,7 @@
             <div class="shortcuts-grid">
                 <div class="shortcut-item">
                     <div class="shortcut-keys">
-                        <span class="key">Cmd/Alt</span>
+                        <span class="key">Cmd/Ctrl</span>
                         <span class="plus">+</span>
                         <span class="key">/</span>
                     </div>
@@ -599,7 +642,7 @@
 
                 <div class="shortcut-item">
                     <div class="shortcut-keys">
-                        <span class="key">Cmd/Alt</span>
+                        <span class="key">Cmd/Ctrl</span>
                         <span class="plus">+</span>
                         <span class="key">\</span>
                         <span style="color: rgba(255,255,255,0.6); font-size: 12px; margin-left: 8px;">(tap)</span>
@@ -612,7 +655,7 @@
 
                 <div class="shortcut-item">
                     <div class="shortcut-keys">
-                        <span class="key">Hold Cmd/Alt</span>
+                        <span class="key">Hold Cmd/Ctrl</span>
                         <span class="plus">+</span>
                         <span class="key">\</span>
                     </div>
@@ -655,7 +698,7 @@
             </div>
 
             <div class="platform-note">
-                <strong>💡 Windows Users:</strong> Customize your modifier key (Alt, Ctrl, or Both) in extension Options → Windows Modifier Key
+                <strong>💡 Windows Users:</strong> Default is Ctrl key - you can change to Alt or Both in extension Options → Windows Modifier Key
             </div>
         </div>
 
@@ -671,7 +714,7 @@
 
                 <div class="tip-card">
                     <strong>⚡ Use Quick Toggle for Back-and-Forth</strong>
-                    <p>Tap <code>Cmd/Alt + \</code> to quickly switch between two conversations. Perfect for coordinating tasks.</p>
+                    <p>Tap <code>Cmd/Ctrl + \</code> to quickly switch between two conversations. Perfect for coordinating tasks.</p>
                 </div>
 
                 <div class="tip-card">
@@ -681,7 +724,7 @@
 
                 <div class="tip-card">
                     <strong>🎨 Customize Windows Shortcuts</strong>
-                    <p>Windows users can choose Alt, Ctrl, or both as modifier keys in Options. Pick what feels natural to you.</p>
+                    <p>Windows default is Ctrl. You can change to Alt or both in Options if you prefer. Pick what feels natural to you.</p>
                 </div>
 
                 <div class="tip-card">
@@ -723,12 +766,14 @@
                     <h3>Customization Options</h3>
                     <p>Fine-tune the extension to match your workflow preferences.</p>
                     <ul style="margin-top: 12px; color: #6b7280; font-size: 14px;">
+                        <li><strong>NEW:</strong> Custom floating button color</li>
+                        <li><strong>NEW:</strong> Floating button first-click behavior</li>
+                        <li>Drag-to-reorder pinned chats</li>
                         <li>Show/hide scrollbar in sidebar</li>
                         <li>Show/hide pin indicators</li>
                         <li>Auto-collapse pinned carousel</li>
                         <li>Snackbar notifications</li>
                         <li>Debug logging</li>
-                        <li>Floating widget behavior</li>
                     </ul>
                 </div>
 
@@ -857,22 +902,29 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="footer">
-        <div class="footer-content">
-            <div class="footer-links">
-                <a href="https://j6workz.github.io/wv-chat-fav-ext/privacy-policy.html">Privacy Policy</a>
-                <a href="mailto:j6workz@gmail.com">Contact Developer</a>
-                <a href="#features">Features</a>
-                <a href="#top">Back to Top</a>
-            </div>
-            <div class="footer-info">
-                <p><strong>WorkVivo Chat Favorites v2.4.4</strong></p>
-                <p style="margin-top: 8px;">Developed by j6 | Email: j6workz@gmail.com</p>
-                <p style="margin-top: 8px; opacity: 0.6;">
-                    Privacy-first productivity extension for WorkVivo Chat
-                </p>
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="https://j6workz.github.io/wv-chat-fav-ext/privacy-policy.html">Privacy Policy</a>
+                    <a href="mailto:j6workz@gmail.com">Contact Developer</a>
+                    <a href="#features">Features</a>
+                    <a href="#top">Back to Top</a>
+                </div>
+                <div class="footer-info">
+                    <p><strong>WorkVivo Chat Favorites v2.5.5</strong></p>
+                    <p style="margin-top: 8px;">Developed by j6 | Email: j6workz@gmail.com</p>
+                    <p style="margin-top: 8px; opacity: 0.6;">
+                        Privacy-first productivity extension for WorkVivo Chat
+                    </p>
+                    <p style="margin-top: 16px;">
+                        <a href="https://buymeacoffee.com/j6workz" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: #FFDD00; color: #000000; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px; transition: transform 0.2s ease;">
+                            <span>☕</span>
+                            <span>Buy me a coffee</span>
+                        </a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
