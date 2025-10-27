@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WorkVivo Favorites Extension - Privacy Policy</title>
+    <title>WorkVivo Chat Favorites Extension - Privacy Policy</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -189,7 +189,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🔒 WorkVivo Favorites Extension - Privacy Policy</h1>
+        <h1>🔒 WorkVivo Chat Favorites Extension - Privacy Policy</h1>
 
         <div class="highlight">
             <strong>🎯 Our Commitment:</strong> We collect minimal data and prioritize your privacy above all else. This extension is built purely to enhance productivity - we have no intention to sell data, show ads, or target users with marketing.
@@ -201,7 +201,8 @@
                 <li><a href="#jurisdiction-aware">🌍 Jurisdiction-Aware Privacy</a></li>
                 <li><a href="#ga4-integration">📊 Google Analytics 4 Integration</a></li>
                 <li><a href="#what-we-collect">📊 What We Collect</a></li>
-                <li><a href="#what-we-dont-collect">🚫 What We DON'T Collect</a></li>
+                <li><a href="#what-we-dont-collect">🚫 What We DON'T Collect or Transmit</a></li>
+                <li><a href="#local-storage">💾 Local Data Storage (Device Only)</a></li>
                 <li><a href="#data-protection">🔒 How We Protect Your Data</a></li>
                 <li><a href="#jurisdiction-detection">🌍 Jurisdiction Detection Method</a></li>
                 <li><a href="#privacy-tiers">⚖️ Privacy Tiers by Jurisdiction</a></li>
@@ -228,9 +229,10 @@
         <h2 id="ga4-integration">📊 Google Analytics 4 Integration</h2>
         <div class="ga4-notice">
             <h3>🔍 How We Use Google Analytics 4</h3>
-            <p><strong>Purpose:</strong> Product improvement and feature optimization only - no advertising, targeting, or data sales.</p>
-            <p><strong>Google's Role:</strong> Google acts as a data processor under our instructions and is bound by data processing agreements. They process analytics data according to our specifications.</p>
-            <p><strong>Data Sharing:</strong> We share only anonymous usage patterns with Google Analytics. No personal information, chat content, or sensitive data is ever shared.</p>
+            <p><strong>Purpose:</strong> Product improvement and feature optimization only - no advertising, targeting, data sales, or any commercial use beyond making this extension better.</p>
+            <p><strong>Individual Developer:</strong> This extension is developed and maintained by an individual (not a company). Analytics data is used solely to understand how features are used and identify areas for improvement.</p>
+            <p><strong>Google Analytics:</strong> We use Google Analytics 4 as our analytics platform. Google processes the anonymous usage data we send them. We have no formal agreements or business relationships beyond using their free analytics service.</p>
+            <p><strong>Data Sharing:</strong> Only anonymous usage patterns are sent to Google Analytics. No personal information, chat content, or sensitive data is ever shared.</p>
             <p><strong>Your Control:</strong> You can opt out of GA4 data sharing at any time while still using all extension features.</p>
             <p><strong>Google's Privacy Policy:</strong> <a href="https://policies.google.com/privacy" target="_blank">https://policies.google.com/privacy</a></p>
         </div>
@@ -255,9 +257,10 @@
             <li><strong>Performance Issues:</strong> Database corruption, memory issues, or critical failures</li>
         </ul>
 
-        <h2 id="what-we-dont-collect">🚫 What We DON'T Collect</h2>
+        <h2 id="what-we-dont-collect">🚫 What We DON'T Collect or Transmit</h2>
         <ul>
-            <li>❌ Personal conversations or chat content</li>
+            <li>❌ Personal conversations or chat content <strong>from completed messages</strong></li>
+            <li>✅ <strong>Note:</strong> Draft message content (text you're typing) is stored <strong>locally only</strong> when Drafts feature is enabled - never transmitted to any server</li>
             <li>❌ Precise location data (only general country/region)</li>
             <li>❌ Login credentials, passwords, or authentication tokens</li>
             <li>❌ Personal identity information beyond anonymous user IDs</li>
@@ -267,6 +270,66 @@
             <li>❌ Names, email addresses, or other personal identifiers</li>
             <li>❌ IP addresses (beyond what's automatically included in web requests)</li>
             <li>❌ Biometric data or device fingerprinting</li>
+        </ul>
+
+        <h2 id="local-storage">💾 Local Data Storage (Device Only)</h2>
+        <div class="highlight">
+            <strong>Important:</strong> The following data is stored <strong>locally on your device only</strong> and is <strong>never transmitted</strong> to external servers. All local storage can be cleared by disabling features or uninstalling the extension.
+        </div>
+
+        <h3>📋 What Each Feature Stores Locally:</h3>
+
+        <h4>1. Drafts Feature (Optional - Can Be Disabled)</h4>
+        <ul>
+            <li><strong>Storage Location:</strong> Browser localStorage</li>
+            <li><strong>Data Stored:</strong> Draft message content (text you're typing), rich text formatting, timestamps, chat/thread context</li>
+            <li><strong>Purpose:</strong> Auto-save and restore draft messages so you don't lose work</li>
+            <li><strong>Retention:</strong> Until message is sent, manually deleted, or feature is disabled</li>
+            <li><strong>Privacy:</strong> Stored locally only, never transmitted. Can be disabled in settings (v2.7.0+)</li>
+        </ul>
+
+        <h4>2. Mentions Panel Feature (Optional - Can Be Disabled)</h4>
+        <ul>
+            <li><strong>Storage Location:</strong> IndexedDB (UnifiedDatabase)</li>
+            <li><strong>Data Stored:</strong> Mention notifications, message metadata (sender name, timestamp, channel)</li>
+            <li><strong>Purpose:</strong> Display where you've been mentioned across chats</li>
+            <li><strong>Retention:</strong> Until feature is disabled or extension uninstalled</li>
+            <li><strong>Privacy:</strong> Local cache only, never transmitted. Can be disabled in settings (v2.7.0+)</li>
+        </ul>
+
+        <h4>3. Threads Panel Feature (Optional - Can Be Disabled)</h4>
+        <ul>
+            <li><strong>Storage Location:</strong> Browser localStorage</li>
+            <li><strong>Data Stored:</strong> Thread metadata (thread counts, read status, channel URLs) - NO message content</li>
+            <li><strong>Purpose:</strong> Track and display threaded conversations</li>
+            <li><strong>Retention:</strong> Until feature is disabled or extension uninstalled</li>
+            <li><strong>Privacy:</strong> Metadata only, no content. Can be disabled in settings (v2.7.0+)</li>
+        </ul>
+
+        <h4>4. Smart Database (Always Active)</h4>
+        <ul>
+            <li><strong>Storage Location:</strong> IndexedDB</li>
+            <li><strong>Data Stored:</strong> User profiles (names, IDs), search indexes, pinned chat preferences</li>
+            <li><strong>Purpose:</strong> Lightning-fast local search without API calls</li>
+            <li><strong>Retention:</strong> 30-day automatic cleanup for inactive entries</li>
+            <li><strong>Privacy:</strong> User directory data only, no message content</li>
+        </ul>
+
+        <h4>5. Extension Settings</h4>
+        <ul>
+            <li><strong>Storage Location:</strong> Chrome Storage Sync (synced across your devices)</li>
+            <li><strong>Data Stored:</strong> Your preferences (layout choices, feature toggles, keyboard shortcuts)</li>
+            <li><strong>Purpose:</strong> Remember your customization settings</li>
+            <li><strong>Privacy:</strong> Settings only, synced via Chrome's secure sync</li>
+        </ul>
+
+        <h4>6. Debug Logging (Optional - Disabled by Default)</h4>
+        <ul>
+            <li><strong>Storage Location:</strong> Browser console only (not persisted)</li>
+            <li><strong>Data Stored:</strong> Detailed interaction logs, timing information, error details</li>
+            <li><strong>Purpose:</strong> Troubleshooting and debugging when enabled</li>
+            <li><strong>Privacy:</strong> Local console only, accessible only via browser DevTools (F12), never transmitted</li>
+            <li><strong>Control:</strong> Can be enabled/disabled in settings (v2.7.0+)</li>
         </ul>
 
         <h2 id="data-protection">🔒 How We Protect Your Data</h2>
@@ -364,6 +427,21 @@
         <p>Similar rights apply under Virginia CDPA, Colorado CPA, Connecticut CTDPA, and Utah UCPA.</p>
 
         <h2 id="your-controls">⚙️ Your Controls</h2>
+
+        <h3>🎛️ Feature Privacy Controls (New in v2.7.0)</h3>
+        <div class="jurisdiction-info">
+            <p><strong>Granular Feature Toggles:</strong> You now have complete control over which features are active and what data is stored locally.</p>
+        </div>
+        <ul>
+            <li><strong>Drafts Feature Toggle:</strong> Enable/disable draft message auto-save. When disabled, no draft content is stored locally</li>
+            <li><strong>Mentions Panel Toggle:</strong> Enable/disable mentions tracking. When disabled, mention data is not cached locally</li>
+            <li><strong>Threads Panel Toggle:</strong> Enable/disable thread tracking. When disabled, thread metadata is not stored</li>
+            <li><strong>Debug Logging Toggle:</strong> Enable/disable detailed console logging. Disabled by default for cleaner console output</li>
+            <li><strong>Layout Options:</strong> Choose pinned chats display (Carousel, 3-column grid, 4-column grid) - no privacy impact, preference only</li>
+            <li><strong>Immediate Effect:</strong> All feature toggles take effect immediately - disabling a feature stops data collection instantly</li>
+        </ul>
+
+        <h3>🔐 General Privacy Controls</h3>
         <ul>
             <li><strong>Extension Settings:</strong> Modify all privacy preferences in real-time</li>
             <li><strong>Consent Management:</strong> Grant or revoke consent with immediate effect</li>
@@ -377,10 +455,9 @@
         <h2 id="data-transfers">📤 Data Transfers</h2>
         <p>Analytics data may be processed by Google Analytics 4 servers which may be located outside your jurisdiction. Google provides appropriate safeguards for international data transfers:</p>
         <ul>
-            <li><strong>Adequacy Decisions:</strong> Transfers to countries with adequate privacy protection</li>
-            <li><strong>Standard Contractual Clauses:</strong> EU-approved contract terms for data protection</li>
-            <li><strong>Binding Corporate Rules:</strong> Google's internal privacy rules for data transfers</li>
-            <li><strong>Data Processing Agreements:</strong> Contracts ensuring Google processes data according to our instructions</li>
+            <li><strong>Google Analytics Terms:</strong> By using Google Analytics 4, we rely on Google's standard terms of service for data processing</li>
+            <li><strong>Data Protection:</strong> Google Analytics has built-in safeguards and complies with major privacy regulations (GDPR, CCPA)</li>
+            <li><strong>Limited Scope:</strong> As an individual developer, we use Google's free analytics service under their standard terms - no custom agreements or special data processing contracts</li>
         </ul>
 
         <h2 id="contact">📧 Contact & Data Rights</h2>
@@ -416,7 +493,7 @@
                     <p><strong>Last Updated:</strong> <span id="last-updated"></span></p>
                 </div>
                 <div>
-                    <p><strong>Extension Version:</strong> 2.4.0+</p>
+                    <p><strong>Extension Version:</strong> 2.7.0+</p>
                     <p><strong>Privacy Framework:</strong> Jurisdiction-Aware</p>
                     <p><strong>Compliance:</strong> GDPR, CCPA, State Laws</p>
                 </div>
@@ -424,21 +501,26 @@
 
             <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #dee2e6;">
                 <p><strong>🔄 Policy Updates:</strong> We'll notify users of material changes through the extension interface. Continued use after notification constitutes acceptance of updated terms.</p>
-                <p><strong>🌍 Multi-Language:</strong> This policy is available in multiple languages. In case of conflicts, the English version prevails.</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Set current date for effective dates
-        const today = new Date().toLocaleDateString('en-US', {
+        // Set fixed dates for privacy policy
+        const effectiveDate = new Date('2025-10-01').toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
         });
 
-        document.getElementById('effective-date').textContent = today;
-        document.getElementById('last-updated').textContent = today;
+        const lastUpdated = new Date('2025-10-27').toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        document.getElementById('effective-date').textContent = effectiveDate;
+        document.getElementById('last-updated').textContent = lastUpdated;
 
         // Smooth scrolling for table of contents
         document.querySelectorAll('.toc a[href^="#"]').forEach(anchor => {
