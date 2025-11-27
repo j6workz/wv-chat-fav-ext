@@ -44,3 +44,7 @@ chat-input-snippet.txt
 # Old/experimental code
 chrome-extension-v2/
 workvivo-navigation-solution/
+
+# Build output
+dist/
+*.zip

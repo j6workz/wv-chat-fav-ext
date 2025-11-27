@@ -123,7 +123,6 @@
     {
       "resources": [
         "icons/*.png",
-        "noun-edit-4781137.svg",
         "styles.css",
         "page-script.js",
         "inject-fetch-interceptor.js",

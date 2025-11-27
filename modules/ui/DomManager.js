@@ -2061,8 +2061,8 @@ WVFavs.DomManager = new (class DomManager {
         const statusText = this.app.userIdentity?.formatStatusDisplay(statusData);
         console.log('📝 [WV STATUS] Status text:', statusText);
 
-        // Load edit icon SVG
-        const editIconSvg = await this.loadEditIconSvg();
+        // Get edit icon SVG (inline)
+        const editIconSvg = this.getEditIconSvg();
 
         // Show default message if no status is set
         const displayText = statusText || 'Set your status';
@@ -2131,8 +2131,8 @@ WVFavs.DomManager = new (class DomManager {
         const statusData = this.app.userIdentity?.getUserStatus(user.fullProfile);
         const statusText = this.app.userIdentity?.formatStatusDisplay(statusData);
 
-        // Load edit icon SVG
-        const editIconSvg = await this.loadEditIconSvg();
+        // Get edit icon SVG (inline)
+        const editIconSvg = this.getEditIconSvg();
 
         // Show default message if no status is set
         const displayText = statusText || 'Set your status';
@@ -2281,22 +2281,10 @@ WVFavs.DomManager = new (class DomManager {
     }
 
     /**
-     * Load the edit icon SVG
+     * Get the edit icon SVG (inline for consistency with other icons)
      */
-    async loadEditIconSvg() {
-        try {
-            const svgUrl = chrome.runtime.getURL('noun-edit-4781137.svg');
-            const response = await fetch(svgUrl);
-            const svgText = await response.text();
-
-            // Add styling to the SVG
-            const styledSvg = svgText.replace('<svg', '<svg style="width: 12px; height: 12px; opacity: 0.6; flex-shrink: 0;"');
-
-            return styledSvg;
-        } catch (error) {
-            this.app?.logger?.log('❌ Error loading edit icon:', error);
-            return '<span style="font-size: 12px;">✏️</span>'; // Fallback emoji
-        }
+    getEditIconSvg() {
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 95 95" style="width: 12px; height: 12px; opacity: 0.6; flex-shrink: 0;"><path d="M94.35,21.9L73.11,0.65c-0.87-0.87-2.28-0.87-3.15,0L0.9,69.7c-0.41,0.41-0.65,0.97-0.65,1.55L0,92.75c-0.01,0.6,0.23,1.18,0.65,1.6C1.07,94.77,1.63,95,2.22,95c0.01,0,0.02,0,0.03,0l21.5-0.25c0.58-0.01,1.14-0.24,1.55-0.65l69.06-69.05c0.42-0.42,0.65-0.98,0.65-1.57C95,22.88,94.77,22.32,94.35,21.9z M22.79,90.31L4.48,90.52l0.21-18.31l52.67-52.66l18.1,18.1L22.79,90.31z M78.6,34.5L60.5,16.4L71.53,5.38l18.1,18.1L78.6,34.5z"/></svg>';
     }
 
     /**
