@@ -1,0 +1,2173 @@
+/* WorkVivo Favorites Extension - Styles using Tailwind classes */
+
+/* ======================== FLOATING SEARCH WIDGET ======================== */
+
+/* Floating Widget Wrapper */
+.wv-floating-widget-wrapper {
+    position: fixed;
+    width: 200px;
+    height: 200px;
+    z-index: 10000000;
+    pointer-events: auto; /* Allow hover events on entire wrapper area */
+    /* Center the button within the larger wrapper */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Floating Search Button */
+.wv-floating-search-button {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #007ACC, #0056b3);
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 122, 204, 0.3);
+    user-select: none;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
+}
+
+.wv-floating-search-button.wv-floating-button-ready {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.wv-floating-search-button:hover {
+    background: linear-gradient(135deg, #0056b3, #004494);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 122, 204, 0.4);
+}
+
+.wv-floating-search-button.wv-floating-button-dragging {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(0, 122, 204, 0.5);
+    cursor: grabbing;
+}
+
+.wv-floating-button-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
+}
+
+.wv-floating-button-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.wv-floating-search-button:active .wv-floating-button-icon {
+    transform: translate(-50%, -50%) scale(0.9);
+}
+
+/* Chat Bubbles Container */
+.wv-floating-chat-bubbles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Don't block button clicks */
+    z-index: -1; /* Put bubbles behind the button */
+}
+
+.wv-floating-bubbles-visible .wv-floating-chat-bubble {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+/* Show labels when bubbles are visible */
+.wv-floating-bubbles-visible .wv-bubble-label {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) !important;
+}
+
+.wv-floating-bubbles-visible {
+    pointer-events: auto; /* Enable pointer events when bubbles are visible */
+}
+
+.wv-floating-bubbles-hiding .wv-floating-chat-bubble {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+/* Hide labels when bubbles are hiding */
+.wv-floating-bubbles-hiding .wv-bubble-label {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8) !important;
+    pointer-events: none;
+}
+
+/* Individual Chat Bubble */
+.wv-floating-chat-bubble {
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid #e5e7eb;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: wv-bubble-appear 0.3s ease forwards;
+}
+
+.wv-floating-chat-bubble:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border-color: #007ACC;
+}
+
+.wv-floating-chat-bubble:hover .wv-bubble-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Direction-specific hover transforms */
+.wv-floating-chat-bubble:hover .wv-bubble-tooltip:not([class*="wv-tooltip-"]) {
+    transform: translateY(-8px) translateX(-50%) scale(1);
+}
+
+.wv-floating-chat-bubble:hover .wv-tooltip-top {
+    transform: translateY(-8px) translateX(-50%) scale(1);
+}
+
+.wv-floating-chat-bubble:hover .wv-tooltip-bottom {
+    transform: translateY(8px) translateX(-50%) scale(1);
+}
+
+.wv-floating-chat-bubble:hover .wv-tooltip-left {
+    transform: translateY(-50%) translateX(-8px) scale(1);
+}
+
+.wv-floating-chat-bubble:hover .wv-tooltip-right {
+    transform: translateY(-50%) translateX(8px) scale(1);
+}
+
+/* Avatar and Initials */
+.wv-avatar-container {
+    position: relative;
+    width: 56px;
+    height: 56px;
+}
+
+.wv-bubble-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #f0f0f0;
+    border: 2px solid #e0e0e0;
+    display: block;
+    transition: opacity 0.2s ease;
+}
+
+.wv-bubble-initials {
+    font-size: 20px;
+    font-weight: 600;
+    color: #ffffff;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #007ACC, #0056b3);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* More Button Styling */
+.wv-more-bubble {
+    background: linear-gradient(135deg, #6c757d, #5a6268) !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    cursor: pointer;
+}
+
+.wv-more-bubble:hover {
+    background: linear-gradient(135deg, #5a6268, #495057) !important;
+    transform: scale(1.1) !important;
+}
+
+.wv-more-icon {
+    font-size: 32px !important;
+    font-weight: 300 !important;
+    color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Unread Badge */
+.wv-bubble-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid white;
+}
+
+/* Always-visible radial labels */
+.wv-bubble-label {
+    position: absolute;
+    background: rgba(26, 26, 26, 0.9) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(68, 68, 68, 0.8) !important;
+    padding: 6px 10px !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    white-space: nowrap !important;
+    z-index: 9999998 !important;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+    transition: all 0.3s ease;
+    pointer-events: none;
+    max-width: 120px !important;
+    text-align: center !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Tooltip */
+.wv-bubble-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateY(-8px) translateX(-50%) scale(0.9);
+    background: #1a1a1a !important;
+    color: #ffffff !important;
+    border: 1px solid #444444 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    font-family: Arial, sans-serif !important;
+    text-shadow: 1px 1px 2px #000000 !important;
+    line-height: 1.2 !important;
+    display: block !important;
+    text-align: center !important;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    z-index: 9999999;
+    min-width: 120px !important;
+    max-width: 300px !important;
+    min-height: 30px !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+}
+
+.wv-bubble-tooltip::after {
+    content: '';
+    position: absolute;
+    border: 4px solid transparent;
+}
+
+/* Default tooltip position (top) */
+.wv-bubble-tooltip::after {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-top-color: #1a1a1a;
+}
+
+/* Tooltip positioned above bubble (top) */
+.wv-tooltip-top {
+    bottom: 100%;
+    left: 50%;
+    margin-bottom: 8px;
+    transform: translateY(-8px) translateX(-50%) scale(0.9);
+}
+
+.wv-tooltip-top::after {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-top-color: #1a1a1a;
+    border-bottom-color: transparent;
+}
+
+/* Tooltip positioned below bubble (bottom) */
+.wv-tooltip-bottom {
+    top: 100%;
+    left: 50%;
+    margin-top: 8px;
+    transform: translateY(8px) translateX(-50%) scale(0.9);
+}
+
+.wv-tooltip-bottom::after {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-bottom-color: #1a1a1a;
+    border-top-color: transparent;
+}
+
+/* Tooltip positioned to the left of bubble (left) */
+.wv-tooltip-left {
+    right: 100%;
+    top: 50%;
+    margin-right: 8px;
+    transform: translateY(-50%) translateX(-8px) scale(0.9);
+}
+
+.wv-tooltip-left::after {
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border-left-color: #1a1a1a;
+    border-right-color: transparent;
+}
+
+/* Tooltip positioned to the right of bubble (right) */
+.wv-tooltip-right {
+    left: 100%;
+    top: 50%;
+    margin-left: 8px;
+    transform: translateY(-50%) translateX(8px) scale(0.9);
+}
+
+.wv-tooltip-right::after {
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border-right-color: #1a1a1a;
+    border-left-color: transparent;
+}
+
+/* Animations */
+@keyframes wv-bubble-appear {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    70% {
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive Behavior */
+@media (max-width: 768px) {
+    .wv-floating-search-button {
+        width: 48px;
+        height: 48px;
+    }
+
+    .wv-floating-button-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .wv-floating-chat-bubble {
+        width: 48px;
+        height: 48px;
+    }
+
+    .wv-avatar-container {
+        width: 40px;
+        height: 40px;
+    }
+
+    .wv-bubble-avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    .wv-bubble-initials {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .wv-bubble-label {
+        font-size: 10px !important;
+        padding: 4px 8px !important;
+        max-width: 100px !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .wv-floating-search-button {
+        border: 2px solid #000;
+    }
+
+    .wv-floating-chat-bubble {
+        border-width: 3px;
+        border-color: #000;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .wv-floating-search-button,
+    .wv-floating-chat-bubble,
+    .wv-floating-button-icon,
+    .wv-bubble-tooltip {
+        transition: none;
+        animation: none;
+    }
+
+    .wv-floating-chat-bubble {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ======================== END FLOATING SEARCH WIDGET ======================== */
+
+/* Mobile Sidebar Drawer Functionality */
+@media (max-width: 1024px) {
+    /* Hide original sidebar on mobile */
+    [data-testid="channel-list"] {
+        display: none !important;
+    }
+
+    /* FAB Button */
+    .wv-favorites-fab {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #007bff;
+        color: white;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        cursor: pointer;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        touch-action: manipulation;
+    }
+
+    .wv-favorites-fab:hover {
+        background: #0056b3;
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+    }
+
+    .wv-favorites-fab:active {
+        transform: scale(0.95);
+    }
+
+    .wv-favorites-fab svg {
+        width: 24px;
+        height: 24px;
+        transition: transform 0.3s ease;
+    }
+
+    .wv-favorites-fab.open svg {
+        transform: rotate(45deg);
+    }
+
+    /* Mobile Drawer Overlay */
+    .wv-favorites-drawer-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1001;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .wv-favorites-drawer-overlay.open {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Mobile Drawer */
+    .wv-favorites-drawer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 340px;
+        max-width: 85vw;
+        height: 100vh;
+        background: white;
+        z-index: 1002;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .wv-favorites-drawer.open {
+        transform: translateX(0);
+    }
+
+    /* Drawer Header */
+    .wv-favorites-drawer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #f8f9fa;
+    }
+
+    .wv-favorites-drawer-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .wv-favorites-drawer-close {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        transition: background 0.2s ease;
+    }
+
+    .wv-favorites-drawer-close:hover {
+        background: #e5e7eb;
+    }
+
+    /* Drawer Content */
+    .wv-favorites-drawer-content {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Animate drawer content */
+    .wv-favorites-drawer-content > * {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease 0.1s;
+    }
+
+    .wv-favorites-drawer.open .wv-favorites-drawer-content > * {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hide pinned section by default - will be shown when there are pinned chats */
+.wv-favorites-pinned-section {
+    display: none;
+}
+
+.wv-favorites-pinned-section.wv-has-pinned {
+    display: block;
+}
+
+/* Accordion chevron rotation */
+.wv-favorites-accordion-btn[aria-expanded="false"] .wv-favorites-chevron {
+    transform: rotate(-90deg);
+}
+
+.wv-favorites-accordion-btn[aria-expanded="true"] .wv-favorites-chevron {
+    transform: rotate(0deg);
+}
+
+/* Hide accordion content when collapsed */
+.wv-favorites-accordion-btn[aria-expanded="false"] + .wv-favorites-accordion-content {
+    display: none;
+}
+
+.wv-favorites-accordion-btn[aria-expanded="true"] + .wv-favorites-accordion-content {
+    display: block;
+}
+
+/* Pin overlay styling - appears over avatar on hover */
+.wv-favorites-pin-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: none; /* Hidden by default */
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.75);
+    border-radius: 50%;
+    z-index: 100;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+/* Specific styling for pinned section overlays */
+.wv-favorites-pinned-overlay {
+    display: none !important; /* Hidden by default */
+    background: rgba(220, 38, 38, 0.9); /* Red background for unpin */
+}
+
+/* Show pinned overlays on avatar hover */
+.wv-favorites-pinned-section .tw-w-8.tw-h-8.tw-mr-3:hover .wv-favorites-pinned-overlay,
+.wv-favorites-pinned-section span[style*="position: relative"]:hover .wv-favorites-pinned-overlay {
+    display: flex !important;
+}
+
+/* Style the unpin button in overlay */
+.wv-favorites-pinned-overlay .wv-favorites-unpin-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.wv-favorites-pinned-overlay .wv-favorites-unpin-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Show pin overlay on avatar container hover - more specific targeting */
+.tw-w-8.tw-h-8.tw-mr-3:hover .wv-favorites-pin-overlay,
+span[data-testid="channel-avatar-image"]:hover .wv-favorites-pin-overlay,
+img[data-testid="channel-avatar-image"]:hover + .wv-favorites-pin-overlay,
+div[style*="position: relative"]:hover .wv-favorites-pin-overlay {
+    display: flex !important;
+}
+
+/* For image avatars that get wrapped */
+.tw-w-8.tw-h-8.tw-mr-3:hover > div[style*="position: relative"] .wv-favorites-pin-overlay {
+    display: flex !important;
+}
+
+
+/* Pin container styling to match WorkVivo's native approach */
+.wv-favorites-pin-container {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.wv-favorites-pin-container.wv-favorites-pin-with-notification {
+    right: 32px; /* Position to left of notification badge */
+}
+
+/* Show pin container on conversation hover with smooth transition */
+button.tw-block.tw-w-full.tw-p-2.tw-rounded-lg:hover .wv-favorites-pin-container {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+/* Ensure conversation buttons can contain positioned pin containers */
+button.tw-block.tw-w-full.tw-p-2.tw-rounded-lg {
+    position: relative;
+}
+
+/* Performance optimization - reduce repaints */
+.wv-favorites-pin-container * {
+    will-change: auto;
+}
+
+/* Horizontal Carousel for Pinned Chats */
+.wv-favorites-carousel-container {
+    padding: 0 12px 16px 12px;
+}
+
+/* Base container for pinned chats (shared by all layouts) */
+.wv-favorites-container {
+    padding: 0 12px 16px 12px;
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.wv-favorites-carousel-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+    cursor: grab;
+    user-select: none;
+    scroll-behavior: smooth;
+}
+
+.wv-favorites-carousel-scroll.wv-dragging {
+    cursor: grabbing;
+    scroll-behavior: auto;
+}
+
+.wv-favorites-carousel-scroll.wv-dragging * {
+    pointer-events: none; /* Prevent clicks while dragging */
+}
+
+.wv-favorites-carousel-scroll::-webkit-scrollbar {
+    height: 4px;
+}
+
+.wv-favorites-carousel-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.wv-favorites-carousel-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+.wv-favorites-carousel-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Hide scrollbar when setting is disabled */
+.wv-favorites-carousel-scroll.wv-hide-scrollbar {
+    scrollbar-width: none;
+}
+
+.wv-favorites-carousel-scroll.wv-hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Grid Layout for Pinned Chats */
+.wv-favorites-grid {
+    display: grid;
+    gap: 8px;
+    padding-bottom: 4px;
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* 3-Column Grid */
+.wv-favorites-grid.wv-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* 4-Column Grid */
+.wv-favorites-grid.wv-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* Grid card styling */
+.wv-favorites-grid .wv-favorites-pinned-card {
+    width: 100%; /* Full width of grid cell */
+    min-width: 0; /* Allow card to shrink below content size */
+    flex-shrink: 1;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Pinned Chat Cards */
+.wv-favorites-pinned-card {
+    flex-shrink: 0;
+    width: 90px; /* Increased width for 3-line names */
+    cursor: move;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Card being dragged - keep in place but semi-transparent */
+.wv-favorites-pinned-card.wv-dragging-card {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+/* Placeholder showing where card will drop */
+.wv-favorites-pinned-card.wv-drag-placeholder {
+    opacity: 0.4;
+    background: var(--wv-favorites-card-bg);
+    border: 2px dashed rgba(var(--primary-color-rgb, 0, 122, 204), 0.5);
+    pointer-events: none;
+}
+
+/* Ensure placeholder maintains grid layout spacing */
+.wv-favorites-grid .wv-drag-placeholder {
+    width: 100%;
+}
+
+.wv-favorites-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.wv-favorites-card-content:hover {
+    background: #f8fafc;
+}
+
+.wv-favorites-card-avatar {
+    position: relative;
+    margin-bottom: 6px;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wv-favorites-card-avatar img,
+.wv-favorites-card-avatar span {
+    width: 32px !important;
+    height: 32px !important;
+}
+
+.wv-favorites-card-name {
+    font-size: 11px;
+    font-weight: 500;
+    color: #475569;
+    text-align: center;
+    line-height: 1.2;
+    max-width: 100%;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+    hyphens: auto;
+}
+
+/* Unpin button on avatar hover */
+.wv-favorites-card-unpin {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ef4444;
+    border: 2px solid white;
+    color: white;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    transition: transform 0.1s ease;
+    z-index: 10;
+}
+
+.wv-favorites-card-avatar:hover .wv-favorites-card-unpin {
+    display: flex;
+}
+
+.wv-favorites-card-unpin:hover {
+    transform: scale(1.1);
+    background: #dc2626;
+}
+
+/* Empty state */
+.wv-favorites-empty-state {
+    padding: 16px;
+    text-align: center;
+}
+
+/* Hide old pin containers and overlays in pinned section */
+.wv-favorites-pinned-section .wv-favorites-pin-container,
+.wv-favorites-pinned-section .wv-favorites-pin-overlay {
+    display: none !important;
+}
+
+/* Chat Header Avatar Hover Overlay */
+.wv-favorites-header-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+/* Show overlay on avatar hover */
+.tw-w-8.tw-h-8.tw-mr-3:hover .wv-favorites-header-overlay {
+    display: flex !important;
+}
+
+/* Pin button inside header overlay */
+.wv-favorites-header-overlay .wv-favorites-header-pin-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wv-favorites-header-overlay .wv-favorites-header-pin-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Pinned state - red overlay for unpin */
+.wv-favorites-header-overlay.pinned {
+    background: rgba(220, 38, 38, 0.85);
+}
+
+/* Header Avatar Pin Indicator */
+.wv-favorites-header-pin-indicator {
+    position: absolute;
+    bottom: 0px;
+    right: -3px;
+    width: 12px;
+    height: 12px;
+    background: #00a300;
+    border: 2px solid white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    pointer-events: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.wv-favorites-header-pin-indicator svg {
+    width: 6px;
+    height: 6px;
+}
+
+/* Sidebar Avatar Hover Overlays */
+.wv-favorites-sidebar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+/* Show sidebar overlay on avatar hover */
+[data-testid="channel-list"] .tw-w-8.tw-h-8.tw-mr-3:hover .wv-favorites-sidebar-overlay {
+    display: flex !important;
+}
+
+/* Pin button inside sidebar overlay */
+.wv-favorites-sidebar-overlay .wv-favorites-sidebar-pin-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wv-favorites-sidebar-overlay .wv-favorites-sidebar-pin-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Pinned state - red overlay for unpin in sidebar */
+.wv-favorites-sidebar-overlay.pinned {
+    background: rgba(220, 38, 38, 0.85);
+}
+
+/* Hide pin indicators in pinned chats section - multiple selectors for safety */
+.wv-favorites-pinned-section .wv-favorites-pin-indicator {
+    display: none !important;
+}
+
+.wv-favorites-pinned-section [data-testid="channel-avatar-image"] .wv-favorites-pin-indicator {
+    display: none !important;
+}
+
+/* Ensure no pin indicators in pinned section by targeting the section directly */
+.wv-favorites-pinned-list .wv-favorites-pin-indicator {
+    display: none !important;
+}
+
+/* Force hide any pin indicators in pinned section */
+[class*="wv-favorites-pinned"] .wv-favorites-pin-indicator {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+.wv-favorites-pin-btn,
+.wv-favorites-unpin-btn {
+    padding: 6px;
+    border-radius: 4px;
+    border: none;
+    background: #f1f5f9; /* Tailwind slate-100 */
+    color: #64748b; /* Tailwind slate-500 */
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    min-height: 28px;
+    pointer-events: auto;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.wv-favorites-pin-btn:hover,
+.wv-favorites-unpin-btn:hover {
+    background: #e2e8f0; /* Tailwind slate-200 */
+    color: #475569; /* Tailwind slate-600 */
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Pin indicator - small pin icon at bottom-right of avatar */
+.wv-favorites-pin-indicator {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 12px;
+    height: 12px;
+    background: #3b82f6; /* Tailwind blue-500 */
+    border: 2px solid white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10; /* Higher z-index to ensure it's above other elements */
+    pointer-events: none; /* Don't interfere with clicking */
+}
+
+.wv-favorites-pin-indicator svg {
+    width: 6px;
+    height: 6px;
+    color: white;
+}
+
+/* Active/pinned state styling */
+.wv-favorites-pin-btn.wv-favorites-pinned {
+    background: rgba(239, 246, 255, 0.95); /* Tailwind blue-50 with opacity */
+    color: #3b82f6; /* Tailwind blue-500 */
+}
+
+.wv-favorites-pin-btn.wv-favorites-pinned:hover {
+    background: rgba(239, 246, 255, 1);
+    color: #1d4ed8; /* Tailwind blue-700 */
+}
+
+/* Notification styling */
+.wv-favorites-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    padding: 12px 16px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease-out;
+}
+
+.wv-favorites-notification.wv-favorites-success {
+    background: #10b981; /* Tailwind green-500 */
+}
+
+.wv-favorites-notification.wv-favorites-info {
+    background: #3b82f6; /* Tailwind blue-500 */
+}
+
+.wv-favorites-notification.wv-favorites-error {
+    background: #ef4444; /* Tailwind red-500 */
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Ensure avatars can have overlays */
+[data-testid="channel-avatar-image"] {
+    position: relative;
+}
+
+/* Remove blue outline from accordion button */
+.wv-favorites-accordion-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.wv-favorites-accordion-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Settings button in pinned header */
+.wv-favorites-settings-btn {
+    padding: 4px;
+    border: none;
+    background: transparent;
+    color: #9ca3af;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wv-favorites-settings-btn:hover {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.wv-favorites-settings-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Accessibility improvements */
+.wv-favorites-pin-btn:focus,
+.wv-favorites-unpin-btn:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+    display: block; /* Show on focus even if not hovered */
+}
+
+/* Quick Search Modal Styles */
+.wv-favorites-quick-search-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+}
+
+.wv-favorites-quick-search-backdrop.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.wv-favorites-quick-search-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    width: 90vw;
+    max-width: 480px;
+    max-height: 70vh;
+    overflow: hidden;
+    z-index: 10001;
+    transition: all 0.2s ease;
+}
+
+.wv-favorites-quick-search-backdrop.open .wv-favorites-quick-search-modal {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.wv-favorites-quick-search-header {
+    padding: 20px 20px 0 20px;
+}
+
+.wv-favorites-quick-search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s ease;
+    background: #f9fafb;
+}
+
+.wv-favorites-quick-search-input:focus {
+    border-color: #3b82f6;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.wv-favorites-quick-search-content {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 8px 0;
+}
+
+.wv-favorites-quick-search-results {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.wv-favorites-quick-search-results.wv-updating {
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.wv-favorites-quick-search-section {
+    margin-bottom: 16px;
+}
+
+.wv-favorites-quick-search-section-title {
+    padding: 8px 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: #f9fafb;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.wv-favorites-quick-search-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.15s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    animation: wv-fadeInUp 0.2s ease-out;
+}
+
+.wv-favorites-quick-search-item:hover,
+.wv-favorites-quick-search-item.selected {
+    background: #f3f4f6;
+}
+
+.wv-favorites-quick-search-item.selected {
+    background: #eff6ff;
+    border-left: 3px solid #3b82f6;
+}
+
+.wv-favorites-quick-search-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.wv-favorites-quick-search-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.wv-favorites-quick-search-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1f2937;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wv-favorites-quick-search-meta {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* Old info button styles removed - now handled in actions container */
+
+/* Actions container for hover buttons */
+.wv-favorites-quick-search-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 8px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.wv-favorites-quick-search-item:hover .wv-favorites-quick-search-actions {
+    opacity: 1;
+}
+
+/* Email copy button */
+.wv-favorites-quick-search-email-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    transition: all 0.15s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.wv-favorites-quick-search-email-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: #374151;
+    transform: scale(1.1);
+}
+
+.wv-favorites-quick-search-email-btn:active {
+    transform: scale(0.95);
+}
+
+/* Update info button to work within actions container */
+.wv-favorites-quick-search-info-btn {
+    position: static;
+    transform: none;
+    width: 24px;
+    height: 24px;
+    opacity: 1;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    transition: all 0.15s ease;
+}
+
+.wv-favorites-quick-search-info-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: #374151;
+    transform: scale(1.1);
+}
+
+.wv-favorites-quick-search-info-btn:active {
+    transform: scale(0.95);
+}
+
+.wv-favorites-quick-search-highlight {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 1px 2px;
+    border-radius: 2px;
+}
+
+.wv-favorites-quick-search-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.wv-favorites-quick-search-empty-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.wv-favorites-quick-search-empty-text {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.wv-favorites-quick-search-empty-subtext {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+/* Quick Search Keyboard Hint */
+.wv-favorites-quick-search-hint {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-top: 1px solid #f3f4f6;
+    background: #f9fafb;
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.wv-favorites-quick-search-native-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.wv-favorites-quick-search-native-btn:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+    color: #111827;
+}
+
+.wv-favorites-quick-search-native-btn svg {
+    flex-shrink: 0;
+}
+
+.wv-favorites-quick-search-settings-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.wv-favorites-quick-search-settings-btn:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+    color: #111827;
+}
+
+.wv-favorites-quick-search-settings-btn svg {
+    flex-shrink: 0;
+}
+
+/* Search for more button - Simple and theme-friendly */
+.wv-favorites-search-for-more-container {
+    padding: 8px 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.wv-favorites-search-for-more-btn {
+    width: 100%;
+    padding: 10px 14px;
+    background: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+    font-size: 13px;
+    color: inherit;
+    font-weight: 500;
+}
+
+.wv-favorites-search-for-more-btn:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.18);
+}
+
+.wv-favorites-search-for-more-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.wv-favorites-search-for-more-icon {
+    flex-shrink: 0;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.wv-favorites-search-for-more-content {
+    flex: 1;
+}
+
+.wv-favorites-search-for-more-text {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 1px;
+    color: inherit;
+}
+
+.wv-favorites-search-for-more-subtext {
+    display: block;
+    font-size: 11px;
+    opacity: 0.6;
+}
+
+/* Dark mode support for quick search */
+@media (prefers-color-scheme: dark) {
+    .wv-favorites-quick-search-modal {
+        background: #1f2937;
+        color: #f9fafb;
+    }
+
+    .wv-favorites-quick-search-input {
+        background: #374151;
+        border-color: #4b5563;
+        color: #f9fafb;
+    }
+
+    .wv-favorites-quick-search-input:focus {
+        border-color: #60a5fa;
+        background: #4b5563;
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    }
+
+    .wv-favorites-quick-search-section-title {
+        background: #374151;
+        color: #9ca3af;
+        border-bottom-color: #4b5563;
+    }
+
+    .wv-favorites-quick-search-item:hover {
+        background: #374151;
+    }
+
+    .wv-favorites-quick-search-item.selected {
+        background: #1e40af;
+        border-left-color: #60a5fa;
+    }
+
+    .wv-favorites-quick-search-name {
+        color: #f9fafb;
+    }
+
+    .wv-favorites-quick-search-meta {
+        color: #9ca3af;
+    }
+
+    .wv-favorites-quick-search-hint {
+        background: #374151;
+        border-top-color: #4b5563;
+        color: #9ca3af;
+    }
+
+    .wv-favorites-quick-search-native-btn {
+        background: #4b5563;
+        border-color: #6b7280;
+        color: #f9fafb;
+    }
+
+    .wv-favorites-quick-search-native-btn:hover {
+        background: #374151;
+        border-color: #9ca3af;
+        color: #ffffff;
+    }
+
+    .wv-favorites-quick-search-settings-btn {
+        background: #4b5563;
+        border-color: #6b7280;
+        color: #f9fafb;
+    }
+
+    .wv-favorites-quick-search-settings-btn:hover {
+        background: #374151;
+        border-color: #9ca3af;
+        color: #ffffff;
+    }
+
+    /* Dark mode styles for action buttons */
+    .wv-favorites-quick-search-email-btn,
+    .wv-favorites-quick-search-info-btn {
+        color: #9ca3af;
+    }
+
+    .wv-favorites-quick-search-email-btn:hover,
+    .wv-favorites-quick-search-info-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #f9fafb;
+    }
+}
+
+/* Dark mode support - adjust colors based on WorkVivo's theme */
+@media (prefers-color-scheme: dark) {
+    .wv-favorites-pin-btn,
+    .wv-favorites-unpin-btn {
+        background: rgba(31, 41, 55, 0.9); /* Tailwind gray-800 with opacity */
+        color: #9ca3af; /* Tailwind gray-400 */
+    }
+
+    .wv-favorites-pin-btn:hover,
+    .wv-favorites-unpin-btn:hover {
+        background: rgba(31, 41, 55, 1);
+        color: #f9fafb; /* Tailwind gray-50 */
+    }
+
+    .wv-favorites-pin-btn.wv-favorites-pinned {
+        background: rgba(30, 58, 138, 0.9); /* Tailwind blue-800 with opacity */
+        color: #93c5fd; /* Tailwind blue-300 */
+    }
+}
+
+/* Chat Switcher Modal Styles */
+.wv-favorites-chat-switcher-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.wv-favorites-chat-switcher-backdrop.open {
+    opacity: 1;
+}
+
+.wv-favorites-chat-switcher-modal {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    transform: scale(0.9) translateY(-20px);
+    transition: transform 0.2s ease;
+}
+
+.wv-favorites-chat-switcher-backdrop.open .wv-favorites-chat-switcher-modal {
+    transform: scale(1) translateY(0);
+}
+
+.wv-favorites-chat-switcher-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f8f9fa;
+}
+
+.wv-favorites-chat-switcher-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.wv-favorites-chat-switcher-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.wv-favorites-chat-switcher-close {
+    background: #f3f4f6;
+    border: none;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.wv-favorites-chat-switcher-close:hover {
+    background: #e5e7eb;
+    color: #1f2937;
+}
+
+.wv-favorites-chat-switcher-hint {
+    font-size: 12px;
+    color: #6b7280;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+}
+
+.wv-favorites-chat-switcher-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.wv-favorites-chat-switcher-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 24px;
+    border-bottom: 1px solid #f3f4f6;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+}
+
+.wv-favorites-chat-switcher-item:last-child {
+    border-bottom: none;
+}
+
+.wv-favorites-chat-switcher-item:hover {
+    background: #f8f9fa;
+}
+
+.wv-favorites-chat-switcher-item.selected {
+    background: #3b82f6;
+    color: white;
+}
+
+.wv-favorites-chat-switcher-item.selected .wv-favorites-chat-switcher-name {
+    color: white;
+}
+
+.wv-favorites-chat-switcher-item.selected .wv-favorites-chat-switcher-meta {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.wv-favorites-chat-switcher-item.selected .wv-favorites-chat-switcher-shortcut {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.wv-favorites-chat-switcher-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 16px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.wv-favorites-chat-switcher-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.wv-favorites-chat-switcher-avatar {
+    width: 40px;
+    height: 40px;
+    margin-right: 16px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wv-favorites-chat-switcher-avatar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.wv-favorites-chat-switcher-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1f2937;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wv-favorites-chat-switcher-meta {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.wv-favorites-chat-switcher-shortcut {
+    background: #f3f4f6;
+    color: #6b7280;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+    margin-left: 12px;
+    flex-shrink: 0;
+}
+
+.wv-favorites-chat-switcher-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6b7280;
+}
+
+.wv-favorites-chat-switcher-empty-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.wv-favorites-chat-switcher-empty-text {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.wv-favorites-chat-switcher-empty-subtext {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* Dark mode support for chat switcher */
+@media (prefers-color-scheme: dark) {
+    .wv-favorites-chat-switcher-modal {
+        background: #1f2937;
+        color: #f9fafb;
+    }
+
+    .wv-favorites-chat-switcher-header {
+        background: #374151;
+        border-bottom-color: #4b5563;
+    }
+
+    .wv-favorites-chat-switcher-title {
+        color: #f9fafb;
+    }
+
+    .wv-favorites-chat-switcher-hint {
+        color: #9ca3af;
+    }
+
+    .wv-favorites-chat-switcher-item {
+        border-bottom-color: #374151;
+    }
+
+    .wv-favorites-chat-switcher-item:hover {
+        background: #374151;
+    }
+
+    .wv-favorites-chat-switcher-name {
+        color: #f9fafb;
+    }
+
+    .wv-favorites-chat-switcher-meta {
+        color: #9ca3af;
+    }
+
+    .wv-favorites-chat-switcher-shortcut {
+        background: #374151;
+        color: #9ca3af;
+    }
+
+    .wv-favorites-chat-switcher-close {
+        background: #374151;
+        color: #9ca3af;
+    }
+
+    .wv-favorites-chat-switcher-close:hover {
+        background: #4b5563;
+        color: #f9fafb;
+    }
+
+    .wv-favorites-chat-switcher-empty {
+        color: #9ca3af;
+    }
+}
+
+/* Advanced Search Enhancement Styles */
+.wv-favorites-quick-search-plus {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #28a745;
+    font-size: 18px;
+    font-weight: bold;
+    opacity: 0.9;
+    transition: all 0.2s ease;
+    z-index: 10;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wv-favorites-quick-search-item:hover .wv-favorites-quick-search-plus {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Ensure search items have relative positioning for plus icon */
+.wv-favorites-quick-search-item[data-type="api_user"] {
+    position: relative;
+}
+
+.wv-favorites-quick-search-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: #6c757d;
+}
+
+.wv-favorites-search-loading-spinner {
+    font-size: 24px;
+    margin-bottom: 12px;
+    animation: wv-spin 1s linear infinite;
+}
+
+.wv-favorites-search-loading-text {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #374151;
+}
+
+.wv-favorites-search-loading-subtext {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.wv-favorites-quick-search-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: #dc2626;
+}
+
+.wv-favorites-search-error-icon {
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+.wv-favorites-search-error-text {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #dc2626;
+}
+
+.wv-favorites-search-error-subtext {
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+@keyframes wv-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes wv-fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.wv-favorites-quick-search-loading-text {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wv-favorites-quick-search-loading-api {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #6c757d;
+    font-size: 13px;
+    border-top: 1px solid #e9ecef;
+    margin-top: 8px;
+    background: #f8f9fa;
+}
+
+/* API channel indicators */
+.wv-favorites-quick-search-item[data-type="api_channel"] .wv-favorites-quick-search-avatar {
+    border: 2px solid #28a745 !important;
+}
+
+.wv-favorites-quick-search-item[data-type="api_user"] .wv-favorites-quick-search-avatar {
+    border: 2px solid #6c757d !important;
+    opacity: 0.8;
+}
+
+.wv-favorites-quick-search-item[data-type="api_user"]:hover .wv-favorites-quick-search-avatar {
+    opacity: 1;
+    border-color: #28a745 !important;
+}
+
+/* Pin status overlay for pinned chats */
+.wv-favorites-pin-overlay {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 16px;
+    height: 16px;
+    background: #3b82f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    color: white;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+/* Make avatar container relative for pin overlay positioning */
+.wv-favorites-quick-search-avatar {
+    position: relative;
+}
+
+/* ======================== THREAD BUTTON LOADING STATE ======================== */
+
+/* Shimmer animation keyframes */
+@keyframes wv-thread-shimmer {
+    0% {
+        opacity: 0.4;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.4;
+    }
+}
+
+/* Loading state for thread button */
+.wv-thread-btn-loading {
+    cursor: not-allowed !important;
+    opacity: 0.6;
+    animation: wv-thread-shimmer 1.5s ease-in-out infinite;
+}
+
+/* Disabled state styling */
+.wv-thread-btn-loading:hover {
+    transform: none !important;
+    background: none !important;
+}
+
+/* Subtle pulse effect on the SVG icon when loading */
+.wv-thread-btn-loading svg {
+    animation: wv-thread-shimmer 1.5s ease-in-out infinite;
+}
+
+/* Slide in from left animation for mentions panel */
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ======================== STATUS DIALOG ANIMATIONS ======================== */
+
+/* Fade in animation for dialog overlay */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Fade out animation for dialog overlay */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Slide up animation for dialog content */
+@keyframes slideInUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Slide in from right animation for panels */
+@keyframes slideInRight {
+    from {
+        transform: translateX(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

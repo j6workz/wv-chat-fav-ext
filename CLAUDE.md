@@ -1,0 +1,1 @@
+- the workvivo app is a react SPA. So the chat especially doesn't associate with any URL changes.

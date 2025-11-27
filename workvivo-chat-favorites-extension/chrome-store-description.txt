@@ -1,0 +1,52 @@
+WorkVivo Chat Favorites helps you stay organized by letting you pin your most important conversations. Instead of scrolling through long chat lists, you can access your favorites instantly.
+
+✨ WHAT IT DOES
+
+📌 Pin & Organize Your Important Chats
+Open any chat and hover over the avatar in the chat header to see the pin icon. Click it to save the chat as a favorite. Your pinned chats appear at the top of your sidebar for instant access.
+Choose between carousel, 3-column grid, or 4-column grid layouts! Drag and drop avatars to reorder your pinned chats exactly how you want them. Pinned chats show a pin badge to indicate they're favorited.
+
+💬 Custom Status Updates (NEW v3.2)
+Let your colleagues know what you're up to! Set your custom status with any emoji and text message. Your status appears next to your avatar in the sidebar and in chat headers when others message you. Set optional expiry times (30m, 1h, 4h, today, this week, or never) for automatic status clearing. Perfect for letting people know you're in meetings, on break, working focused, or on vacation. Update your status anytime by clicking your avatar in the sidebar.
+
+⌨️ Navigate with Keyboard Shortcuts
+Use keyboard shortcuts to quickly search and switch between conversations (Cmd/Ctrl + / for search, Cmd/Ctrl + \ to toggle recent chats). Find what you need without reaching for your mouse. Windows users can customize their modifier key (Ctrl, Alt, or both) in settings.
+
+🔘 Customizable Floating Button
+A beautiful floating button provides quick access to search and recent chats. 
+NEW in v2.5.5: Personalize the button color with any color you like! The icon color automatically adjusts for perfect contrast (WCAG compliant). Choose between single-click for recent chats or double-click for search. Drag the button anywhere on your screen.
+
+🔄 Recent Chat Switcher
+The extension remembers your last 5 conversations, making it easy to switch between active chats. Quick toggle: tap Cmd/Ctrl + \ to instantly jump to your last conversation. Hold the modifier key and press \ repeatedly to cycle through all recent chats. Perfect for multitasking across multiple ongoing discussions.
+
+🔍 Lightning-Fast Smart Search
+Revolutionary IndexedDB-powered search that learns from your usage. Search anyone in your company directory by name or nickname - results appear in under 10ms! The search shows your pinned chats first, then your 5 most recent conversations, and all organization members. Click on a result to open an existing chat or create a new direct conversation. You can also view profiles or copy email addresses directly from search results. The Smart Database achieves 95%+ local search success with zero API calls.
+
+🔎 Channel Message Search Panel (NEW v2.8)
+Search messages within specific channels using the dedicated search panel. Click the search icon in any chat header to open the panel. Use advanced query syntax: comma (,) for AND operators and pipe (|) for OR operators. For example, "meeting,notes" finds messages with both words, while "urgent|asap" finds messages with either word. Perfect for finding important information in long conversations.
+
+💬 Thread Panel
+View all threads for any chat in a convenient side panel. The Thread Panel shows all threaded conversations with unread badges, making it easy to track replies and never miss important updates. Click any thread to jump directly to it in the conversation. The panel updates automatically in real-time as new threads arrive or replies are posted.
+
+@ Mentions Panel (NEW v2.7)
+Never miss when someone mentions you! The Mentions Panel shows all your @mentions across all chats in one convenient sidebar. See unread mentions with badges, click any mention to jump directly to the message. Perfect for staying on top of conversations where you're specifically called out.
+
+✍️ Draft Messages (NEW v2.7)
+Never lose your thoughts! The extension automatically saves draft messages as you type. Switch between chats without losing your unfinished messages. Access all your drafts from the Drafts Panel in the sidebar. Click any draft to jump back to that conversation with your message ready to finish and send.
+
+⚙️ Flexible Feature Toggles
+Customize your experience with granular control. Enable or disable individual features like Thread Panel, Mentions Panel, Search Panel, Draft Messages, and more. Choose your preferred pinned chats layout, customize keyboard shortcuts, and adjust notification preferences. Control debug logging for a clean console. All settings sync across your devices.
+
+💡 WHY YOU'LL LIKE IT
+
+Save time by eliminating endless scrolling through chat lists. Keep your most critical conversations within easy reach and organized exactly how you want with multiple layout options. Set custom status updates to let colleagues know your availability. Lightning-fast search that gets smarter the more you use it, plus powerful channel message search with advanced operators. Never miss mentions or lose draft messages. Stay on top of threaded discussions with real-time updates and unread badges. Create instant Google Meet links without leaving your chat. Personalize your experience with custom button colors, status messages, flexible feature toggles, and keyboard shortcuts. Perfect for anyone managing multiple active conversations, tracking mentions, communicating availability, searching through message history, and scheduling quick meetings.
+
+🔒 PRIVACY AND SECURITY
+
+Your pinned chats, settings, and search data are stored locally on your computer. The extension doesn't send your data to external servers. Optional anonymous analytics with jurisdiction-aware consent - if you're in a strict privacy region (EU, California), analytics are disabled by default. You can export your settings for backup or import them on another device. Email j6workz@gmail.com for data deletion requests.
+
+🚀 GETTING STARTED
+
+Install the extension and it automatically integrates with your interface. Open any chat, hover over the avatar in the chat header to see the pin icon. Click to pin, click again to unpin. Drag pinned chat avatars to reorder them. Click your avatar in the sidebar to set your custom status with emoji and text. Use Cmd/Ctrl + / to search, Cmd/Ctrl + \ to toggle recent chats. Click the extension icon to access settings and choose your pinned chats layout (carousel, 3-column grid, or 4-column grid). Enable or disable features like Status Updates, Thread Panel, Mentions Panel, Search Panel, and Draft Messages. Click the search icon in any chat header to search messages within that channel. That's it!
+
+For support or questions, contact j6workz@gmail.com.

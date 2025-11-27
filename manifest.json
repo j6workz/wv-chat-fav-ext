@@ -1,0 +1,180 @@
+{
+  "manifest_version": 3,
+  "name": "WorkVivo Chat Favorites",
+  "version": "3.3.8",
+  "description": "Pin chats, track @mentions, auto-save drafts, search messages, manage threads, set custom status & create instant Google Meets.",
+  "author": "Jawahar Mariselvam <j6workz@gmail.com>",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1qB7SgxAvndi47A2OpEMHW6wRdVAwnOPBkuxVEmJM2RktuvJw2lOnmglxT2HtsaSIR+PRXvE2O+qLNF4COSOcAxmqgCdJWOcra3/0CVBe2tpNYxrt6V/hqnewOYKqE62mnn1Fqil8z9LWSxP7+SbRjIrd5/0mNBlsN+dfbIWYpdPd9sxWho1CAmNc34U1Enm+u8699e0enhC0of7ZcYx3eih4Ga08ltTaGb7raSxFZMNsYbYfKJuWhK+mCWBSBv52fdBJ7iA3yn4WtXJtJna1Hxf6leJdh0Wri+xnBXQWgEFYYvxJf7cFCp/mqQZUjFgxrokWw43Um+94Lo3fZmlEwIDAQAB",
+
+  "permissions": [
+    "storage",
+    "activeTab",
+    "identity"
+  ],
+
+  "oauth2": {
+    "client_id": "507567893645-tidceffp17c1utr7ck97136v5tmni787.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/calendar.events",
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]
+  },
+
+  "host_permissions": [
+    "*://*.workvivo.com/*",
+    "*://*.workvivo.us/*",
+    "*://*.workvivo.co/*",
+    "*://*.workvivo.vn/*",
+    "*://www.google-analytics.com/*",
+    "https://www.googleapis.com/*"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.workvivo.com/*",
+        "*://*.workvivo.us/*",
+        "*://*.workvivo.co/*",
+        "*://*.workvivo.vn/*"
+      ],
+      "js": ["inject-early.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://*.workvivo.com/*",
+        "*://*.workvivo.us/*",
+        "*://*.workvivo.co/*",
+        "*://*.workvivo.vn/*"
+      ],
+      "js": [
+        "modules/utils/ConsoleOverride.js",
+        "modules/utils/Version.js",
+        "modules/utils/Constants.js",
+        "modules/utils/Helpers.js",
+        "modules/utils/DeviceLocationDetector.js",
+        "modules/utils/JurisdictionDetector.js",
+        "modules/compliance/PrivacyRulesEngine.js",
+        "modules/analytics/ConsentManager.js",
+        "modules/analytics/AnalyticsManager.js",
+        "modules/websocket/WebSocketStateManager.js",
+        "modules/core/Logger.js",
+        "modules/core/PrivacyManager.js",
+        "modules/core/ContextManager.js",
+        "modules/core/StorageManager.js",
+        "modules/utils/Settings.js",
+        "modules/core/CacheManager.js",
+        "modules/core/StatisticsManager.js",
+        "modules/core/SmartUserDatabase.js",
+        "modules/core/UnifiedDatabase.js",
+        "modules/core/APIManager.js",
+        "modules/core/SearchEngine.js",
+        "modules/core/ThreadManager.js",
+        "modules/core/DraftManager.js",
+        "modules/core/SearchManager.js",
+        "modules/core/UserIdentityManager.js",
+        "modules/core/MentionsManager.js",
+        "modules/core/StatusManager.js",
+        "modules/integrations/WebpackNavigator.js",
+        "modules/integrations/ReactFiberNavigator.js",
+        "modules/integrations/GoogleMeetManager.js",
+        "modules/utils/DomDataExtractor.js",
+        "modules/ui/DomManager.js",
+        "modules/ui/EventHandler.js",
+        "modules/ui/FloatingSearchWidget.js",
+        "modules/ui/MentionsPanel.js",
+        "modules/ui/SearchPanel.js",
+        "modules/ui/DraftsPanel.js",
+        "modules/ui/StatusDialog.js",
+        "modules/ui/ConsentPrompt.js",
+        "content.js"
+      ],
+      "css": ["styles.css"],
+      "run_at": "document_end"
+    }
+  ],
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "WorkVivo Chat Favorites",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "options_page": "options.html",
+  
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/*.png",
+        "noun-edit-4781137.svg",
+        "styles.css",
+        "page-script.js",
+        "inject-fetch-interceptor.js",
+        "inject-websocket-interceptor.js",
+        "inject-xhr-interceptor.js",
+        "modules/utils/ConsoleOverride.js",
+        "modules/utils/Version.js",
+        "modules/utils/Constants.js",
+        "modules/utils/Helpers.js",
+        "modules/utils/DeviceLocationDetector.js",
+        "modules/utils/JurisdictionDetector.js",
+        "modules/compliance/PrivacyRulesEngine.js",
+        "modules/analytics/ConsentManager.js",
+        "modules/analytics/AnalyticsManager.js",
+        "modules/websocket/WebSocketStateManager.js",
+        "modules/core/Logger.js",
+        "modules/core/PrivacyManager.js",
+        "modules/core/ContextManager.js",
+        "modules/core/StorageManager.js",
+        "modules/utils/Settings.js",
+        "modules/core/CacheManager.js",
+        "modules/core/StatisticsManager.js",
+        "modules/core/SmartUserDatabase.js",
+        "modules/core/UnifiedDatabase.js",
+        "modules/core/APIManager.js",
+        "modules/core/SearchEngine.js",
+        "modules/core/ThreadManager.js",
+        "modules/core/DraftManager.js",
+        "modules/core/SearchManager.js",
+        "modules/core/UserIdentityManager.js",
+        "modules/core/MentionsManager.js",
+        "modules/core/StatusManager.js",
+        "modules/integrations/WebpackNavigator.js",
+        "modules/integrations/ReactFiberNavigator.js",
+        "modules/integrations/GoogleMeetManager.js",
+        "modules/utils/DomDataExtractor.js",
+        "modules/ui/DomManager.js",
+        "modules/ui/EventHandler.js",
+        "modules/ui/FloatingSearchWidget.js",
+        "modules/ui/MentionsPanel.js",
+        "modules/ui/SearchPanel.js",
+        "modules/ui/DraftsPanel.js",
+        "modules/ui/StatusDialog.js",
+        "modules/ui/ConsentPrompt.js"
+      ],
+      "matches": [
+        "*://*.workvivo.com/*",
+        "*://*.workvivo.us/*",
+        "*://*.workvivo.co/*",
+        "*://*.workvivo.vn/*"
+      ]
+    }
+  ]
+}

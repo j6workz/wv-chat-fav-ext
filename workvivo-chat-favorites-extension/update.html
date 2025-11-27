@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You for Updating - WorkVivo Chat Favorites</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.7) 0%, transparent 40%),
+                radial-gradient(circle at 85% 20%, rgba(236, 72, 153, 0.6) 0%, transparent 45%),
+                radial-gradient(circle at 50% 35%, rgba(59, 130, 246, 0.5) 0%, transparent 40%),
+                radial-gradient(circle at 25% 55%, rgba(168, 85, 247, 0.6) 0%, transparent 45%),
+                radial-gradient(circle at 75% 65%, rgba(14, 165, 233, 0.5) 0%, transparent 40%),
+                radial-gradient(circle at 10% 85%, rgba(34, 197, 94, 0.5) 0%, transparent 45%),
+                radial-gradient(circle at 90% 90%, rgba(249, 115, 22, 0.4) 0%, transparent 40%),
+                radial-gradient(circle at 45% 100%, rgba(236, 72, 153, 0.5) 0%, transparent 45%),
+                linear-gradient(135deg, #4f46e5 0%, #7c3aed 30%, #2563eb 60%, #0891b2 100%);
+            color: #1f2937;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 48px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .version {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .message {
+            font-size: 18px;
+            color: #4b5563;
+            margin-bottom: 32px;
+            line-height: 1.8;
+        }
+
+        .donate-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: #FFDD00;
+            color: #000000;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .donate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 221, 0, 0.4);
+        }
+
+        .changelog-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+
+        .changelog-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .changelog-header span {
+            font-size: 24px;
+        }
+
+        .changelog-header h2 {
+            font-size: 20px;
+            color: #1f2937;
+        }
+
+        .changelog-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .changelog-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f3f4f6;
+            color: #4b5563;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .changelog-list li:last-child {
+            border-bottom: none;
+        }
+
+        .changelog-list li::before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .footer {
+            margin-top: 32px;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .footer-info {
+            margin-top: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 32px 24px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            .message {
+                font-size: 16px;
+            }
+
+            .icon {
+                font-size: 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="icon">🎉</div>
+            <h1>Thank You for Updating!</h1>
+            <div class="version">v3.3.8</div>
+            <p class="message">
+                Your support means the world! This extension is a labor of love,
+                built to make your WorkVivo experience better. If it's been helpful,
+                consider buying me a coffee to keep the updates coming.
+            </p>
+            <a href="https://buymeacoffee.com/j6workz" target="_blank" class="donate-btn">
+                <span>☕</span>
+                <span>Buy me a coffee</span>
+            </a>
+        </div>
+
+        <div class="changelog-card">
+            <div class="changelog-header">
+                <span>📋</span>
+                <h2>What's New</h2>
+            </div>
+            <ul class="changelog-list">
+                <li>Fixed group chat detection to prevent member count displacement</li>
+                <li>Fixed status showing on group chats</li>
+                <li>Fixed draft clearing for messages with attachments</li>
+                <li>Added settings button to quick search widget</li>
+                <li>Improved pinned section stability</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <div class="footer-links">
+                <a href="https://j6.studio/workvivo-chat-favorites-extension/">All Features</a>
+                <a href="https://j6.studio/workvivo-chat-favorites-extension/privacy-policy.html">Privacy Policy</a>
+                <a href="mailto:j6workz@gmail.com">Contact</a>
+            </div>
+            <p class="footer-info">
+                WorkVivo Chat Favorites by j6 | j6workz@gmail.com
+            </p>
+        </div>
+    </div>
+</body>
+</html>

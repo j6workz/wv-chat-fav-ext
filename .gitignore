@@ -1,0 +1,46 @@
+# Debug logs
+log*.txt
+*.log
+
+# OAuth credentials (security-sensitive)
+client_secret*.json
+secrets.js
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node modules (if any)
+node_modules/
+
+# Analysis and development artifacts
+analysis/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Test files
+test-*.js
+devtools-test.js
+
+# Debug data files
+get-channel-response.json
+test-messages.json
+sidebar-header.txt
+chat-input-snippet.txt
+
+# Playwright debugging
+.playwright-mcp/
+
+# Old/experimental code
+chrome-extension-v2/
+workvivo-navigation-solution/

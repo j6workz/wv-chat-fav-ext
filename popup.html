@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkVivo Chat Favorites</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            width: 360px;
+            min-height: 380px;
+            max-height: 600px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .header p {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 10px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+            background: white;
+            border-radius: 6px;
+            padding: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 16px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+
+        .section {
+            margin-bottom: 10px;
+        }
+        
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .pinned-list {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .pinned-item {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .pinned-item:last-child {
+            border-bottom: none;
+        }
+        
+        .pinned-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .pinned-name {
+            font-size: 13px;
+            color: #333;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .pinned-date {
+            font-size: 11px;
+            color: #6c757d;
+            margin-left: 8px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 32px 16px;
+            color: #6c757d;
+        }
+        
+        .empty-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        .empty-text {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .empty-subtext {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 7px 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .instructions {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-left: 3px solid #007bff;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 10px;
+            color: #495057;
+            line-height: 1.4;
+        }
+
+        .instructions strong {
+            color: #212529;
+        }
+
+        .kbd {
+            display: inline-block;
+            padding: 2px 6px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            line-height: 1;
+            color: #24292e;
+            background: linear-gradient(180deg, #fafbfc 0%, #eff3f6 100%);
+            border: 1px solid #d1d5da;
+            border-radius: 3px;
+            box-shadow: 0 1px 0 rgba(27, 31, 35, 0.04), inset 0 0 0 1px #ffffff;
+            white-space: nowrap;
+            vertical-align: middle;
+            margin: 0 1px;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+        
+        .loading::before {
+            content: '';
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e9ecef;
+            border-top-color: #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .footer {
+            padding: 8px 12px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            text-align: center;
+            font-size: 10px;
+            color: #6c757d;
+            line-height: 1.5;
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 11px;
+        }
+        
+        .status.active {
+            color: #28a745;
+            border: 1px solid #c3e6cb;
+            background: #f8fff9;
+        }
+        
+        .status.inactive {
+            color: #dc3545;
+            border: 1px solid #f5c6cb;
+            background: #fff5f5;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .toggles-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .toggle-item {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toggle-item:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-info {
+            flex: 1;
+        }
+
+        .toggle-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .toggle-description {
+            font-size: 10px;
+            color: #6c757d;
+            line-height: 1.3;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 32px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            border-radius: 18px;
+            transition: 0.3s;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #007bff;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(14px);
+        }
+
+        .toggle-switch input:disabled + .toggle-slider {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Nested toggle styles */
+        .toggle-item-nested {
+            padding: 10px 12px 10px 32px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+        }
+
+        .toggle-item-nested:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-item-nested .toggle-label {
+            font-size: 11px;
+        }
+
+        .toggle-item-nested .toggle-description {
+            font-size: 9px;
+        }
+
+        /* Google OAuth Styles */
+        .google-auth-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .google-auth-card {
+            padding: 14px;
+        }
+
+        .google-auth-message {
+            margin-bottom: 12px;
+        }
+
+        .google-auth-text {
+            font-size: 11px;
+            color: #6c757d;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .google-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .google-btn-small {
+            width: 100%;
+            padding: 7px 12px;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+
+        .google-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .google-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e9ecef;
+        }
+
+        .google-profile-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .google-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .google-email {
+            font-size: 11px;
+            color: #6c757d;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📌 WorkVivo Chat Favorites</h1>
+        <p>Manage your conversations efficiently</p>
+    </div>
+    
+    <div class="content">
+        <div id="status" class="status">
+            <div class="status-dot"></div>
+            <span>Loading...</span>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div id="currentlyPinned" class="stat-number">0</div>
+                <div class="stat-label">Pinned Chats</div>
+            </div>
+            <div class="stat-item">
+                <div id="searchesPerformed" class="stat-number">0</div>
+                <div class="stat-label">Searches</div>
+            </div>
+            <div class="stat-item">
+                <div id="chatClicks" class="stat-number">0</div>
+                <div class="stat-label">Chat Clicks</div>
+            </div>
+            <div class="stat-item">
+                <div id="usersInDatabase" class="stat-number">0</div>
+                <div class="stat-label">Users in DB</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">⚙️ Feature Toggles</div>
+            <div class="toggles-section">
+                <!-- Threads Panel -->
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <div class="toggle-label">Threads Panel</div>
+                        <div class="toggle-description">Quick access to message threads</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-enableThreadsPanel" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Mentions Panel -->
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <div class="toggle-label">Mentions Panel</div>
+                        <div class="toggle-description">View all your mentions</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-enableMentionsPanel" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Search Panel (Master) -->
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <div class="toggle-label">Search Panel</div>
+                        <div class="toggle-description">Advanced message search panel</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-enableSearchPanel" checked data-master-for="overrideSearchButton">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Override Search Button (Dependent) -->
+                <div class="toggle-item-nested">
+                    <div class="toggle-info">
+                        <div class="toggle-label">Override Search Button</div>
+                        <div class="toggle-description">Open search widget on sidebar button click</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-overrideSearchButton" checked data-depends-on="enableSearchPanel">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Draft Messages (Master) -->
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <div class="toggle-label">Draft Messages</div>
+                        <div class="toggle-description">Auto-save draft messages</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-enableDrafts" checked data-master-for="adasEnabled">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- ADAS Draft Recovery (Dependent) -->
+                <div class="toggle-item-nested">
+                    <div class="toggle-info">
+                        <div class="toggle-label">ADAS (Draft Recovery)</div>
+                        <div class="toggle-description">60-second countdown before permanent delete</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-adasEnabled" checked data-depends-on="enableDrafts">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Availability Status -->
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <div class="toggle-label">Availability Status</div>
+                        <div class="toggle-description">Set and view status. Note: Cannot see others' status if disabled</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-enableStatusUpdates" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Google Meet Integration -->
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <div class="toggle-label">Google Meet Integration</div>
+                        <div class="toggle-description">Enable instant Google Meet creation</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-enableGoogleMeet" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Google OAuth Section (nested under GMeet toggle) -->
+                <div id="google-auth-section" class="google-auth-container" style="display: none; border-top: 1px solid #e9ecef;">
+                    <!-- Signed Out State -->
+                    <div id="google-signed-out" class="google-auth-card" style="display: none;">
+                        <div class="google-auth-message">
+                            <p class="google-auth-text">Sign in with Google to use Meet integration</p>
+                        </div>
+                        <button id="google-sign-in-btn" class="btn btn-primary google-btn">
+                            <svg width="18" height="18" viewBox="0 0 18 18" style="margin-right: 8px;">
+                                <path fill="#4285F4" d="M17.64,9.2c0-0.6-0.05-1.2-0.16-1.8H9v3.4h4.84c-0.21,1.1-0.84,2-1.8,2.6v2.2h2.9 C16.66,13.9,17.64,11.7,17.64,9.2z"/>
+                                <path fill="#34A853" d="M9,18c2.4,0,4.5-0.8,6-2.2l-2.9-2.2c-0.8,0.5-1.8,0.9-3.1,0.9c-2.4,0-4.4-1.6-5.1-3.8H1v2.3 C2.5,16.3,5.5,18,9,18z"/>
+                                <path fill="#FBBC05" d="M3.9,10.7c-0.4-1.1-0.4-2.3,0-3.4V5H1c-1.1,2.2-1.1,4.8,0,7L3.9,10.7z"/>
+                                <path fill="#EA4335" d="M9,3.6c1.3,0,2.5,0.5,3.4,1.3L15,2.3C13.5,0.9,11.4,0,9,0C5.5,0,2.5,1.7,1,4.3l2.9,2.3 C4.6,5.2,6.6,3.6,9,3.6z"/>
+                            </svg>
+                            Sign in with Google
+                        </button>
+                    </div>
+
+                    <!-- Signed In State -->
+                    <div id="google-signed-in" class="google-auth-card" style="display: none;">
+                        <div class="google-profile">
+                            <img id="google-profile-picture" src="" alt="Profile" class="google-avatar">
+                            <div class="google-profile-info">
+                                <div id="google-profile-name" class="google-name"></div>
+                                <div id="google-profile-email" class="google-email"></div>
+                            </div>
+                        </div>
+                        <button id="google-sign-out-btn" class="btn btn-secondary google-btn-small">
+                            Sign Out
+                        </button>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div id="google-loading" class="loading" style="display: none;">
+                        <span>Loading...</span>
+                    </div>
+                </div>
+
+                <!-- Floating Search Widget -->
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <div class="toggle-label">Floating Search Widget</div>
+                        <div class="toggle-description">Show floating search button</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-floatingWidgetEnabled" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Show Pinned Sidebar -->
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <div class="toggle-label">Show Pinned Sidebar</div>
+                        <div class="toggle-description">Display pinned chats section in sidebar</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-showPinnedSidebar" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Show Pin Indicator -->
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <div class="toggle-label">Show Pin Indicator</div>
+                        <div class="toggle-description">Show pin icon on pinned chats</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-showPinIndicator" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Notifications -->
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <div class="toggle-label">Notifications</div>
+                        <div class="toggle-description">Show action notifications</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-showSnackbars" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Auto-redirect -->
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <div class="toggle-label">Auto-redirect</div>
+                        <div class="toggle-description">Auto-redirect to chat page</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-autoRedirectToChat" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">⚡ Quick Tips</div>
+
+            <div id="keyCommands" class="instructions">
+                <strong>Loading shortcuts...</strong>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button id="settingsBtn" class="btn btn-primary">⚙️ Settings</button>
+        </div>
+    </div>
+    
+    <div class="footer">
+        WorkVivo Chat Favorites <span id="version-number"></span> by j6<br>
+        <a href="https://buymeacoffee.com/j6workz" target="_blank" style="color: #007bff; text-decoration: none; font-size: 11px; margin-top: 4px; display: inline-block;">☕ Buy me a coffee</a>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
