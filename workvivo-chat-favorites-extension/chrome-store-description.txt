@@ -6,7 +6,7 @@ WorkVivo Chat Favorites helps you stay organized by letting you pin your most im
 Open any chat and hover over the avatar in the chat header to see the pin icon. Click it to save the chat as a favorite. Your pinned chats appear at the top of your sidebar for instant access.
 Choose between carousel, 3-column grid, or 4-column grid layouts! Drag and drop avatars to reorder your pinned chats exactly how you want them. Pinned chats show a pin badge to indicate they're favorited.
 
-💬 Custom Status Updates (NEW v3.2)
+💬 Custom Status Updates
 Let your colleagues know what you're up to! Set your custom status with any emoji and text message. Your status appears next to your avatar in the sidebar and in chat headers when others message you. Set optional expiry times (30m, 1h, 4h, today, this week, or never) for automatic status clearing. Perfect for letting people know you're in meetings, on break, working focused, or on vacation. Update your status anytime by clicking your avatar in the sidebar.
 
 ⌨️ Navigate with Keyboard Shortcuts
@@ -14,7 +14,7 @@ Use keyboard shortcuts to quickly search and switch between conversations (Cmd/C
 
 🔘 Customizable Floating Button
 A beautiful floating button provides quick access to search and recent chats. 
-NEW in v2.5.5: Personalize the button color with any color you like! The icon color automatically adjusts for perfect contrast (WCAG compliant). Choose between single-click for recent chats or double-click for search. Drag the button anywhere on your screen.
+Personalize the button color with any color you like! The icon color automatically adjusts for perfect contrast (WCAG compliant). Choose between single-click for recent chats or double-click for search. Drag the button anywhere on your screen.
 
 🔄 Recent Chat Switcher
 The extension remembers your last 5 conversations, making it easy to switch between active chats. Quick toggle: tap Cmd/Ctrl + \ to instantly jump to your last conversation. Hold the modifier key and press \ repeatedly to cycle through all recent chats. Perfect for multitasking across multiple ongoing discussions.
@@ -22,16 +22,16 @@ The extension remembers your last 5 conversations, making it easy to switch betw
 🔍 Lightning-Fast Smart Search
 Revolutionary IndexedDB-powered search that learns from your usage. Search anyone in your company directory by name or nickname - results appear in under 10ms! The search shows your pinned chats first, then your 5 most recent conversations, and all organization members. Click on a result to open an existing chat or create a new direct conversation. You can also view profiles or copy email addresses directly from search results. The Smart Database achieves 95%+ local search success with zero API calls.
 
-🔎 Channel Message Search Panel (NEW v2.8)
+🔎 Channel Message Search Panel
 Search messages within specific channels using the dedicated search panel. Click the search icon in any chat header to open the panel. Use advanced query syntax: comma (,) for AND operators and pipe (|) for OR operators. For example, "meeting,notes" finds messages with both words, while "urgent|asap" finds messages with either word. Perfect for finding important information in long conversations.
 
 💬 Thread Panel
 View all threads for any chat in a convenient side panel. The Thread Panel shows all threaded conversations with unread badges, making it easy to track replies and never miss important updates. Click any thread to jump directly to it in the conversation. The panel updates automatically in real-time as new threads arrive or replies are posted.
 
-@ Mentions Panel (NEW v2.7)
+@ Mentions Panel
 Never miss when someone mentions you! The Mentions Panel shows all your @mentions across all chats in one convenient sidebar. See unread mentions with badges, click any mention to jump directly to the message. Perfect for staying on top of conversations where you're specifically called out.
 
-✍️ Draft Messages (NEW v2.7)
+✍️ Draft Messages
 Never lose your thoughts! The extension automatically saves draft messages as you type. Switch between chats without losing your unfinished messages. Access all your drafts from the Drafts Panel in the sidebar. Click any draft to jump back to that conversation with your message ready to finish and send.
 
 ⚙️ Flexible Feature Toggles
