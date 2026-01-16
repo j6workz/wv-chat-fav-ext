@@ -1,0 +1,62 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-01-16T00:00:00Z",
+  "features": {
+    "webpackNavigator": {
+      "enabled": true,
+      "minVersion": null,
+      "maxVersion": null,
+      "message": null
+    },
+    "reactFiberNavigator": {
+      "enabled": false,
+      "minVersion": null,
+      "maxVersion": "3.3.9",
+      "message": "ReactFiberNavigator disabled for v3.3.9 and below due to SendBird SDK changes. Update to v3.4.0+ for full functionality."
+    },
+    "threadManager": {
+      "enabled": false,
+      "minVersion": null,
+      "maxVersion": "3.4.0",
+      "message": "Threads panel temporarily disabled for v3.4.0 and below. Update to the latest version for full functionality."
+    },
+    "mentionsManager": {
+      "enabled": true,
+      "minVersion": null,
+      "maxVersion": null,
+      "message": null
+    },
+    "searchManager": {
+      "enabled": true,
+      "minVersion": null,
+      "maxVersion": null,
+      "message": null
+    },
+    "draftManager": {
+      "enabled": true,
+      "minVersion": null,
+      "maxVersion": null,
+      "message": null
+    },
+    "statusManager": {
+      "enabled": true,
+      "minVersion": null,
+      "maxVersion": null,
+      "message": null
+    },
+    "googleMeetManager": {
+      "enabled": true,
+      "minVersion": null,
+      "maxVersion": null,
+      "message": null
+    },
+    "floatingWidget": {
+      "enabled": true,
+      "minVersion": null,
+      "maxVersion": null,
+      "message": null
+    }
+  },
+  "announcements": [],
+  "emergencyDisable": false
+}
