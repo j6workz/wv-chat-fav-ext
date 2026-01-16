@@ -27,10 +27,10 @@
       "message": null
     },
     "searchManager": {
-      "enabled": true,
+      "enabled": false,
       "minVersion": null,
-      "maxVersion": null,
-      "message": null
+      "maxVersion": "3.4.0",
+      "message": "Search Panel temporarily disabled for testing feature stability control"
     },
     "draftManager": {
       "enabled": true,
