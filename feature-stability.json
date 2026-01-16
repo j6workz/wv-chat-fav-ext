@@ -57,10 +57,10 @@
       "message": null
     },
     "searchButtonOverride": {
-      "enabled": false,
+      "enabled": true,
       "minVersion": null,
-      "maxVersion": "3.4.0",
-      "message": "Search button override temporarily disabled for testing"
+      "maxVersion": null,
+      "message": null
     }
   },
   "announcements": [],

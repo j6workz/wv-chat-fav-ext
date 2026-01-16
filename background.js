@@ -1701,6 +1701,16 @@ async function exchangeCodeForTokens(code, codeVerifier) {
         expiresIn: tokens.expires_in
     });
 
+    // CRITICAL: Warn if no refresh token received
+    // This can happen if:
+    // 1. User previously authorized without access_type=offline
+    // 2. Google OAuth configuration issue
+    // 3. User revoked access and re-authorized without consent screen
+    if (!tokens.refresh_token) {
+        console.warn('⚠️ No refresh token received! User will need to re-authenticate when token expires.');
+        console.warn('💡 To fix: Sign out completely, then sign in again with fresh consent.');
+    }
+
     // Fetch user profile
     const profileResponse = await fetch(OAUTH_CONFIG.userInfoEndpoint, {
         headers: {
@@ -1813,29 +1823,40 @@ async function getValidAccessToken() {
 
         const now = Date.now();
         const timeUntilExpiry = auth.expiresAt - now;
+        const minutesRemaining = Math.round(timeUntilExpiry / 60000);
 
         // Token is still valid (more than 5 minutes remaining)
         if (timeUntilExpiry > 5 * 60 * 1000) {
+            console.log(`✅ Token is valid for ${minutesRemaining} more minutes`);
             return auth.accessToken;
         }
 
         // Token expired or expiring soon - attempt refresh
-        console.log('🔄 Token expiring soon, refreshing...');
+        console.log(`🔄 Token ${timeUntilExpiry > 0 ? 'expiring soon' : 'expired'} (${minutesRemaining} min), refreshing...`);
 
         // Check if we have a refresh token
         if (!auth.refreshToken) {
-            console.log('⚠️ No refresh token available');
+            console.log('⚠️ No refresh token available - user will need to re-authenticate');
+            console.log('💡 This happens when the initial sign-in didn\'t receive a refresh token');
+            // Don't clear the auth yet - let the user know they need to sign out and sign in again
             return null;
         }
 
         // Use refresh token to get new access token
         try {
+            console.log('🔄 Attempting token refresh with refresh_token...');
             const newAuth = await refreshAccessToken(auth.refreshToken);
+            console.log('✅ Token refreshed successfully, new expiry:', new Date(newAuth.expiresAt).toLocaleString());
             return newAuth.accessToken;
         } catch (error) {
             console.log('❌ Token refresh failed:', error.message);
-            // Clear invalid auth
-            await chrome.storage.local.remove('googleMeetAuth');
+
+            // Check if it's a revoked token error
+            if (error.message.includes('invalid_grant') || error.message.includes('Token has been revoked')) {
+                console.log('🗑️ Refresh token was revoked, clearing auth data');
+                await chrome.storage.local.remove('googleMeetAuth');
+            }
+            // For other errors, keep the auth data so user can try again
             return null;
         }
 

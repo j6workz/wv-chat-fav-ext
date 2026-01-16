@@ -856,15 +856,34 @@ class OptionsManager {
 
     async checkGoogleAuthStatus() {
         try {
-            const authData = await chrome.storage.local.get(['googleMeetAuth']);
+            // Use background script to check AND refresh token if needed
+            // This ensures the token is valid and refreshed before displaying status
+            const response = await new Promise((resolve) => {
+                chrome.runtime.sendMessage(
+                    { action: 'CHECK_GOOGLE_MEET_TOKEN' },
+                    (response) => {
+                        if (chrome.runtime.lastError) {
+                            console.warn('Token check error:', chrome.runtime.lastError.message);
+                            resolve({ success: false, isSignedIn: false });
+                            return;
+                        }
+                        resolve(response || { success: false, isSignedIn: false });
+                    }
+                );
+            });
 
-            if (authData.googleMeetAuth && authData.googleMeetAuth.accessToken) {
-                // User is signed in
-                await this.showGoogleSignedInState(authData.googleMeetAuth);
-            } else {
-                // User is not signed in
-                this.showGoogleSignedOutState();
+            if (response.success && response.isSignedIn) {
+                // Token is valid (possibly just refreshed), get fresh auth data
+                const authData = await chrome.storage.local.get(['googleMeetAuth']);
+                if (authData.googleMeetAuth) {
+                    await this.showGoogleSignedInState(authData.googleMeetAuth);
+                    return;
+                }
             }
+
+            // Not signed in or token refresh failed
+            this.showGoogleSignedOutState();
+
         } catch (error) {
             console.error('Error checking Google auth status:', error);
             this.showGoogleSignedOutState();

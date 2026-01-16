@@ -12,17 +12,21 @@
 
         /**
          * Initialize the Google Meet Manager
+         * Checks for existing auth and attempts to refresh if expired
          */
         async init() {
             try {
-                // Check if user is already authenticated
-                const storedAuth = await this.getStoredAuth();
-                if (storedAuth && storedAuth.accessToken && storedAuth.expiresAt > Date.now()) {
-                    this.accessToken = storedAuth.accessToken;
-                    this.tokenExpiresAt = storedAuth.expiresAt;
+                // Check and refresh token via background script
+                // This handles both valid tokens and expired tokens with refresh tokens
+                const validToken = await this.checkAndRefreshToken();
 
+                if (validToken) {
                     if (this.app.logger) {
-                        this.app?.logger?.log('✅ GoogleMeetManager initialized with existing auth');
+                        this.app?.logger?.log('✅ GoogleMeetManager initialized with valid auth');
+                    }
+                } else {
+                    if (this.app.logger) {
+                        this.app?.logger?.log('📭 GoogleMeetManager: No valid auth, user will need to sign in');
                     }
                 }
             } catch (error) {
@@ -33,10 +37,86 @@
         }
 
         /**
-         * Check if user is authenticated
+         * Check if user is authenticated (local check only)
+         * For API calls, use ensureValidToken() instead
          */
         isAuthenticated() {
             return this.accessToken && this.tokenExpiresAt && this.tokenExpiresAt > Date.now();
+        }
+
+        /**
+         * Check and refresh token via background script
+         * This is the primary method to get a valid token - it handles refresh automatically
+         * @returns {Promise<string|null>} Valid access token or null if not signed in
+         */
+        async checkAndRefreshToken() {
+            return new Promise((resolve) => {
+                chrome.runtime.sendMessage(
+                    { action: 'CHECK_GOOGLE_MEET_TOKEN' },
+                    (response) => {
+                        if (chrome.runtime.lastError) {
+                            if (this.app.logger) {
+                                this.app?.logger?.warn('Token check error:', chrome.runtime.lastError.message);
+                            }
+                            resolve(null);
+                            return;
+                        }
+
+                        if (response && response.success && response.isSignedIn) {
+                            // Token is valid, update local state
+                            this.getStoredAuth().then(auth => {
+                                if (auth) {
+                                    this.accessToken = auth.accessToken;
+                                    this.tokenExpiresAt = auth.expiresAt;
+                                }
+                            });
+                            resolve(this.accessToken || true);
+                        } else {
+                            // Not signed in or token refresh failed
+                            this.accessToken = null;
+                            this.tokenExpiresAt = null;
+                            resolve(null);
+                        }
+                    }
+                );
+            });
+        }
+
+        /**
+         * Ensure we have a valid token before making API calls
+         * Attempts to refresh if expired, prompts for auth if no refresh token
+         * @returns {Promise<string>} Valid access token
+         * @throws {Error} If unable to get valid token
+         */
+        async ensureValidToken() {
+            // First, check if we have a locally cached valid token
+            if (this.isAuthenticated()) {
+                return this.accessToken;
+            }
+
+            // Try to refresh via background script
+            if (this.app.logger) {
+                this.app?.logger?.log('🔄 Token expired or missing, checking with background...');
+            }
+
+            const refreshResult = await this.checkAndRefreshToken();
+
+            if (refreshResult) {
+                // Refresh succeeded, get the updated token
+                const auth = await this.getStoredAuth();
+                if (auth && auth.accessToken) {
+                    this.accessToken = auth.accessToken;
+                    this.tokenExpiresAt = auth.expiresAt;
+                    return this.accessToken;
+                }
+            }
+
+            // No valid token and refresh failed, need to authenticate
+            if (this.app.logger) {
+                this.app?.logger?.log('🔐 No valid token, initiating authentication...');
+            }
+
+            return await this.authenticate();
         }
 
         /**
@@ -143,10 +223,8 @@
          */
         async createInstantMeeting(meetingTitle = 'Quick Meeting', durationMinutes = 30) {
             try {
-                // Ensure we have a valid token
-                if (!this.isAuthenticated()) {
-                    await this.authenticate();
-                }
+                // Ensure we have a valid token (will refresh or prompt for auth if needed)
+                await this.ensureValidToken();
 
                 if (this.app.logger) {
                     this.app?.logger?.log(`📅 Creating instant Google Meet (${durationMinutes} min)...`);
