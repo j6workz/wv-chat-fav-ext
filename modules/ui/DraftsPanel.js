@@ -1153,9 +1153,22 @@ WVFavs.DraftsPanel = class DraftsPanel {
                     console.log('Thread draft - navigating to channel and opening thread');
                     // Navigate to channel first
                     const currentChannel = this.app.threadManager?.getCurrentChannel();
-                    if (currentChannel !== draft.channelUrl && this.app.reactFiberNav) {
+                    if (currentChannel !== draft.channelUrl) {
                         console.log('Navigating to channel:', draft.channelUrl);
-                        await this.app.reactFiberNav.openChannelByUrl(draft.channelUrl);
+                        // TIER 1: Try WebpackNavigator first (most reliable after WorkVivo updates)
+                        if (this.app.webpackNav && this.app.webpackNav.initialized) {
+                            const result = await this.app.webpackNav.navigateToMessage({
+                                message_id: null,
+                                channel_url: draft.channelUrl,
+                                parent_message_id: null
+                            });
+                            if (!result.success && this.app.reactFiberNav) {
+                                // TIER 2: Fallback to ReactFiberNav
+                                await this.app.reactFiberNav.openChannelByUrl(draft.channelUrl);
+                            }
+                        } else if (this.app.reactFiberNav) {
+                            await this.app.reactFiberNav.openChannelByUrl(draft.channelUrl);
+                        }
                         // Wait longer for channel messages to load
                         await new Promise(resolve => setTimeout(resolve, 800));
                     }
@@ -1167,10 +1180,21 @@ WVFavs.DraftsPanel = class DraftsPanel {
                 } else {
                     console.log('Main chat draft - navigating to channel');
                     // Main chat - just navigate to channel
-                    if (this.app.reactFiberNav) {
+                    // TIER 1: Try WebpackNavigator first (most reliable after WorkVivo updates)
+                    if (this.app.webpackNav && this.app.webpackNav.initialized) {
+                        const result = await this.app.webpackNav.navigateToMessage({
+                            message_id: null,
+                            channel_url: draft.channelUrl,
+                            parent_message_id: null
+                        });
+                        if (!result.success && this.app.reactFiberNav) {
+                            // TIER 2: Fallback to ReactFiberNav
+                            await this.app.reactFiberNav.openChannelByUrl(draft.channelUrl);
+                        }
+                    } else if (this.app.reactFiberNav) {
                         await this.app.reactFiberNav.openChannelByUrl(draft.channelUrl);
-                        await new Promise(resolve => setTimeout(resolve, 800));
                     }
+                    await new Promise(resolve => setTimeout(resolve, 800));
                 }
 
                 // Restore the draft content - add extra delay for editor to be ready
@@ -1219,9 +1243,22 @@ WVFavs.DraftsPanel = class DraftsPanel {
                             console.log('Thread draft - navigating to channel and opening thread');
                             // Navigate to channel first
                             const currentChannel = this.app.threadManager?.getCurrentChannel();
-                            if (currentChannel !== draft.channelUrl && this.app.reactFiberNav) {
+                            if (currentChannel !== draft.channelUrl) {
                                 console.log('Navigating to channel:', draft.channelUrl);
-                                await this.app.reactFiberNav.openChannelByUrl(draft.channelUrl);
+                                // TIER 1: Try WebpackNavigator first (most reliable after WorkVivo updates)
+                                if (this.app.webpackNav && this.app.webpackNav.initialized) {
+                                    const result = await this.app.webpackNav.navigateToMessage({
+                                        message_id: null,
+                                        channel_url: draft.channelUrl,
+                                        parent_message_id: null
+                                    });
+                                    if (!result.success && this.app.reactFiberNav) {
+                                        // TIER 2: Fallback to ReactFiberNav
+                                        await this.app.reactFiberNav.openChannelByUrl(draft.channelUrl);
+                                    }
+                                } else if (this.app.reactFiberNav) {
+                                    await this.app.reactFiberNav.openChannelByUrl(draft.channelUrl);
+                                }
                                 // Wait longer for channel messages to load
                                 await new Promise(resolve => setTimeout(resolve, 800));
                             }
@@ -1233,10 +1270,21 @@ WVFavs.DraftsPanel = class DraftsPanel {
                         } else {
                             console.log('Main chat draft - navigating to channel');
                             // Main chat - just navigate to channel
-                            if (this.app.reactFiberNav) {
+                            // TIER 1: Try WebpackNavigator first (most reliable after WorkVivo updates)
+                            if (this.app.webpackNav && this.app.webpackNav.initialized) {
+                                const result = await this.app.webpackNav.navigateToMessage({
+                                    message_id: null,
+                                    channel_url: draft.channelUrl,
+                                    parent_message_id: null
+                                });
+                                if (!result.success && this.app.reactFiberNav) {
+                                    // TIER 2: Fallback to ReactFiberNav
+                                    await this.app.reactFiberNav.openChannelByUrl(draft.channelUrl);
+                                }
+                            } else if (this.app.reactFiberNav) {
                                 await this.app.reactFiberNav.openChannelByUrl(draft.channelUrl);
-                                await new Promise(resolve => setTimeout(resolve, 800));
                             }
+                            await new Promise(resolve => setTimeout(resolve, 800));
                         }
 
                         // Restore the draft content - add extra delay for editor to be ready

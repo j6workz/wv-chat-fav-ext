@@ -1596,6 +1596,20 @@
             const message = data.message;
             debugLog(`🎯 [PAGE CONTEXT] Calling ${data.primaryFunction}...`);
 
+            // If no message_id, just open the channel (used by navigateToChat)
+            if (!message.message_id && message.channel_url) {
+                debugLog('📂 [PAGE CONTEXT] No message_id provided, just opening channel...');
+                context.setCurrentChannelId(message.channel_url);
+                await new Promise(r => setTimeout(r, 500));
+                debugLog('✅ [PAGE CONTEXT] Channel opened (no message navigation)');
+                return {
+                    success: true,
+                    method: 'webpack',
+                    primaryFunction: 'setCurrentChannelId',
+                    channelUrl: message.channel_url
+                };
+            }
+
             if (data.primaryFunction === 'setHighlightedMessage') {
                 // SMART NAVIGATION: Check if we can use fast path (message in DOM AND in correct channel)
                 const currentChannelId = context.currentChannelId || context.currentChannel?.channel_url;

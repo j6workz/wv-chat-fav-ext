@@ -4288,17 +4288,47 @@ WVFavs.DomManager = new (class DomManager {
             // const panel = document.querySelector('.wv-favorites-thread-panel');
             // if (panel) panel.remove();
 
-            // PRIMARY METHOD: Try React Fiber instant thread opening
             const currentChannelUrl = this.app.threadManager?.getCurrentChannel();
 
+            // TIER 1: Try WebpackNavigator first (highlights message AND opens thread)
+            // This uses setHighlightedMessage which properly scrolls and highlights
+            if (currentChannelUrl && this.app.webpackNav && this.app.webpackNav.initialized) {
+                this.app?.logger?.log('⚡ Trying WebpackNavigator for thread opening (TIER 1)...');
+
+                try {
+                    // Get thread data to find the timestamp
+                    const threadData = this.app.threadManager?.getThread(messageId);
+
+                    const result = await this.app.webpackNav.navigateToMessage({
+                        message_id: messageId,
+                        channel_url: currentChannelUrl,
+                        parent_message_id: messageId,  // This triggers thread panel opening
+                        root_message_id: messageId,
+                        created_at: threadData?.createdAt || null
+                    });
+
+                    if (result.success) {
+                        this.app?.logger?.log('✅ Thread opened via WebpackNavigator!');
+                        return;
+                    } else {
+                        this.app?.logger?.warn('⚠️ WebpackNavigator thread opening failed, trying Tier 2:', result.error);
+                    }
+                } catch (error) {
+                    this.app?.logger?.warn('⚠️ WebpackNavigator error, trying Tier 2:', error.message);
+                }
+            }
+
+            // TIER 2: Try React Fiber instant thread opening
             if (currentChannelUrl && this.app.reactFiberNav) {
-                this.app?.logger?.log('🧵 Trying React Fiber thread opening (PRIMARY)...');
+                this.app?.logger?.log('🧵 Trying React Fiber thread opening (TIER 2)...');
 
                 try {
                     const result = await this.openThreadViaReactFiber(messageId, currentChannelUrl);
 
                     if (result.success) {
                         this.app?.logger?.log('✅ Thread opened via React Fiber!');
+                        // Also try to highlight the message in main chat
+                        this.highlightMessageInMainChat(messageId);
                         return;
                     } else {
                         this.app?.logger?.warn('⚠️ React Fiber thread opening failed, using fallback:', result.error);
@@ -4308,8 +4338,8 @@ WVFavs.DomManager = new (class DomManager {
                 }
             }
 
-            // FALLBACK METHOD: Traditional scroll and click
-            this.app?.logger?.log('📜 Using fallback method: scroll and click');
+            // TIER 3: FALLBACK - Traditional scroll and click
+            this.app?.logger?.log('📜 Using fallback method: scroll and click (TIER 3)');
 
             // Find the message in the DOM by message ID
             const message = await this.findMessageByIdInDOM(messageId);
@@ -4342,6 +4372,24 @@ WVFavs.DomManager = new (class DomManager {
         } catch (error) {
             this.app?.logger?.error('❌ Error opening thread:', error);
         }
+    }
+
+    /**
+     * Helper to highlight a message in main chat after thread is opened
+     */
+    highlightMessageInMainChat(messageId) {
+        setTimeout(() => {
+            const messageElement = document.getElementById(`message-${messageId}`);
+            if (messageElement) {
+                messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const originalBg = messageElement.style.background;
+                messageElement.style.background = '#fef3c7';
+                messageElement.style.transition = 'background 0.3s';
+                setTimeout(() => {
+                    messageElement.style.background = originalBg;
+                }, 2000);
+            }
+        }, 500);
     }
 
     /**
@@ -5742,8 +5790,57 @@ WVFavs.DomManager = new (class DomManager {
             }
         }
 
-        // NEW: Try React Fiber navigation FIRST (PRIMARY METHOD)
-        // Only if we have a channel_url and ReactFiberNavigator is available
+        // TIER 1: Try WebpackNavigator FIRST (PRIMARY METHOD - most reliable)
+        // This uses setCurrentChannelId which works after WorkVivo updates
+        if (chatData.channel_url && this.app.webpackNav && this.app.webpackNav.initialized) {
+            if (this.app.logger) {
+                this.app?.logger?.debug('⚡ Trying WebpackNavigator navigation (TIER 1 - PRIMARY)', {
+                    channelUrl: chatData.channel_url,
+                    source: source
+                });
+            }
+
+            try {
+                const result = await this.app.webpackNav.navigateToMessage({
+                    message_id: null,  // No specific message, just open channel
+                    channel_url: chatData.channel_url,
+                    parent_message_id: null
+                });
+
+                if (this.app.logger) {
+                    this.app?.logger?.debug('⚡ WebpackNavigator result:', result);
+                }
+
+                if (result.success) {
+                    this.trackNavigationSuccess(source, 'webpack_tier1', chatData);
+                    setTimeout(() => {
+                        this.detectCurrentChat();
+                    }, 1000);
+                    return;
+                } else {
+                    if (this.app.logger) {
+                        this.app?.logger?.warn('⚠️ WebpackNavigator failed, trying React Fiber fallback', {
+                            reason: result.error
+                        });
+                    }
+                }
+            } catch (error) {
+                if (this.app.logger) {
+                    this.app?.logger?.warn('⚠️ WebpackNavigator error, trying React Fiber fallback:', error.message);
+                }
+            }
+        } else {
+            if (this.app.logger) {
+                this.app?.logger?.debug('⏭️ Skipping WebpackNavigator', {
+                    reason: !chatData.channel_url ? 'no channel_url' :
+                            !this.app.webpackNav ? 'WebpackNav not available' :
+                            'WebpackNav not initialized'
+                });
+            }
+        }
+
+        // TIER 2: Try React Fiber navigation (FALLBACK)
+        // Note: This may fail after WorkVivo updates if SendBird SDK structure changed
         if (this.app.logger) {
             this.app?.logger?.debug('🔍 React Fiber check:', {
                 hasChannelUrl: !!chatData.channel_url,
@@ -5755,7 +5852,7 @@ WVFavs.DomManager = new (class DomManager {
 
         if (chatData.channel_url && this.app.reactFiberNav) {
             if (this.app.logger) {
-                this.app?.logger?.debug('🧭 Trying React Fiber navigation (PRIMARY)', {
+                this.app?.logger?.debug('🧭 Trying React Fiber navigation (TIER 2 - FALLBACK)', {
                     channelUrl: chatData.channel_url,
                     source: source
                 });
