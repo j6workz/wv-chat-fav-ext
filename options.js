@@ -611,7 +611,8 @@ class OptionsManager {
             draftManager: 'Draft Messages',
             statusManager: 'Availability Status',
             googleMeetManager: 'Google Meet Integration',
-            floatingWidget: 'Floating Button'
+            floatingWidget: 'Floating Button',
+            searchButtonOverride: 'Search Button Override'
         };
         return names[name] || name;
     }

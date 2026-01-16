@@ -264,9 +264,10 @@ WVFavs.DomManager = new (class DomManager {
             });
         }
 
-        // Create Global Search button (only if enabled)
+        // Create Global Search button (only if enabled and feature stability allows)
         let searchButton = null;
-        if (settings.enableSearchPanel !== false) {
+        const searchManagerEnabled = this.app.isFeatureEnabled ? this.app.isFeatureEnabled('searchManager') : true;
+        if (settings.enableSearchPanel !== false && searchManagerEnabled) {
             searchButton = this.createButtonGroupButton({
             icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72" width="16" height="16" fill="currentColor">
                 <path d="M58.7446809,12 C59.9383601,12 60.9154455,12.915741 60.9947969,14.0746088 L61,14.2270889 L61.000962,36.5676709 L60.9669368,36.5464996 C65.8009703,39.5464722 69.0199993,44.9023137 69.0199993,51.0099996 C69.0199993,55.4961272 67.2833396,59.5766361 64.4456376,62.6159092 L70.4142136,68.5857864 C71.1952621,69.366835 71.1952621,70.633165 70.4142136,71.4142136 C69.6742728,72.1541543 68.4987886,72.1930986 67.7130012,71.5310463 L67.5857864,71.4142136 L61.3799119,65.2088938 C58.6930121,66.9855646 55.4723085,68.0199993 52.0099996,68.0199993 C42.6156362,68.0199993 35,60.404363 35,51.0099996 L35.0000354,50.9749057 L35.0000354,50.9749057 L24.539383,50.9740563 L11.6085106,60.5505388 C10.2118309,61.5849367 8.25484631,60.723177 8.0227662,59.0935622 L8.00613186,58.9385706 L8,58.7688676 L8,14.2270889 C8,13.0483511 8.92734873,12.0834961 10.1009062,12.005138 L10.2553191,12 L58.7446809,12 Z M52.0099996,38.3200001 C45.0015064,38.3200001 39.3200001,44.0015064 39.3200001,51.0099996 C39.3200001,58.0184929 45.0015064,63.6999992 52.0099996,63.6999992 C59.0184929,63.6999992 64.6999992,58.0184929 64.6999992,51.0099996 C64.6999992,44.0015064 59.0184929,38.3200001 52.0099996,38.3200001 Z M56.4893617,16.4541779 L12.5106383,16.4541779 L12.5106383,54.3146897 L22.4340426,46.9652963 C22.7208576,46.7528776 23.0532476,46.6121589 23.4029492,46.5524434 L23.5791118,46.529379 L23.787234,46.5198785 L35.5991176,46.5190701 L35.5914929,46.5470923 C37.5519525,39.3175607 44.1599846,34 52.0099996,34 C53.572828,34 55.0864301,34.2107629 56.523933,34.6054157 L56.4899227,34.5961166 L56.4899227,34.5961166 L56.4893617,16.4541779 Z M41,31 C42.1045695,31 43,31.8954305 43,33 C43,34.0543618 42.1841222,34.9181651 41.1492623,34.9945143 L41,35 L26,35 C24.8954305,35 24,34.1045695 24,33 C24,31.9456382 24.8158778,31.0818349 25.8507377,31.0054857 L26,31 L41,31 Z"/>
@@ -1467,9 +1468,10 @@ WVFavs.DomManager = new (class DomManager {
     }
 
     async addSearchButtonToChatHeader(chatHeader) {
-        // Check if search feature is enabled
+        // Check if search feature is enabled (both local setting and feature stability)
         const searchEnabled = this.app.settings?.get('enableSearchPanel') !== false;
-        if (!searchEnabled || !this.app.searchPanel) {
+        const searchManagerEnabled = this.app.isFeatureEnabled ? this.app.isFeatureEnabled('searchManager') : true;
+        if (!searchEnabled || !searchManagerEnabled || !this.app.searchPanel) {
             return; // Search disabled or SearchPanel not initialized
         }
 
@@ -2300,6 +2302,13 @@ WVFavs.DomManager = new (class DomManager {
      * Setup search button override to open extension search widget instead
      */
     async setupSearchButtonOverride() {
+        // Check if search button override is enabled via feature stability
+        const searchButtonOverrideEnabled = this.app.isFeatureEnabled ? this.app.isFeatureEnabled('searchButtonOverride') : true;
+        if (!searchButtonOverrideEnabled) {
+            this.app?.logger?.debug('⚙️ Search button override is disabled by feature stability');
+            return;
+        }
+
         // Try multiple selectors to find the search button
         let searchButton = document.querySelector('button[aria-label="Search"]');
 
