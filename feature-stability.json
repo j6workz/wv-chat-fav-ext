@@ -27,10 +27,10 @@
       "message": null
     },
     "searchManager": {
-      "enabled": false,
+      "enabled": true,
       "minVersion": null,
-      "maxVersion": "3.4.0",
-      "message": "Search Panel temporarily disabled for testing feature stability control"
+      "maxVersion": null,
+      "message": null
     },
     "draftManager": {
       "enabled": true,
@@ -55,6 +55,12 @@
       "minVersion": null,
       "maxVersion": null,
       "message": null
+    },
+    "searchButtonOverride": {
+      "enabled": false,
+      "minVersion": null,
+      "maxVersion": "3.4.0",
+      "message": "Search button override temporarily disabled for testing"
     }
   },
   "announcements": [],
