@@ -472,6 +472,30 @@ class WorkVivoFavorites {
         }
     }
 
+    /**
+     * Check if a feature is enabled (combining local settings and remote stability control)
+     * @param {string} featureName - The feature name to check
+     * @param {string} settingKey - The local setting key to check (optional)
+     * @returns {boolean} - Whether the feature is enabled
+     */
+    isFeatureEnabled(featureName, settingKey = null) {
+        // Check local setting first (if provided)
+        if (settingKey && this.settings.get(settingKey) === false) {
+            return false;
+        }
+
+        // Check remote stability control
+        if (this.featureStability && !this.featureStability.isFeatureEnabled(featureName)) {
+            const msg = this.featureStability.getFeatureMessage(featureName);
+            if (this.logger) {
+                this.logger.warn(`🛡️ Feature '${featureName}' disabled by stability control: ${msg || 'No reason provided'}`);
+            }
+            return false;
+        }
+
+        return true;
+    }
+
     setupURLChangeDetection() {
         // Detect URL changes for SPA navigation (WorkVivo uses client-side routing)
         let lastUrl = location.href;
@@ -546,6 +570,22 @@ class WorkVivoFavorites {
             console.log('✅ [STATUS] Settings loaded successfully:', this.settings.getAll());
         } catch (error) {
             console.error('❌ [STATUS] Failed to load settings:', error);
+        }
+
+        // Initialize Feature Stability Manager (remote feature control)
+        console.log('🛡️ [STATUS] Initializing FeatureStabilityManager...');
+        try {
+            if (WVFavs.FeatureStabilityManager) {
+                this.featureStability = new WVFavs.FeatureStabilityManager(this);
+                await this.featureStability.init();
+                window.wvFeatureStability = this.featureStability; // Expose for debugging
+                console.log('✅ [STATUS] FeatureStabilityManager initialized');
+            } else {
+                console.warn('⚠️ [STATUS] FeatureStabilityManager class not found');
+            }
+        } catch (error) {
+            console.error('❌ [STATUS] Failed to initialize FeatureStabilityManager:', error);
+            // Continue without feature stability - fail-safe
         }
 
         // Send debug settings to page-script.js
@@ -629,16 +669,14 @@ class WorkVivoFavorites {
         WVFavs.DomDataExtractor.init(this);
 
         // Initialize Floating Search Widget (if enabled and available)
-        this.logger.log('🐛 Debug - Checking FloatingSearchWidget availability:', !!WVFavs.FloatingSearchWidget);
-        this.logger.log('🐛 Debug - FloatingSearchWidget enabled in settings:', WVFavs.Settings.get('floatingWidgetEnabled'));
-        if (WVFavs.FloatingSearchWidget && WVFavs.Settings.get('floatingWidgetEnabled')) {
-            this.logger.log('🐛 Debug - Creating FloatingSearchWidget instance...');
+        this.logger.log('🔍 Initializing FloatingSearchWidget...');
+        if (!this.isFeatureEnabled('floatingWidget', 'floatingWidgetEnabled')) {
+            this.logger.log('⏸️ FloatingSearchWidget disabled');
+        } else if (WVFavs.FloatingSearchWidget) {
             this.floatingWidget = new WVFavs.FloatingSearchWidget(this);
-            this.logger.log('🐛 Debug - FloatingSearchWidget created:', !!this.floatingWidget);
-        } else if (!WVFavs.FloatingSearchWidget) {
-            this.logger.log('❌ FloatingSearchWidget class not found in WVFavs namespace');
+            this.logger.log('✅ FloatingSearchWidget initialized');
         } else {
-            this.logger.log('⚠️ FloatingSearchWidget disabled in settings');
+            this.logger.warn('⚠️ FloatingSearchWidget class not found in WVFavs namespace');
         }
         WVFavs.APIManager.init(this);
         this.apiManager = WVFavs.APIManager; // Make APIManager accessible as this.apiManager
@@ -657,9 +695,8 @@ class WorkVivoFavorites {
 
         // Initialize Thread Manager
         this.logger.log('🧵 Initializing ThreadManager...');
-        const threadsEnabled = this.settings.get('enableThreadsPanel') !== false;
-        if (!threadsEnabled) {
-            this.logger.log('⏸️ ThreadManager disabled by user settings');
+        if (!this.isFeatureEnabled('threadManager', 'enableThreadsPanel')) {
+            this.logger.log('⏸️ ThreadManager disabled');
         } else if (WVFavs.ThreadManager) {
             try {
                 this.threadManager = new WVFavs.ThreadManager(this);
@@ -677,7 +714,9 @@ class WorkVivoFavorites {
         // Initialize Webpack Navigator (TIER 1 - Fastest navigation method)
         // DON'T AWAIT - Initialize in background so it doesn't block UI
         this.logger.log('⚡ Initializing WebpackNavigator (Tier 1) in background...');
-        if (WVFavs.WebpackNavigator) {
+        if (!this.isFeatureEnabled('webpackNavigator')) {
+            this.logger.log('⏸️ WebpackNavigator disabled');
+        } else if (WVFavs.WebpackNavigator) {
             this.webpackNav = new WVFavs.WebpackNavigator(this);
             window.wvWebpackNav = this.webpackNav; // Expose for debugging
 
@@ -697,7 +736,9 @@ class WorkVivoFavorites {
 
         // Initialize React Fiber Navigator (TIER 3 - Fallback navigation method)
         this.logger.log('🧭 Initializing ReactFiberNavigator (Tier 3)...');
-        if (WVFavs.ReactFiberNavigator) {
+        if (!this.isFeatureEnabled('reactFiberNavigator')) {
+            this.logger.log('⏸️ ReactFiberNavigator disabled');
+        } else if (WVFavs.ReactFiberNavigator) {
             try {
                 this.reactFiberNav = new WVFavs.ReactFiberNavigator(this);
                 await this.reactFiberNav.init();
@@ -713,9 +754,8 @@ class WorkVivoFavorites {
 
         // Initialize Draft Manager (auto-save/restore drafts)
         this.logger.log('📝 Initializing DraftManager...');
-        const draftsEnabled = this.settings.get('enableDrafts') !== false;
-        if (!draftsEnabled) {
-            this.logger.log('⏸️ DraftManager disabled by user settings');
+        if (!this.isFeatureEnabled('draftManager', 'enableDrafts')) {
+            this.logger.log('⏸️ DraftManager disabled');
         } else if (WVFavs.DraftManager) {
             try {
                 this.draftManager = new WVFavs.DraftManager(this);
@@ -753,10 +793,10 @@ class WorkVivoFavorites {
         // Initialize Mentions Manager (requires UserIdentityManager)
         this.logger.debug('⚙️ [WV STATUS] About to initialize MentionsManager...');
         this.logger.log('📧 Initializing MentionsManager...');
-        const mentionsEnabled = this.settings.get('enableMentionsPanel') !== false;
-        this.logger.debug(`⚙️ [WV STATUS] MentionsPanel enabled in settings: ${mentionsEnabled}`);
+        const mentionsEnabled = this.isFeatureEnabled('mentionsManager', 'enableMentionsPanel');
+        this.logger.debug(`⚙️ [WV STATUS] MentionsPanel enabled: ${mentionsEnabled}`);
         if (!mentionsEnabled) {
-            this.logger.log('⏸️ MentionsManager disabled by user settings');
+            this.logger.log('⏸️ MentionsManager disabled');
         } else if (WVFavs.MentionsManager && this.userIdentity) {
             try {
                 this.logger.debug('⚙️ [WV STATUS] Creating MentionsManager...');
@@ -807,7 +847,9 @@ class WorkVivoFavorites {
 
         // Initialize Search Manager (for channel message search)
         this.logger.log('🔍 Initializing SearchManager...');
-        if (WVFavs.SearchManager) {
+        if (!this.isFeatureEnabled('searchManager')) {
+            this.logger.log('⏸️ SearchManager disabled');
+        } else if (WVFavs.SearchManager) {
             try {
                 this.searchManager = new WVFavs.SearchManager(this);
                 window.wvSearchManager = this.searchManager; // Expose for debugging
@@ -842,9 +884,9 @@ class WorkVivoFavorites {
 
         // Initialize Drafts Panel (requires DraftManager)
         this.logger.log('📝 Initializing DraftsPanel...');
-        if (!draftsEnabled) {
-            this.logger.log('⏸️ DraftsPanel disabled by user settings');
-        } else if (WVFavs.DraftsPanel && this.draftManager) {
+        if (!this.draftManager) {
+            this.logger.log('⏸️ DraftsPanel disabled (DraftManager not initialized)');
+        } else if (WVFavs.DraftsPanel) {
             try {
                 this.draftsPanel = new WVFavs.DraftsPanel(this);
                 window.wvDraftsPanel = this.draftsPanel; // Expose for debugging
@@ -865,10 +907,10 @@ class WorkVivoFavorites {
         // Initialize Status Dialog (requires UserIdentityManager)
         this.logger.debug('📝 [WV STATUS] About to initialize StatusDialog...');
         this.logger.log('📝 Initializing StatusDialog...');
-        const statusUpdatesEnabled = this.settings.get('enableStatusUpdates') !== false;
-        this.logger.debug(`⚙️ [WV STATUS] Status Updates enabled in settings: ${statusUpdatesEnabled}`);
+        const statusUpdatesEnabled = this.isFeatureEnabled('statusManager', 'enableStatusUpdates');
+        this.logger.debug(`⚙️ [WV STATUS] Status Updates enabled: ${statusUpdatesEnabled}`);
         if (!statusUpdatesEnabled) {
-            this.logger.log('⏸️ StatusDialog disabled by user settings');
+            this.logger.log('⏸️ StatusDialog disabled');
         } else if (WVFavs.StatusDialog && this.userIdentity) {
             try {
                 this.logger.debug('✅ [STATUS] StatusDialog class found, creating instance...');
@@ -936,10 +978,10 @@ class WorkVivoFavorites {
         }
 
         // Initialize Google Meet Manager (if enabled)
-        const enableGoogleMeet = WVFavs.Settings.get('enableGoogleMeet');
-        this.logger.log('📹 Initializing GoogleMeetManager...', 'Enabled:', enableGoogleMeet);
-
-        if (enableGoogleMeet !== false && WVFavs.GoogleMeetManager) {
+        this.logger.log('📹 Initializing GoogleMeetManager...');
+        if (!this.isFeatureEnabled('googleMeetManager', 'enableGoogleMeet')) {
+            this.logger.log('⏸️ GoogleMeetManager disabled');
+        } else if (WVFavs.GoogleMeetManager) {
             try {
                 this.googleMeetManager = new WVFavs.GoogleMeetManager(this);
                 await this.googleMeetManager.init();
@@ -955,8 +997,6 @@ class WorkVivoFavorites {
                 this.logger.error('❌ Failed to initialize GoogleMeetManager:', error);
                 console.error('GoogleMeetManager initialization error:', error);
             }
-        } else if (enableGoogleMeet === false) {
-            this.logger.log('⚠️ GoogleMeetManager disabled via settings');
         } else {
             this.logger.warn('⚠️ GoogleMeetManager class not found in WVFavs namespace');
         }

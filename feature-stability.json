@@ -9,16 +9,16 @@
       "message": null
     },
     "reactFiberNavigator": {
-      "enabled": false,
+      "enabled": true,
       "minVersion": null,
-      "maxVersion": "3.3.9",
-      "message": "ReactFiberNavigator disabled for v3.3.9 and below due to SendBird SDK changes. Update to v3.4.0+ for full functionality."
+      "maxVersion": null,
+      "message": null
     },
     "threadManager": {
-      "enabled": false,
+      "enabled": true,
       "minVersion": null,
-      "maxVersion": "3.4.0",
-      "message": "Threads panel temporarily disabled for v3.4.0 and below. Update to the latest version for full functionality."
+      "maxVersion": null,
+      "message": null
     },
     "mentionsManager": {
       "enabled": true,

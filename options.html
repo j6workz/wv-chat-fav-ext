@@ -1369,6 +1369,51 @@
                 </div>
             </div>
 
+            <!-- Feature Stability Control Section -->
+            <div class="section">
+                <div class="section-title">
+                    🛡️ Feature Stability Control
+                </div>
+                <p style="color: #6b7280; margin-bottom: 20px; font-size: 14px;">
+                    Remote feature control helps maintain extension stability by automatically disabling problematic features until fixes are available.
+                </p>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">Enable Feature Stability Control</div>
+                        <div class="setting-description">
+                            Allow the extension to automatically disable features that may not work correctly with the current WorkVivo version.
+                            Disable this if you want all features enabled regardless of stability status.
+                        </div>
+                    </div>
+                    <div class="setting-control">
+                        <label class="toggle">
+                            <input type="checkbox" id="enableFeatureStability" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="featureStabilityStatus" style="margin-top: 16px; padding: 16px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="font-weight: 600; color: #1f2937;">Status</div>
+                        <button id="refreshStabilityBtn" class="button button-secondary-small" style="font-size: 11px; padding: 4px 8px;">
+                            🔄 Refresh
+                        </button>
+                    </div>
+                    <div id="stabilityStatusContent">
+                        <div style="color: #6b7280; font-size: 13px;">Loading...</div>
+                    </div>
+                </div>
+
+                <div id="disabledFeaturesSection" style="margin-top: 16px; display: none;">
+                    <div style="font-weight: 600; color: #dc3545; margin-bottom: 12px;">⚠️ Disabled Features</div>
+                    <div id="disabledFeaturesList" style="padding: 12px; background: #fff5f5; border: 1px solid #fecaca; border-radius: 8px;">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
             <div class="actions">
                 <button id="resetBtn" class="button button-secondary">
                     🔄 Reset to Defaults

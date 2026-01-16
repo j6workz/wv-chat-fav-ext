@@ -29,6 +29,9 @@ class OptionsManager {
             // Load statistics
             await this.loadStatistics();
 
+            // Load feature stability status
+            await this.loadFeatureStabilityStatus();
+
             // Initialize jurisdiction-aware privacy UI
             await this.initJurisdictionAwarePrivacy();
 
@@ -405,6 +408,212 @@ class OptionsManager {
         // Calculate and display cache hit rate
         const hitRate = stats.cacheHitRate || 0;
         document.getElementById('cacheHitRate').textContent = `${hitRate}%`;
+    }
+
+    /**
+     * Load and display feature stability status
+     */
+    async loadFeatureStabilityStatus() {
+        const statusContent = document.getElementById('stabilityStatusContent');
+        const disabledSection = document.getElementById('disabledFeaturesSection');
+        const disabledList = document.getElementById('disabledFeaturesList');
+
+        if (!statusContent) return;
+
+        try {
+            // Get cached config from storage
+            const result = await chrome.storage.local.get(['wvfav_feature_stability', 'wvfav_feature_stability_timestamp']);
+            const config = result.wvfav_feature_stability;
+            const timestamp = result.wvfav_feature_stability_timestamp;
+
+            // Check if feature stability is enabled
+            const isEnabled = this.settings?.enableFeatureStability !== false;
+
+            if (!isEnabled) {
+                statusContent.innerHTML = `
+                    <div style="color: #6b7280; font-size: 13px;">
+                        <span style="color: #f59e0b;">⚠️</span> Feature stability control is disabled. All features are enabled regardless of remote status.
+                    </div>
+                `;
+                disabledSection.style.display = 'none';
+                return;
+            }
+
+            if (!config) {
+                statusContent.innerHTML = `
+                    <div style="color: #6b7280; font-size: 13px;">
+                        <span style="color: #3b82f6;">ℹ️</span> No stability config loaded yet. Visit a WorkVivo page to fetch the latest status.
+                    </div>
+                `;
+                disabledSection.style.display = 'none';
+                return;
+            }
+
+            // Get extension version
+            const extensionVersion = chrome.runtime.getManifest().version;
+
+            // Format last updated time
+            const lastUpdated = timestamp ? new Date(timestamp).toLocaleString() : 'Unknown';
+
+            // Check for disabled features
+            const disabledFeatures = [];
+            if (config.features) {
+                for (const [name, feature] of Object.entries(config.features)) {
+                    const isFeatureEnabled = this.isFeatureEnabledInConfig(feature, extensionVersion);
+                    if (!isFeatureEnabled) {
+                        disabledFeatures.push({
+                            name: this.formatFeatureName(name),
+                            message: feature.message || 'Temporarily disabled',
+                            minVersion: feature.minVersion,
+                            maxVersion: feature.maxVersion
+                        });
+                    }
+                }
+            }
+
+            // Emergency disable check
+            if (config.emergencyDisable) {
+                statusContent.innerHTML = `
+                    <div style="color: #dc3545; font-size: 13px; font-weight: 500;">
+                        🚨 Emergency Mode Active - All features disabled
+                    </div>
+                    <div style="color: #6b7280; font-size: 12px; margin-top: 8px;">
+                        Config version: ${config.version || 'Unknown'} | Last checked: ${lastUpdated}
+                    </div>
+                `;
+                disabledSection.style.display = 'none';
+                return;
+            }
+
+            // Normal status
+            const statusColor = disabledFeatures.length > 0 ? '#f59e0b' : '#22c55e';
+            const statusIcon = disabledFeatures.length > 0 ? '⚠️' : '✅';
+            const statusText = disabledFeatures.length > 0
+                ? `${disabledFeatures.length} feature(s) disabled`
+                : 'All features operational';
+
+            statusContent.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="color: ${statusColor}; font-size: 16px;">${statusIcon}</span>
+                    <span style="color: ${statusColor}; font-weight: 500;">${statusText}</span>
+                </div>
+                <div style="color: #6b7280; font-size: 12px;">
+                    Extension version: ${extensionVersion} | Config version: ${config.version || 'Unknown'} | Last checked: ${lastUpdated}
+                </div>
+            `;
+
+            // Show disabled features if any
+            if (disabledFeatures.length > 0) {
+                disabledSection.style.display = 'block';
+                disabledList.innerHTML = disabledFeatures.map(f => `
+                    <div style="padding: 8px 0; border-bottom: 1px solid #fecaca;">
+                        <div style="font-weight: 500; color: #dc3545;">${f.name}</div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">${f.message}</div>
+                        ${f.minVersion || f.maxVersion ? `
+                            <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">
+                                ${f.minVersion ? `Min version: ${f.minVersion}` : ''}
+                                ${f.minVersion && f.maxVersion ? ' | ' : ''}
+                                ${f.maxVersion ? `Max version: ${f.maxVersion}` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            } else {
+                disabledSection.style.display = 'none';
+            }
+
+        } catch (error) {
+            console.error('Error loading feature stability status:', error);
+            statusContent.innerHTML = `
+                <div style="color: #dc3545; font-size: 13px;">
+                    ❌ Error loading stability status
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Check if a feature is enabled based on config and version
+     */
+    isFeatureEnabledInConfig(feature, extensionVersion) {
+        if (!feature) return true;
+
+        // Check if version is within the constraint range
+        const meetsMinVersion = !feature.minVersion || this.isVersionGte(extensionVersion, feature.minVersion);
+        const meetsMaxVersion = !feature.maxVersion || this.isVersionLte(extensionVersion, feature.maxVersion);
+        const versionInRange = meetsMinVersion && meetsMaxVersion;
+
+        // If enabled is false AND version is in range, feature is disabled
+        // If enabled is false BUT version is OUTSIDE range, feature is enabled (not affected)
+        if (feature.enabled === false) {
+            // Only disable if version is within the affected range
+            if (versionInRange) {
+                return false; // Feature disabled for this version
+            }
+            // Version is outside the range, so this disable rule doesn't apply
+            return true;
+        }
+
+        // If enabled is true but version constraints exist and aren't met, disable
+        if (!versionInRange) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Compare two semantic version strings: v1 >= v2
+     */
+    isVersionGte(v1, v2) {
+        const parts1 = v1.split('.').map(Number);
+        const parts2 = v2.split('.').map(Number);
+
+        for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+            const p1 = parts1[i] || 0;
+            const p2 = parts2[i] || 0;
+
+            if (p1 > p2) return true;
+            if (p1 < p2) return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Compare two semantic version strings: v1 <= v2
+     */
+    isVersionLte(v1, v2) {
+        const parts1 = v1.split('.').map(Number);
+        const parts2 = v2.split('.').map(Number);
+
+        for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+            const p1 = parts1[i] || 0;
+            const p2 = parts2[i] || 0;
+
+            if (p1 < p2) return true;
+            if (p1 > p2) return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Format feature name for display
+     */
+    formatFeatureName(name) {
+        const names = {
+            webpackNavigator: 'Webpack Navigator',
+            reactFiberNavigator: 'React Fiber Navigator',
+            threadManager: 'Threads Panel',
+            mentionsManager: 'Mentions Panel',
+            searchManager: 'Search Panel',
+            draftManager: 'Draft Messages',
+            statusManager: 'Availability Status',
+            googleMeetManager: 'Google Meet Integration',
+            floatingWidget: 'Floating Button'
+        };
+        return names[name] || name;
     }
 
     async clearStatistics() {
@@ -877,6 +1086,25 @@ class OptionsManager {
         if (refreshStatsBtn) {
             refreshStatsBtn.addEventListener('click', () => {
                 this.loadStatistics();
+            });
+        }
+
+        // Feature stability refresh button
+        const refreshStabilityBtn = document.getElementById('refreshStabilityBtn');
+        if (refreshStabilityBtn) {
+            refreshStabilityBtn.addEventListener('click', () => {
+                this.loadFeatureStabilityStatus();
+            });
+        }
+
+        // Feature stability toggle - reload status when changed
+        const enableFeatureStabilityToggle = document.getElementById('enableFeatureStability');
+        if (enableFeatureStabilityToggle) {
+            enableFeatureStabilityToggle.addEventListener('change', () => {
+                // Delay slightly to allow settings to save first
+                setTimeout(() => {
+                    this.loadFeatureStabilityStatus();
+                }, 100);
             });
         }
 

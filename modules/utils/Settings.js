@@ -31,7 +31,8 @@ WVFavs.Settings = new (class Settings {
 
             // System
             debugLogging: false,             // Enable debug logging
-            windowsModifierKey: 'ctrl'       // Modifier key for Windows
+            windowsModifierKey: 'ctrl',      // Modifier key for Windows
+            enableFeatureStability: true     // Enable remote feature stability control
         };
     }
 
