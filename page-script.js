@@ -188,6 +188,16 @@
                     response = getCurrentThreadState();
                     break;
 
+                case 'getWorkvivoPin':
+                    // Get WorkVivo pin state for the current channel
+                    response = getWorkvivoPin();
+                    break;
+
+                case 'toggleWorkvivoPin':
+                    // Pin or unpin the current channel via WorkVivo's native API
+                    response = await toggleWorkvivoPin();
+                    break;
+
                 default:
                     throw new Error(`Unknown action: ${action}`);
             }
@@ -1944,6 +1954,90 @@
                 success: false,
                 error: error.message
             };
+        }
+    }
+
+    /**
+     * Walk the React fiber tree from [data-testid="channel-list"] to find the
+     * chat context that exposes currentChannelId, pinnedChatChannelIds and updatePinnedChannels.
+     */
+    function getWVChatPinContext() {
+        const el = document.querySelector('[data-testid="channel-list"]');
+        if (!el) return null;
+        const fiberKey = Object.keys(el).find(k => k.startsWith('__reactFiber'));
+        if (!fiberKey) return null;
+        let f = el[fiberKey];
+        for (let i = 0; i < 50; i++) {
+            if (!f) break;
+            const v = f.memoizedProps?.value;
+            if (v && typeof v.updatePinnedChannels === 'function') return v;
+            f = f.return;
+        }
+        return null;
+    }
+
+    /**
+     * Returns the current WorkVivo pin state for the open channel.
+     * { currentChannelId, pinnedIds: [{pinId, channelId}], isPinned, pinId }
+     */
+    function getWorkvivoPin() {
+        const ctx = getWVChatPinContext();
+        if (!ctx) throw new Error('WorkVivo chat context not found');
+        const currentChannelId = ctx.currentChannelId || null;
+        const pinnedIds = ctx.pinnedChatChannelIds?.current || [];
+        const entry = currentChannelId ? pinnedIds.find(p => p.channelId === currentChannelId) : null;
+        return {
+            currentChannelId,
+            pinnedIds,
+            isPinned: !!entry,
+            pinId: entry ? entry.pinId : null
+        };
+    }
+
+    /**
+     * Pins or unpins the current open channel using WorkVivo's REST API,
+     * then updates React state so the sidebar reflects the change immediately.
+     */
+    async function toggleWorkvivoPin() {
+        const ctx = getWVChatPinContext();
+        if (!ctx) throw new Error('WorkVivo chat context not found');
+
+        const channelId = ctx.currentChannelId;
+        if (!channelId) throw new Error('No channel currently open');
+
+        const pinnedIds = ctx.pinnedChatChannelIds?.current || [];
+        const entry = pinnedIds.find(p => p.channelId === channelId);
+
+        const xsrf = decodeURIComponent(
+            (document.cookie.split(';').find(c => c.trim().startsWith('XSRF-TOKEN=')) || '=')
+                .split('=').slice(1).join('=')
+        );
+        const headers = {
+            'accept': 'application/json, text/plain, */*',
+            'x-requested-with': 'XMLHttpRequest',
+            'x-xsrf-token': xsrf
+        };
+
+        if (entry) {
+            // Unpin
+            const resp = await fetch(`/api/chat/pinned-channels/${entry.pinId}`, { method: 'DELETE', headers });
+            if (!resp.ok) throw new Error(`Unpin failed: HTTP ${resp.status}`);
+            await ctx.updatePinnedChannels({ newPinnedIds: pinnedIds.filter(p => p.pinId !== entry.pinId) });
+            return { isPinned: false, channelId };
+        } else {
+            // Pin
+            const resp = await fetch('/api/chat/pinned-channels', {
+                method: 'POST',
+                headers: { ...headers, 'content-type': 'application/json' },
+                body: JSON.stringify({ channel_url: channelId })
+            });
+            if (!resp.ok) {
+                if (resp.status === 422) throw new Error('Reached maximum number of pinned chats');
+                throw new Error(`Pin failed: HTTP ${resp.status}`);
+            }
+            const data = await resp.json();
+            await ctx.updatePinnedChannels({ newPinnedIds: [...pinnedIds, { pinId: data.id, channelId: data.channel_url }] });
+            return { isPinned: true, channelId, pinId: data.id };
         }
     }
 

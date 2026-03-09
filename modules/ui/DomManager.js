@@ -1030,42 +1030,24 @@ WVFavs.DomManager = new (class DomManager {
             return; // Don't add pin button at all for NoName groups
         }
 
-        // Check pin status using name-based matching only (ignore IDs completely)
+        // Check pin status via WorkVivo's native pinned channels (React context)
         let isPinned = false;
-        let databaseRecord = null;
+        let wvPinState = null;
 
-        if (chatInfo.name) {
-            this.app?.logger?.debug('🔍 Checking pin status using name-based matching for:', chatInfo.name);
-            const pinnedChats = await this.app.smartUserDB.getPinnedChats();
-
-            // Find the best match using name similarity
-            const bestMatch = this.findBestNameMatch(chatInfo.name, pinnedChats);
-
-            if (bestMatch) {
-                isPinned = true;
-                databaseRecord = bestMatch.record;
-                this.app?.logger?.debug('✅ Found pinned status via name matching:', {
-                    headerName: chatInfo.name,
-                    matchedName: bestMatch.record.name,
-                    similarity: bestMatch.similarity,
-                    matchType: bestMatch.matchType
-                });
-            } else {
-                this.app?.logger?.log('📌 No pinned match found for:', chatInfo.name);
-            }
+        try {
+            wvPinState = await this.sendPageScriptRequest('getWorkvivoPin', {}, 5000);
+            isPinned = wvPinState?.isPinned || false;
+            this.app?.logger?.debug('📌 WorkVivo pin state:', wvPinState);
+        } catch (err) {
+            this.app?.logger?.warn('⚠️ Could not get WorkVivo pin state, defaulting to unpinned:', err.message);
         }
 
         const showPinIndicatorSetting = this.app.settings.get('showPinIndicator');
 
         this.app?.logger?.log('📌 Pin status check:', {
             chatName: chatInfo.name,
-            isPinned: isPinned,
-            showPinIndicatorSetting: showPinIndicatorSetting,
-            willShowBadge: isPinned && showPinIndicatorSetting,
-            lookupMethod: 'Name-based matching',
-            matchedName: databaseRecord?.name,
-            similarity: isPinned ? '99%+' : 'None',
-            source: chatInfo._verification?.source
+            isPinned,
+            source: 'WorkVivo native pinned channels'
         });
 
         avatarContainer.style.position = 'relative';
@@ -1104,10 +1086,12 @@ WVFavs.DomManager = new (class DomManager {
             e.preventDefault();
             e.stopPropagation();
 
-            if (isPinned) {
-                await this.app.unpinChat(chatInfo.id);
-            } else {
-                await this.app.pinChatFromInfo(chatInfo);
+            try {
+                await this.sendPageScriptRequest('toggleWorkvivoPin', {}, 8000);
+            } catch (err) {
+                const msg = err.message || 'Failed to toggle pin';
+                WVFavs.DomManager.showSnackbar(msg.includes('maximum') ? 'Reached maximum pinned chats' : 'Failed to pin chat', 'error');
+                this.app?.logger?.error('❌ toggleWorkvivoPin failed:', err.message);
             }
 
             await this.refreshChatHeader(chatHeader);
