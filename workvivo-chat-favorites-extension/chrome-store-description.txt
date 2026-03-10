@@ -1,56 +1,56 @@
-WorkVivo Chat Favorites helps you stay organized by letting you pin your most important conversations. Instead of scrolling through long chat lists, you can access your favorites instantly.
+WorkVivo Chat Favorites makes your WorkVivo chat faster and smarter — find messages, people, and conversations instantly without endless scrolling.
 
 ✨ WHAT IT DOES
 
+🔍 Find People Instantly — Ranked by Relevance & Frequency
+Smart search powered by IndexedDB learns from how you work. Results are ranked by who you talk to most, so your frequent contacts always appear first. Search by name or nickname and get results in under 10ms — no API calls, no waiting. Your pinned chats appear at the top, followed by recent conversations, then everyone else in your org.
+
+@ Never Miss a Mention Again
+The Mentions Panel collects every message that @mentions you across all your chats into one place. Click any mention to jump straight to that message in context. No more digging through multiple chats to find where someone called you out.
+
+🔎 Search Messages with Wildcards & Advanced Operators
+Search inside any channel with powerful query syntax. Use comma (,) for AND — find messages that contain all your terms. Use pipe (|) for OR — find messages with any of your terms. Paginate through results to go as far back as you need. Perfect for digging up that decision made weeks ago or tracking down a specific link someone shared.
+
 🌙 Dark Mode
-Full dark theme that follows your OS preference automatically, or switch it manually in settings. Covers the entire chat area — message bubbles, sidebar, panels, headers, and more. Easy on the eyes during long work sessions.
+A full dark theme that follows your OS automatically or can be switched manually. Covers everything — chat bubbles, sidebar, panels, thread views, and headers. Makes long sessions noticeably easier on your eyes.
 
 📌 Quick Pin
-Pin any DM chat instantly — just click the avatar in the chat header to pin or unpin. Your pinned chats appear at the top of your sidebar for quick access.
+Click the avatar in any DM chat header to instantly pin or unpin that conversation. Pinned chats sit at the top of your sidebar so your most important people are always one click away.
 
 ⓘ Quick Info
-A subtle info button in DM chat headers lets you open the user's profile in one click, independent of any other feature toggles.
-
-@ Mentions Panel
-Never miss when someone mentions you! The Mentions Panel shows all messages that mention you across all chats in one convenient sidebar. See unread mentions with badges, click any mention to jump directly to the message.
+A one-click profile button in every DM chat header. Jump to someone's full profile without navigating away from your conversation.
 
 💬 Thread Panel
-View all threads for any chat in a convenient side panel. The Thread Panel shows all threaded conversations with unread badges, making it easy to track replies and never miss important updates. Click any thread to jump directly to it in the conversation. The panel updates automatically in real-time.
-
-🔎 Channel Message Search Panel
-Search messages within specific channels using the dedicated search panel. Click the search icon in any chat header to open the panel. Use advanced query syntax: comma (,) for AND operators and pipe (|) for OR operators. For example, "meeting,notes" finds messages with both words, while "urgent|asap" finds messages with either word. Supports pagination to browse through results.
+See all threads for a chat in one side panel with unread badges. Click any thread to jump to it instantly. Updates in real-time so you never fall behind on a threaded discussion.
 
 📹 Google Meet Integration
-Create instant Google Meet links directly from any chat! Connect your Google account once, then use the unified meeting picker to set a schedule, title, description, and optionally add a calendar invite — all in one flow.
+Start a Google Meet from any chat in seconds. Set a title, description, schedule, and optionally add a calendar invite — all in one flow. No switching tabs.
 
 🔄 Recent Chat Switcher
-The extension remembers your last 5 conversations, making it easy to switch between active chats. Quick toggle: tap Cmd/Ctrl + \ to instantly jump to your last conversation. Hold the modifier key and press \ repeatedly to cycle through all recent chats.
+Quickly jump between your last 5 conversations with Cmd/Ctrl + \. Tap repeatedly to cycle through them. Great for multitasking across active discussions.
 
-🔍 Lightning-Fast Smart Search
-IndexedDB-powered search that learns from your usage. Search anyone in your company directory by name or nickname — results appear in under 10ms! Shows your pinned chats first, then recent conversations, then all org members. Click a result to open an existing chat or start a new one. Copy email addresses directly from search results.
+⌨️ Keyboard Shortcuts
+Cmd/Ctrl + / to open smart search. Cmd/Ctrl + \ to switch recent chats. Windows users can pick their modifier key in settings.
 
-⌨️ Navigate with Keyboard Shortcuts
-Use keyboard shortcuts to quickly search and switch between conversations (Cmd/Ctrl + / for search, Cmd/Ctrl + \ to toggle recent chats). Windows users can customize their modifier key (Ctrl, Alt, or both) in settings.
-
-🔘 Customizable Floating Button
-A floating button provides quick access to search and recent chats. Personalize the button color, choose single-click or double-click behavior, and drag it anywhere on your screen.
-
-⚙️ Flexible Feature Toggles
-Enable or disable individual features including Thread Panel, Mentions Panel, Search Panel, Dark Mode, Quick Pin, Quick Info, and Google Meet integration. All settings sync across your devices.
+🔘 Floating Quick-Access Button
+A draggable button for one-click access to search and recent chats. Customizable color with automatic contrast adjustment.
 
 🛡️ Feature Stability Control
-Remote feature control keeps your experience stable. If a feature has issues with the current WorkVivo version, it can be automatically disabled until a fix is available — keeping everything running smoothly.
+Remote feature flags keep the extension stable. Features that conflict with the current WorkVivo version are automatically paused until a fix ships — so nothing breaks your workflow.
+
+⚙️ Flexible Settings
+Toggle any feature on or off — Dark Mode, Quick Pin, Quick Info, Mentions Panel, Thread Panel, Search Panel, Google Meet. Settings sync across your devices.
 
 💡 WHY YOU'LL LIKE IT
 
-Save time by eliminating endless scrolling through chat lists. Keep your most critical conversations within easy reach. Dark Mode makes long sessions easier on your eyes. Quick Pin puts any DM one click away. Never miss mentions with the Mentions Panel. Stay on top of threaded discussions in real-time. Search messages within channels using advanced operators. Create instant Google Meet links without leaving your chat. Lightning-fast smart search with zero API calls. Personalize your experience with dark mode, custom button colors, flexible feature toggles, and keyboard shortcuts.
+Stop wasting time hunting for messages and people. Find your most-contacted colleagues in milliseconds. Track down any old message with wildcard and multi-term search. Never miss a mention. Stay on top of threads without losing your place in main chat. Dark Mode for long focus sessions. Pin the chats you care about most and reach them instantly. Everything works without leaving your WorkVivo tab.
 
-🔒 PRIVACY AND SECURITY
+🔒 PRIVACY & SECURITY
 
-Your pinned chats, settings, and search data are stored locally on your computer. The extension doesn't send your data to external servers. Optional anonymous analytics with jurisdiction-aware consent — if you're in a strict privacy region (EU, California), analytics are disabled by default. Google Meet integration uses secure OAuth 2.0 — the extension only accesses your calendar to create meeting events. You can export your settings for backup or import them on another device. Email j6workz@gmail.com for data deletion requests.
+All data — pinned chats, search index, settings — is stored locally on your device. Nothing is sent to external servers. Anonymous analytics are opt-in, with automatic opt-out for EU and California users. Google Meet uses OAuth 2.0 and only accesses your calendar to create events. Export or import your settings anytime. Email j6workz@gmail.com for data deletion requests.
 
 🚀 GETTING STARTED
 
-Install the extension and it automatically integrates with your interface. Click the avatar in any DM chat header to pin or unpin it. Pinned chats appear at the top of your sidebar. Use Cmd/Ctrl + / to search, Cmd/Ctrl + \ to toggle recent chats. Click the Meet icon in any chat header to create a Google Meet link (after connecting your Google account). Access the Mentions, Thread, and Search panels from the sidebar buttons. Open settings to toggle Dark Mode, adjust features, customize colors, and more.
+Install and it integrates automatically. Click any DM avatar in the chat header to pin it. Use Cmd/Ctrl + / to search people by name — results rank by who you talk to most. Use the search icon in any chat header to search messages with advanced operators. Open the Mentions panel from the sidebar to catch up on all your @mentions. Enable Dark Mode in settings. That's it.
 
-For support or questions, contact j6workz@gmail.com.
+For support, contact j6workz@gmail.com.
