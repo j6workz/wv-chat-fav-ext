@@ -1259,52 +1259,123 @@ WVFavs.SearchPanel = class SearchPanel {
         const resultsList = this.currentPanel.querySelector('.wv-search-results-list');
 
         if (!results.results || results.results.length === 0) {
-            resultsList.innerHTML = `
-                <div style="text-align: center; padding: 24px 16px; color: #6b7280;">
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; opacity: 0.3;">
-                        <circle cx="11" cy="11" r="8"/>
-                        <path d="m21 21-4.35-4.35"/>
-                    </svg>
-                    <p style="margin: 0; font-size: 12px; font-weight: 500;">No results found</p>
-                    <p style="margin: 4px 0 0 0; font-size: 11px; color: #9ca3af;">Try different search terms</p>
-                    ${!this.isGlobalPanel ? `
-                        <button class="wv-search-all-channels-btn" style="
-                            margin-top: 16px;
-                            padding: 8px 16px;
-                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                            color: white;
-                            border: none;
-                            border-radius: 8px;
-                            font-size: 12px;
-                            font-weight: 600;
-                            cursor: pointer;
-                            display: inline-flex;
-                            align-items: center;
-                            gap: 6px;
-                            transition: transform 0.2s, box-shadow 0.2s;
-                            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
-                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(102, 126, 234, 0.4)';"
-                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(102, 126, 234, 0.3)';">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="11" cy="11" r="8"/>
-                                <path d="m21 21-4.35-4.35"/>
-                            </svg>
-                            Search in All Channels
-                        </button>
-                    ` : ''}
-                </div>
-            `;
+            const currentQuery = this.currentPanel.querySelector('.wv-search-input')?.value?.trim() || '';
+            const isAlreadyWildcard = currentQuery.includes('*') || currentQuery.includes('~');
+            const isAlreadyAdvanced = this.searchMode === 'advanced';
+            const bareQuery = currentQuery.replace(/[*~]/g, '').trim();
 
-            // Add event listener for "Search in All Channels" button
-            if (!this.isGlobalPanel) {
-                const searchAllBtn = resultsList.querySelector('.wv-search-all-channels-btn');
-                if (searchAllBtn) {
-                    searchAllBtn.addEventListener('click', () => {
-                        // Use the same method as the footer's Global Search button
-                        this.openGlobalSearchWithContext();
-                    });
+            resultsList.innerHTML = '';
+
+            // Container
+            const container = document.createElement('div');
+            container.style.cssText = 'text-align: center; padding: 24px 16px; color: #6b7280;';
+
+            // Icon (static SVG, no user content)
+            const iconWrap = document.createElement('div');
+            iconWrap.innerHTML = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 10px; opacity: 0.3; display: block;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>';
+            container.appendChild(iconWrap);
+
+            const title = document.createElement('p');
+            title.style.cssText = 'margin: 0; font-size: 12px; font-weight: 500;';
+            title.textContent = 'No results found';
+            container.appendChild(title);
+
+            const subtitle = document.createElement('p');
+            subtitle.style.cssText = 'margin: 4px 0 0 0; font-size: 11px; color: #9ca3af;';
+            subtitle.textContent = 'Search is case-sensitive and matches whole words';
+            container.appendChild(subtitle);
+
+            // Wildcard tip — only shown when user hasn't already used wildcards
+            if (!isAlreadyWildcard) {
+                const wildcardEx = bareQuery ? `*${bareQuery}*` : '*your term*';
+                const prefixEx   = bareQuery ? `${bareQuery}*`  : 'hello*';
+                const fuzzyEx    = bareQuery && bareQuery.length > 4 ? `${bareQuery}~` : 'hello~';
+
+                const tipBox = document.createElement('div');
+                tipBox.style.cssText = 'margin-top: 14px; background: #f8f9ff; border: 1px solid #e0e4ff; border-radius: 10px; padding: 12px 14px; text-align: left;';
+
+                const tipTitle = document.createElement('p');
+                tipTitle.style.cssText = 'margin: 0 0 8px 0; font-size: 11px; font-weight: 600; color: #4f46e5;';
+                tipTitle.textContent = isAlreadyAdvanced ? 'Try wildcard syntax' : 'Try Advanced mode with wildcards';
+                tipBox.appendChild(tipTitle);
+
+                if (!isAlreadyAdvanced) {
+                    const desc = document.createElement('p');
+                    desc.style.cssText = 'margin: 0 0 8px 0; font-size: 11px; color: #6b7280;';
+                    desc.innerHTML = 'Switch to <strong>Advanced</strong> mode and use:';
+                    tipBox.appendChild(desc);
                 }
+
+                const exampleRows = isAlreadyAdvanced
+                    ? [[wildcardEx, 'substring match', 'wv-example-wildcard'], [fuzzyEx, 'fuzzy — tolerates typos', 'wv-example-fuzzy']]
+                    : [[wildcardEx, 'matches anywhere in a word', 'wv-example-wildcard'], [prefixEx, 'prefix match', 'wv-example-prefix'], [fuzzyEx, 'fuzzy — tolerates typos', 'wv-example-fuzzy']];
+
+                exampleRows.forEach(([example, label, cls]) => {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display: flex; align-items: center; gap: 6px; margin-bottom: 5px;';
+
+                    const code = document.createElement('code');
+                    code.className = cls;
+                    code.style.cssText = 'background: #eef2ff; color: #4338ca; padding: 2px 7px; border-radius: 5px; font-size: 11px; font-family: monospace; cursor: pointer;';
+                    code.textContent = example; // user-derived — set via textContent only
+                    row.appendChild(code);
+
+                    const lbl = document.createElement('span');
+                    lbl.style.cssText = 'font-size: 10px; color: #9ca3af;';
+                    lbl.textContent = label;
+                    row.appendChild(lbl);
+
+                    tipBox.appendChild(row);
+                });
+
+                const hint = document.createElement('p');
+                hint.style.cssText = 'margin: 6px 0 0 0; font-size: 10px; color: #9ca3af;';
+                hint.textContent = 'Click any example to apply it';
+                tipBox.appendChild(hint);
+
+                container.appendChild(tipBox);
             }
+
+            // "Search in All Channels" button for channel-specific panel
+            if (!this.isGlobalPanel) {
+                const searchAllBtn = document.createElement('button');
+                searchAllBtn.className = 'wv-search-all-channels-btn';
+                searchAllBtn.style.cssText = 'margin-top: 16px; padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);';
+                searchAllBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>';
+                const btnLabel = document.createElement('span');
+                btnLabel.textContent = 'Search in All Channels';
+                searchAllBtn.appendChild(btnLabel);
+                searchAllBtn.addEventListener('mouseover', () => { searchAllBtn.style.transform = 'translateY(-2px)'; searchAllBtn.style.boxShadow = '0 4px 8px rgba(102, 126, 234, 0.4)'; });
+                searchAllBtn.addEventListener('mouseout',  () => { searchAllBtn.style.transform = 'translateY(0)';    searchAllBtn.style.boxShadow = '0 2px 4px rgba(102, 126, 234, 0.3)'; });
+                searchAllBtn.addEventListener('click', () => this.openGlobalSearchWithContext());
+                container.appendChild(searchAllBtn);
+            }
+
+            resultsList.appendChild(container);
+
+            // Wire up example clicks: set query + switch to advanced mode, then search
+            resultsList.querySelectorAll('.wv-example-wildcard, .wv-example-prefix, .wv-example-fuzzy').forEach(el => {
+                el.addEventListener('click', () => {
+                    const input = this.currentPanel.querySelector('.wv-search-input');
+                    if (input) {
+                        input.value = el.textContent;
+                        // Switch to advanced mode if not already
+                        if (this.searchMode !== 'advanced') {
+                            this.searchMode = 'advanced';
+                            localStorage.setItem('wv-search-mode', 'advanced');
+                            // Update mode label and option styles to match normal mode-selection behaviour
+                            const modeLabel = this.currentPanel.querySelector('.wv-search-mode-label');
+                            if (modeLabel) modeLabel.textContent = 'Advanced';
+                            this.currentPanel.querySelectorAll('.wv-search-mode-option').forEach(opt => {
+                                const isSelected = opt.dataset.mode === 'advanced';
+                                opt.style.background = isSelected ? '#eff6ff' : 'white';
+                                opt.style.fontWeight = isSelected ? '600' : '400';
+                            });
+                        }
+                        this.performSearch();
+                    }
+                });
+            });
 
             return;
         }

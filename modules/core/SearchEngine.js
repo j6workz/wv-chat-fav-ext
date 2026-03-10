@@ -6,6 +6,8 @@ WVFavs.SearchEngine = new (class SearchEngine {
         this.searchInProgress = false;
         this.currentSearchId = null;
         this.abortCurrentSearch = false;
+        this.lastAPIPageFetched = {};  // query -> last page fetched from API
+        this.searchMoreQuery = null;
     }
 
     init(app) {
@@ -39,7 +41,7 @@ WVFavs.SearchEngine = new (class SearchEngine {
         this.abortCurrentSearch = false;
     }
 
-    async performHierarchicalSearch(query, searchId = null, forceAdvanced = false) {
+    async performHierarchicalSearch(query, searchId = null, forceAdvanced = false, page = 1) {
         this.app?.logger?.log('🌐 SearchEngine.performHierarchicalSearch called with:', { query, searchId, forceAdvanced });
 
         // Handle backward compatibility - if second param is boolean, it's forceAdvanced
@@ -114,8 +116,11 @@ WVFavs.SearchEngine = new (class SearchEngine {
                 try {
 
                     // NEW: Use comprehensive 4-endpoint search strategy
-                    this.app?.logger?.log('🌐 Calling comprehensive 4-endpoint search...');
-                    const comprehensiveResults = await WVFavs.APIManager.comprehensiveSearch(trimmedQuery, searchId);
+                    this.app?.logger?.log('🌐 Calling comprehensive 4-endpoint search...', { page });
+                    const comprehensiveResults = await WVFavs.APIManager.comprehensiveSearch(trimmedQuery, searchId, page);
+
+                    // Track the last API page successfully fetched for this query
+                    this.lastAPIPageFetched[trimmedQuery] = page;
 
                     // Check if search was cancelled after API calls
                     if (!this.shouldContinueSearch(searchId)) {
@@ -136,8 +141,9 @@ WVFavs.SearchEngine = new (class SearchEngine {
                         this.app?.logger?.log(`📊 Stored ${allResults.length} items in SmartUserDatabase`);
                     }
 
-                    // Get fresh local results to include newly stored data
-                    const rawEnhancedResults = await this.smartDB.searchItemsLocally(trimmedQuery, 20);
+                    // Get fresh local results — expand limit on subsequent pages to surface newly stored results
+                    const localSearchLimit = page > 1 ? 20 * page : 20;
+                    const rawEnhancedResults = await this.smartDB.searchItemsLocally(trimmedQuery, localSearchLimit);
                     const enhancedLocalResults = this.transformSmartDBResults(rawEnhancedResults);
 
                     // Merge with fresh comprehensive results
@@ -744,8 +750,12 @@ WVFavs.SearchEngine = new (class SearchEngine {
 
     // Public method for "Search for more" button
     async searchForMore(query) {
-        this.app?.logger?.log('🔍➕ "Search for more" triggered for:', query);
-        return await this.performHierarchicalSearch(query, null, true); // Force Advanced API
+        const trimmedQuery = query.trim();
+        // Next page = last page fetched + 1 (defaults to 1 if API was never called for this query)
+        const lastPage = this.lastAPIPageFetched[trimmedQuery] || 0;
+        const nextPage = lastPage + 1;
+        this.app?.logger?.log('🔍➕ "Search for more" triggered for:', trimmedQuery, `(fetching page ${nextPage}, last fetched: ${lastPage})`);
+        return await this.performHierarchicalSearch(trimmedQuery, null, true, nextPage); // Force Advanced API
     }
 
     // Transform SmartUserDatabase results to match UI expectations

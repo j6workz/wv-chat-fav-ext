@@ -172,17 +172,22 @@ WVFavs.APIManager = new (class APIManager {
     }
 
     // Comprehensive search using all 4 endpoints strategically
-    async comprehensiveSearch(query, searchId = null) {
+    async comprehensiveSearch(query, searchId = null, page = 1) {
         // Handle empty queries
         if (!query || query.trim().length === 0) {
             this.app?.logger?.log('⚠️ Empty query provided to comprehensive search, returning empty results');
             return { users: [], channels: [], stats: { error: 'Empty query' } };
         }
 
-        const cachedResults = WVFavs.CacheManager.get('comprehensiveSearchCache', query);
-        if (cachedResults) {
-            this.app?.logger?.log('⚡️ Returning cached comprehensive search results for:', query);
-            return cachedResults;
+        // Only use cache for page 1 (subsequent pages always hit the API)
+        if (page === 1) {
+            const cachedResults = WVFavs.CacheManager.get('comprehensiveSearchCache', query);
+            if (cachedResults) {
+                this.app?.logger?.log('⚡️ Returning cached comprehensive search results for:', query);
+                return cachedResults;
+            }
+        } else {
+            this.app?.logger?.log(`🔍 Bypassing cache for page ${page} of query:`, query);
         }
 
         // Cancel previous requests if searchId provided
@@ -196,18 +201,19 @@ WVFavs.APIManager = new (class APIManager {
         try {
             const host = window.location.host;
 
-            this.app?.logger?.log('🌐 Starting comprehensive 4-endpoint search for:', query, searchId ? `(${searchId})` : '');
+            this.app?.logger?.log('🌐 Starting comprehensive 4-endpoint search for:', query, `(page ${page})`, searchId ? `(${searchId})` : '');
 
             // Execute all 4 API calls in parallel
             const [advancedResponse, usersResponse, channelsResponse, membersResponse] = await Promise.all([
                 this.executeAdvancedSearchAPI(`https://${host}/api/advanced-search`, {
                     term: query,
                     sort: "most_relevant",
-                    page: 1,
+                    page: page,
                     limit: 20,
+                    characters: { excerpt: 240, title: 240 },
                     types: ["People"]
                 }, searchId),
-                this.executeSearchAPI(`https://${host}/api/chat/users?page=1&query=${encodeURIComponent(query)}`, searchId),
+                this.executeSearchAPI(`https://${host}/api/chat/users?page=${page}&query=${encodeURIComponent(query)}`, searchId),
                 this.executeSearchAPI(`https://${host}/api/chat/search/channels?query=${encodeURIComponent(query)}`, searchId),
                 this.executeSearchAPI(`https://${host}/api/chat/search/channels/members?query=${encodeURIComponent(query)}`, searchId)
             ]);
@@ -224,7 +230,10 @@ WVFavs.APIManager = new (class APIManager {
                 advancedResponse, usersResponse, channelsResponse, membersResponse, query
             );
 
-            WVFavs.CacheManager.set('comprehensiveSearchCache', query, processedResults);
+            // Only cache page 1 results
+            if (page === 1) {
+                WVFavs.CacheManager.set('comprehensiveSearchCache', query, processedResults);
+            }
             return processedResults;
         } catch (error) {
             this.app?.logger?.error('Error in comprehensive search:', error);

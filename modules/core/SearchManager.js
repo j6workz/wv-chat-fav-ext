@@ -91,7 +91,7 @@ WVFavs.SearchManager = class SearchManager {
 
             // Add pagination token if provided
             if (nextToken) {
-                url += `&next_token=${encodeURIComponent(nextToken)}`;
+                url += `&token=${encodeURIComponent(nextToken)}`;
             }
 
             this.app?.logger?.log('🔍 Searching messages:', {
