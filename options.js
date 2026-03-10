@@ -521,6 +521,9 @@ class OptionsManager {
                 disabledSection.style.display = 'none';
             }
 
+            // Reflect FSC state on option toggles
+            this.applyFscDisabledState(disabledFeatures.map(f => f.name));
+
         } catch (error) {
             console.error('Error loading feature stability status:', error);
             statusContent.innerHTML = `
@@ -528,6 +531,40 @@ class OptionsManager {
                     ❌ Error loading stability status
                 </div>
             `;
+        }
+    }
+
+    /**
+     * Grey out / restore option toggles based on FSC disabled features
+     */
+    applyFscDisabledState(disabledNames) {
+        const featureToggleMap = {
+            'Draft Messages':      ['enableDrafts', 'adasEnabled'],
+            'Availability Status': ['enableStatusUpdates'],
+        };
+
+        for (const [label, ids] of Object.entries(featureToggleMap)) {
+            const isDisabled = disabledNames.includes(label);
+            ids.forEach(id => {
+                const input = document.getElementById(id);
+                if (!input) return;
+                const settingItem = input.closest('.setting-item-compact') || input.closest('div[style]');
+                input.disabled = isDisabled;
+                if (settingItem) {
+                    settingItem.style.opacity = isDisabled ? '0.5' : '';
+                    settingItem.style.pointerEvents = isDisabled ? 'none' : '';
+                    const existing = settingItem.querySelector('.fsc-disabled-badge');
+                    if (isDisabled && !existing) {
+                        const badge = document.createElement('div');
+                        badge.className = 'fsc-disabled-badge';
+                        badge.style.cssText = 'font-size: 11px; color: #dc3545; margin-top: 4px;';
+                        badge.textContent = '\uD83D\uDEE1\uFE0F Disabled by Feature Stability Control';
+                        settingItem.appendChild(badge);
+                    } else if (!isDisabled && existing) {
+                        existing.remove();
+                    }
+                }
+            });
         }
     }
 
@@ -1108,8 +1145,28 @@ class OptionsManager {
         // Feature stability refresh button
         const refreshStabilityBtn = document.getElementById('refreshStabilityBtn');
         if (refreshStabilityBtn) {
-            refreshStabilityBtn.addEventListener('click', () => {
-                this.loadFeatureStabilityStatus();
+            refreshStabilityBtn.addEventListener('click', async () => {
+                refreshStabilityBtn.disabled = true;
+                refreshStabilityBtn.textContent = 'Fetching...';
+                try {
+                    const response = await fetch('https://raw.githubusercontent.com/j6workz/wv-chat-fav-ext/main/feature-stability.json', {
+                        cache: 'no-store',
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (response.ok) {
+                        const config = await response.json();
+                        await chrome.storage.local.set({
+                            wvfav_feature_stability: config,
+                            wvfav_feature_stability_timestamp: Date.now()
+                        });
+                    }
+                } catch (e) {
+                    console.warn('Failed to fetch feature stability config:', e);
+                } finally {
+                    refreshStabilityBtn.disabled = false;
+                    refreshStabilityBtn.textContent = '⟳ Refresh';
+                    this.loadFeatureStabilityStatus();
+                }
             });
         }
 

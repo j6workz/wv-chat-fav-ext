@@ -229,9 +229,10 @@ WVFavs.DomManager = new (class DomManager {
             background: white;
         `;
 
-        // Create Drafts button (only if enabled)
+        // Create Drafts button (only if enabled and feature stability allows)
         let draftsButton = null;
-        if (settings.enableDrafts !== false) {
+        const draftManagerEnabled = this.app.isFeatureEnabled ? this.app.isFeatureEnabled('draftManager', 'enableDrafts') : (settings.enableDrafts !== false);
+        if (draftManagerEnabled) {
             draftsButton = this.createButtonGroupButton({
             icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 24" width="16" height="16" fill="currentColor">
                 <path d="M8 6H5c-.553 0-1-.448-1-1s.447-1 1-1h3c.553 0 1 .448 1 1s-.447 1-1 1zM13 10H5c-.553 0-1-.448-1-1s.447-1 1-1h8c.553 0 1 .448 1 1s-.447 1-1 1zM13 14H5c-.553 0-1-.448-1-1s.447-1 1-1h8c.553 0 1 .448 1 1s-.447 1-1 1z"/>
