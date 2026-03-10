@@ -221,22 +221,22 @@
         /**
          * Create an instant Google Meet meeting
          */
-        async createInstantMeeting(meetingTitle = 'Quick Meeting', durationMinutes = 30) {
+        async createInstantMeeting(meetingTitle = 'Quick Meeting', durationMinutes = 30, startTime = null, attendees = [], description = '') {
             try {
                 // Ensure we have a valid token (will refresh or prompt for auth if needed)
                 await this.ensureValidToken();
 
                 if (this.app.logger) {
-                    this.app?.logger?.log(`📅 Creating instant Google Meet (${durationMinutes} min)...`);
+                    this.app?.logger?.log(`📅 Creating Google Meet (${durationMinutes} min, start: ${startTime ? startTime.toISOString() : 'now'}, attendees: ${attendees.length})...`);
                 }
 
-                const now = new Date();
+                const now = startTime || new Date();
                 const endTime = new Date(now.getTime() + (durationMinutes * 60 * 1000)); // Convert minutes to milliseconds
 
                 // Create calendar event with Google Meet
                 const event = {
                     summary: meetingTitle,
-                    description: 'Meeting created via WorkVivo Chat Favorites extension',
+                    description: description || 'Meeting created via WorkVivo Chat Favorites extension',
                     start: {
                         dateTime: now.toISOString(),
                         timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -254,6 +254,12 @@
                         }
                     }
                 };
+
+                // Add attendees if provided (e.g. for 1:1 chats where we know the email)
+                if (attendees.length > 0) {
+                    event.attendees = attendees.map(email => ({ email }));
+                    event.guestsCanSeeOtherGuests = true;
+                }
 
                 const response = await fetch(
                     'https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceDataVersion=1',

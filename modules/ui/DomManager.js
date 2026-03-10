@@ -2471,7 +2471,7 @@ WVFavs.DomManager = new (class DomManager {
         button.type = 'button';
         button.className = 'tw-rounded-lg tw-relative tw-p-2 tw-bg-transparent hover:tw-bg-gray-200 tw-transition-colors tw-cursor-pointer tw-border-0';
         button.setAttribute('aria-label', 'Create Google Meet');
-        button.setAttribute('title', 'Create and send Google Meet link');
+        button.setAttribute('title', 'Create or schedule a Google Meet');
 
         button.innerHTML = `
             <svg width="20" height="20" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2492,11 +2492,11 @@ WVFavs.DomManager = new (class DomManager {
             </svg>
         `;
 
-        // Add click handler
-        button.addEventListener('click', async (e) => {
+        // Add click handler — opens unified create/schedule picker
+        button.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            await this.handleCreateGoogleMeet(button);
+            this.showScheduleMeetingPicker(button);
         });
 
         // Assemble the structure
@@ -2959,6 +2959,525 @@ WVFavs.DomManager = new (class DomManager {
                 this.showSnackbar('Meeting created! Link copied to clipboard', 'info');
             } catch (clipError) {
                 this.showSnackbar('Meeting created!', 'success');
+            }
+        }
+    }
+
+    /**
+     * Round a future start time up to the nearest 5-minute boundary
+     * @param {number} minutesFromNow - How many minutes from now to start
+     * @returns {Date} Rounded start time
+     */
+    roundStartTime(minutesFromNow) {
+        const now = new Date();
+        const startMs = now.getTime() + minutesFromNow * 60 * 1000;
+        const startDate = new Date(startMs);
+        // Round to a coarser boundary for longer offsets so times look clean
+        // ≤10 min → 5-min grid, ≤30 min → 15-min grid, >30 min → 30-min grid
+        const roundTo = minutesFromNow <= 10 ? 5 : minutesFromNow <= 30 ? 15 : 30;
+        const minutes = startDate.getMinutes();
+        const roundedMinutes = Math.ceil(minutes / roundTo) * roundTo;
+        startDate.setMinutes(roundedMinutes, 0, 0);
+        return startDate;
+    }
+
+    /**
+     * Show floating schedule-meeting picker near the anchor button
+     * @param {HTMLElement} anchorEl - The schedule button element
+     */
+    showScheduleMeetingPicker(anchorEl) {
+        const existing = document.getElementById('wv-schedule-meet-picker');
+        if (existing) { existing.remove(); return; }
+
+        // ── Config ────────────────────────────────────────────────────────
+        const startOptions = [
+            { label: 'Now',    value: 0 },
+            { label: '5 min',  value: 5 },
+            { label: '10 min', value: 10 },
+            { label: '15 min', value: 15 },
+            { label: '30 min', value: 30 },
+            { label: '1 hr',   value: 60 },
+            { label: 'Custom', value: 'custom' }
+        ];
+        const chatInfo = window.WVFavs?.DomDataExtractor?.extractActiveSidebarChatInfo();
+
+        // Non-linear snap map: 0–60% of track covers 5–60 min, 60–100% covers 60–180 min
+        const snapMap = [
+            { min: 5,   pct: 0   },
+            { min: 15,  pct: 11  },
+            { min: 30,  pct: 27  },
+            { min: 45,  pct: 44  },
+            { min: 60,  pct: 60  },
+            { min: 90,  pct: 70  },
+            { min: 120, pct: 80  },
+            { min: 180, pct: 100 }
+        ];
+        const SNAP_THRESHOLD_PCT = 4;
+
+        let selectedStart = 0;
+        let selectedDuration = 30;
+        let sendCalendarInvite = true;
+        let isDragging = false;
+
+        // ── Helpers ───────────────────────────────────────────────────────
+        const minToPercent = (min) => {
+            if (min <= snapMap[0].min) return snapMap[0].pct;
+            if (min >= snapMap[snapMap.length - 1].min) return snapMap[snapMap.length - 1].pct;
+            for (let i = 0; i < snapMap.length - 1; i++) {
+                const a = snapMap[i], b = snapMap[i + 1];
+                if (min >= a.min && min <= b.min)
+                    return a.pct + (min - a.min) / (b.min - a.min) * (b.pct - a.pct);
+            }
+            return 0;
+        };
+
+        const percentToMin = (pct) => {
+            if (pct <= snapMap[0].pct) return snapMap[0].min;
+            if (pct >= snapMap[snapMap.length - 1].pct) return snapMap[snapMap.length - 1].min;
+            for (let i = 0; i < snapMap.length - 1; i++) {
+                const a = snapMap[i], b = snapMap[i + 1];
+                if (pct >= a.pct && pct <= b.pct)
+                    return Math.round(a.min + (pct - a.pct) / (b.pct - a.pct) * (b.min - a.min));
+            }
+            return snapMap[0].min;
+        };
+
+        const durText = (d) => {
+            if (d >= 60 && d % 60 === 0) return `${d / 60} hr`;
+            if (d >= 60) return `${Math.floor(d / 60)} hr ${d % 60} min`;
+            return `${d} min`;
+        };
+
+        const snapLabel = (min) =>
+            min < 60 ? `${min}m` : (min % 60 === 0 ? `${min / 60}h` : `${Math.floor(min / 60)}h${min % 60}`);
+
+        const pillStyle = (active) =>
+            `padding:5px 11px;border-radius:20px;font-size:12px;cursor:pointer;` +
+            `border:1px solid ${active ? '#1a73e8' : '#e2e8f0'};` +
+            `background:${active ? '#e8f0fe' : '#f8fafc'};` +
+            `color:${active ? '#1a73e8' : '#475569'};` +
+            `font-weight:${active ? '600' : '400'};transition:all 0.15s;`;
+
+        // ── Picker shell ──────────────────────────────────────────────────
+        const picker = document.createElement('div');
+        picker.id = 'wv-schedule-meet-picker';
+        picker.style.cssText = 'position:fixed;z-index:999999;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,0.16);padding:20px;width:460px;font-family:inherit;box-sizing:border-box;';
+
+        const rect = anchorEl.getBoundingClientRect();
+        const pickerWidth = 460;
+        picker.style.bottom = (window.innerHeight - rect.top + 10) + 'px';
+        picker.style.left = Math.max(8, Math.min(rect.left - 100, window.innerWidth - pickerWidth - 8)) + 'px';
+
+        // Header
+        const header = document.createElement('div');
+        header.style.cssText = 'font-size:14px;font-weight:700;color:#1e293b;margin-bottom:16px;';
+        header.textContent = 'Create Google Meet';
+        picker.appendChild(header);
+
+        // ── Title field ───────────────────────────────────────────────────
+        const titleInput = document.createElement('input');
+        titleInput.type = 'text';
+        titleInput.placeholder = 'Meeting title (optional)';
+        titleInput.value = chatInfo?.name ? `Meeting with ${chatInfo.name}` : '';
+        titleInput.style.cssText = 'width:100%;padding:7px 10px;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;color:#1e293b;box-sizing:border-box;margin-bottom:8px;outline:none;';
+        titleInput.addEventListener('focus', () => { titleInput.style.borderColor = '#1a73e8'; });
+        titleInput.addEventListener('blur',  () => { titleInput.style.borderColor = '#e2e8f0'; });
+        picker.appendChild(titleInput);
+
+        // ── Description field ─────────────────────────────────────────────
+        const descInput = document.createElement('textarea');
+        descInput.placeholder = 'Description (optional)';
+        descInput.rows = 2;
+        descInput.style.cssText = 'width:100%;padding:7px 10px;border:1px solid #e2e8f0;border-radius:7px;font-size:12px;color:#1e293b;box-sizing:border-box;margin-bottom:16px;resize:none;outline:none;font-family:inherit;';
+        descInput.addEventListener('focus', () => { descInput.style.borderColor = '#1a73e8'; });
+        descInput.addEventListener('blur',  () => { descInput.style.borderColor = '#e2e8f0'; });
+        picker.appendChild(descInput);
+
+        // ── Declare datetime input + preview early (used in updatePreview) ─
+        const timeInput = document.createElement('input');
+        timeInput.type = 'datetime-local';
+        timeInput.style.cssText = 'width:100%;padding:7px 10px;border:1px solid #e2e8f0;border-radius:7px;font-size:12px;box-sizing:border-box;margin-top:8px;outline:none;transition:border-color 0.15s;';
+        timeInput.addEventListener('focus', () => { timeInput.style.borderColor = '#1a73e8'; });
+        timeInput.addEventListener('blur',  () => { timeInput.style.borderColor = '#e2e8f0'; });
+
+        const preview = document.createElement('div');
+        preview.style.cssText = 'font-size:12px;color:#64748b;background:#f8fafc;border-radius:8px;padding:7px 11px;margin-top:14px;margin-bottom:14px;';
+
+        // Format a Date to datetime-local input value (YYYY-MM-DDTHH:MM)
+        const toDateTimeLocal = (date) => {
+            const p = (n) => String(n).padStart(2, '0');
+            return `${date.getFullYear()}-${p(date.getMonth()+1)}-${p(date.getDate())}T${p(date.getHours())}:${p(date.getMinutes())}`;
+        };
+
+        // Keep min = now so browser prevents past-time selection
+        const refreshMin = () => { timeInput.min = toDateTimeLocal(new Date()); };
+        const minInterval = setInterval(refreshMin, 60000); // refresh every minute
+
+        // Format a Date for human-readable preview
+        const formatStartLabel = (date) => {
+            const today = new Date();
+            const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            if (date.toDateString() === today.toDateString()) return `Today at ${timeStr}`;
+            if (date.toDateString() === tomorrow.toDateString()) return `Tomorrow at ${timeStr}`;
+            return date.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' at ' + timeStr;
+        };
+
+        // Sync datetime input value to the selected start option
+        const syncTimeInput = () => {
+            refreshMin();
+            if (selectedStart === 0) {
+                timeInput.value = toDateTimeLocal(new Date());
+                timeInput.readOnly = true;
+                timeInput.style.color = '#94a3b8';
+                timeInput.style.background = '#f8fafc';
+            } else if (selectedStart === 'custom') {
+                timeInput.readOnly = false;
+                timeInput.style.color = '#1e293b';
+                timeInput.style.background = '#fff';
+            } else {
+                timeInput.value = toDateTimeLocal(this.roundStartTime(selectedStart));
+                timeInput.readOnly = true;
+                timeInput.style.color = '#94a3b8';
+                timeInput.style.background = '#f8fafc';
+            }
+        };
+
+        const updatePreview = () => {
+            if (selectedStart === 0) {
+                preview.textContent = 'Starts now \u00b7 ' + durText(selectedDuration);
+            } else {
+                try {
+                    const d = new Date(timeInput.value);
+                    preview.textContent = 'Starts ' + formatStartLabel(d) + ' \u00b7 ' + durText(selectedDuration);
+                } catch (_) {
+                    preview.textContent = durText(selectedDuration);
+                }
+            }
+        };
+
+        // If user manually edits the datetime, switch to Custom
+        timeInput.addEventListener('input', () => {
+            if (selectedStart !== 'custom') {
+                selectedStart = 'custom';
+                refreshStartPills();
+            }
+            timeInput.readOnly = false;
+            timeInput.style.color = '#1e293b';
+            timeInput.style.background = '#fff';
+            updatePreview();
+        });
+
+        // ── Start In ──────────────────────────────────────────────────────
+        const startSectionLabel = document.createElement('div');
+        startSectionLabel.style.cssText = 'font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;';
+        startSectionLabel.textContent = 'Start In';
+        picker.appendChild(startSectionLabel);
+
+        const startPills = document.createElement('div');
+        startPills.style.cssText = 'display:flex;gap:6px;flex-wrap:nowrap;';
+
+        const refreshStartPills = () =>
+            startPills.querySelectorAll('button').forEach((p, i) =>
+                p.style.cssText = pillStyle(startOptions[i].value === selectedStart));
+
+        startOptions.forEach(opt => {
+            const pill = document.createElement('button');
+            pill.type = 'button';
+            pill.style.cssText = pillStyle(opt.value === selectedStart);
+            pill.textContent = opt.label;
+            pill.addEventListener('click', () => {
+                selectedStart = opt.value;
+                refreshStartPills();
+                syncTimeInput();
+                updatePreview();
+            });
+            startPills.appendChild(pill);
+        });
+        picker.appendChild(startPills);
+
+        // Time input always visible below pills
+        picker.appendChild(timeInput);
+
+        // ── Duration ──────────────────────────────────────────────────────
+        const durHeaderRow = document.createElement('div');
+        durHeaderRow.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-top:16px;margin-bottom:10px;';
+
+        const durSectionLabel = document.createElement('span');
+        durSectionLabel.style.cssText = 'font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.07em;';
+        durSectionLabel.textContent = 'Duration';
+
+        const durValueBadge = document.createElement('span');
+        durValueBadge.style.cssText = 'font-size:13px;font-weight:700;color:#1a73e8;';
+
+        durHeaderRow.appendChild(durSectionLabel);
+        durHeaderRow.appendChild(durValueBadge);
+        picker.appendChild(durHeaderRow);
+
+        // Custom non-linear slider
+        const sliderWrap = document.createElement('div');
+        sliderWrap.style.cssText = 'position:relative;padding-bottom:22px;';
+
+        // Track
+        const trackEl = document.createElement('div');
+        trackEl.style.cssText = 'position:relative;height:5px;background:#e2e8f0;border-radius:3px;cursor:pointer;';
+
+        // Fill
+        const fillEl = document.createElement('div');
+        fillEl.style.cssText = 'position:absolute;left:0;top:0;height:100%;background:#1a73e8;border-radius:3px;pointer-events:none;';
+        trackEl.appendChild(fillEl);
+
+        // Tick bumps on track
+        snapMap.forEach(snap => {
+            const tick = document.createElement('div');
+            tick.dataset.snapPct = snap.pct;
+            tick.style.cssText = `position:absolute;left:${snap.pct}%;top:50%;transform:translate(-50%,-50%);width:3px;height:11px;border-radius:2px;pointer-events:none;background:#d1d5db;`;
+            trackEl.appendChild(tick);
+        });
+
+        // Handle
+        const handleEl = document.createElement('div');
+        handleEl.style.cssText = 'position:absolute;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;background:#1a73e8;border:2.5px solid #fff;border-radius:50%;cursor:grab;box-shadow:0 1px 5px rgba(26,115,232,0.45);z-index:2;';
+        trackEl.appendChild(handleEl);
+
+        // Labels row — absolutely positioned below sliderWrap, aligned to snap pcts
+        const labelsEl = document.createElement('div');
+        labelsEl.style.cssText = 'position:absolute;bottom:0;left:0;right:0;';
+
+        snapMap.forEach((snap, idx) => {
+            const lbl = document.createElement('span');
+            lbl.dataset.idx = idx;
+            lbl.style.cssText = `position:absolute;left:${snap.pct}%;transform:translateX(-50%);font-size:10px;color:#94a3b8;cursor:pointer;white-space:nowrap;line-height:1;`;
+            lbl.textContent = snapLabel(snap.min);
+            lbl.addEventListener('click', () => {
+                selectedDuration = snap.min;
+                updateSliderUI();
+                durValueBadge.textContent = durText(selectedDuration);
+                updatePreview();
+            });
+            labelsEl.appendChild(lbl);
+        });
+
+        sliderWrap.appendChild(trackEl);
+        sliderWrap.appendChild(labelsEl);
+        picker.appendChild(sliderWrap);
+
+        // ── Slider state update ───────────────────────────────────────────
+        const updateSliderUI = () => {
+            const pct = minToPercent(selectedDuration);
+            handleEl.style.left = pct + '%';
+            fillEl.style.width = pct + '%';
+            // Tick colours: white-ish inside fill, gray outside
+            trackEl.querySelectorAll('[data-snap-pct]').forEach(tick => {
+                const tp = parseFloat(tick.dataset.snapPct);
+                tick.style.background = tp < pct ? 'rgba(255,255,255,0.75)' : '#d1d5db';
+            });
+            // Label highlight
+            labelsEl.querySelectorAll('span').forEach((lbl, i) => {
+                const active = snapMap[i].min === selectedDuration;
+                lbl.style.color = active ? '#1a73e8' : '#94a3b8';
+                lbl.style.fontWeight = active ? '700' : '400';
+            });
+        };
+
+        // ── Drag logic ────────────────────────────────────────────────────
+        const getPctFromX = (clientX) => {
+            const r = trackEl.getBoundingClientRect();
+            return Math.max(0, Math.min(100, (clientX - r.left) / r.width * 100));
+        };
+
+        const applyPct = (pct) => {
+            for (const snap of snapMap) {
+                if (Math.abs(pct - snap.pct) <= SNAP_THRESHOLD_PCT) {
+                    selectedDuration = snap.min;
+                    updateSliderUI();
+                    durValueBadge.textContent = durText(selectedDuration);
+                    updatePreview();
+                    return;
+                }
+            }
+            selectedDuration = percentToMin(pct);
+            updateSliderUI();
+            durValueBadge.textContent = durText(selectedDuration);
+            updatePreview();
+        };
+
+        handleEl.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            handleEl.style.cursor = 'grabbing';
+            handleEl.style.boxShadow = '0 0 0 5px rgba(26,115,232,0.18),0 1px 5px rgba(26,115,232,0.4)';
+            e.preventDefault(); e.stopPropagation();
+        });
+
+        trackEl.addEventListener('mousedown', (e) => {
+            if (e.target === handleEl) return;
+            applyPct(getPctFromX(e.clientX));
+            isDragging = true;
+            e.preventDefault();
+        });
+
+        const onMouseMove = (e) => { if (isDragging) applyPct(getPctFromX(e.clientX)); };
+        const onMouseUp = () => {
+            if (isDragging) {
+                isDragging = false;
+                handleEl.style.cursor = 'grab';
+                handleEl.style.boxShadow = '0 1px 5px rgba(26,115,232,0.45)';
+            }
+        };
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+
+        const cleanup = () => {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+            clearInterval(minInterval);
+        };
+
+        // ── Preview ───────────────────────────────────────────────────────
+        picker.appendChild(preview);
+
+        // ── Calendar invite toggle ────────────────────────────────────────
+        const toggleRow = document.createElement('label');
+        toggleRow.style.cssText = 'display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:14px;user-select:none;';
+
+        const toggleCheckbox = document.createElement('input');
+        toggleCheckbox.type = 'checkbox';
+        toggleCheckbox.checked = sendCalendarInvite;
+        toggleCheckbox.style.cssText = 'width:14px;height:14px;accent-color:#1a73e8;cursor:pointer;flex-shrink:0;';
+        toggleCheckbox.addEventListener('change', () => { sendCalendarInvite = toggleCheckbox.checked; });
+
+        const toggleLabelEl = document.createElement('span');
+        toggleLabelEl.style.cssText = 'font-size:12px;color:#475569;';
+        toggleLabelEl.textContent = 'Send calendar invite to recipient';
+
+        toggleRow.appendChild(toggleCheckbox);
+        toggleRow.appendChild(toggleLabelEl);
+        picker.appendChild(toggleRow);
+
+        // ── Create button ─────────────────────────────────────────────────
+        const createButton = document.createElement('button');
+        createButton.type = 'button';
+        createButton.style.cssText = 'width:100%;padding:10px 0;background:#1a73e8;color:#fff;border:0;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.01em;';
+        createButton.textContent = 'Create Meeting';
+        createButton.addEventListener('click', async () => {
+            let startTime;
+            if (selectedStart === 0) {
+                startTime = null;
+            } else {
+                startTime = new Date(timeInput.value);
+                // Guard: if somehow in the past, reject
+                if (startTime <= new Date()) {
+                    timeInput.style.borderColor = '#ef4444';
+                    timeInput.style.outline = '0';
+                    const errMsg = picker.querySelector('#wv-time-error') || document.createElement('div');
+                    errMsg.id = 'wv-time-error';
+                    errMsg.style.cssText = 'font-size:11px;color:#ef4444;margin-top:4px;';
+                    errMsg.textContent = 'Start time must be in the future.';
+                    timeInput.insertAdjacentElement('afterend', errMsg);
+                    return;
+                }
+            }
+            cleanup();
+            picker.remove();
+            const meetingTitle = titleInput.value.trim() || (chatInfo?.name ? `Meeting with ${chatInfo.name}` : 'Quick Meeting');
+            const description = descInput.value.trim();
+            await this.handleScheduleGoogleMeet(anchorEl, startTime, selectedDuration, sendCalendarInvite, meetingTitle, description);
+        });
+        picker.appendChild(createButton);
+
+        // ── Init ──────────────────────────────────────────────────────────
+        durValueBadge.textContent = durText(selectedDuration);
+        updateSliderUI();
+        syncTimeInput();
+        updatePreview();
+
+        document.body.appendChild(picker);
+
+        // Close on outside click
+        const closeHandler = (e) => {
+            if (!picker.contains(e.target) && e.target !== anchorEl) {
+                cleanup();
+                picker.remove();
+                document.removeEventListener('click', closeHandler, true);
+            }
+        };
+        setTimeout(() => document.addEventListener('click', closeHandler, true), 0);
+    }
+
+    /**
+     * Handle creating/scheduling a Google Meet
+     * @param {HTMLElement} anchorEl - Anchor button (used to find nearby chat input)
+     * @param {Date|null} startTime - Exact start time, or null for "now"
+     * @param {number} durationMinutes - Duration of the meeting in minutes
+     * @param {boolean} sendCalendarInvite - Whether to add attendees to the Calendar event
+     */
+    async handleScheduleGoogleMeet(anchorEl, startTime, durationMinutes, sendCalendarInvite = true, meetingTitle = '', description = '') {
+        try {
+            if (!this.app.googleMeetManager) {
+                this.showSnackbar('Google Meet not initialized', 'error');
+                return;
+            }
+
+            const timeStr = startTime
+                ? startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : null;
+
+            const chatInfo = window.WVFavs?.DomDataExtractor?.extractActiveSidebarChatInfo();
+            if (!meetingTitle) meetingTitle = chatInfo?.name ? `Meeting with ${chatInfo.name}` : 'Quick Meeting';
+
+            // Try to resolve attendee email for 1:1 chats (only if calendar invite is enabled)
+            const attendees = [];
+            if (sendCalendarInvite && chatInfo?.name) {
+                try {
+                    let userRecord = null;
+
+                    // 1. Try by userId if available (fast cache hit)
+                    if (chatInfo.userId) {
+                        userRecord = await this.app.smartUserDB?.getUser(chatInfo.userId);
+                    }
+
+                    // 2. Try by name in cache
+                    if (!userRecord?.email) {
+                        userRecord = await this.app.smartUserDB?.getChatByName(chatInfo.name);
+                    }
+
+                    // 3. Live API search by name — take first result since name is specific
+                    if (!userRecord?.email) {
+                        const results = await this.app.apiManager?.comprehensiveSearch(chatInfo.name);
+                        if (results?.users?.length > 0) {
+                            // Prefer exact userId match, otherwise take first result
+                            userRecord = chatInfo.userId
+                                ? (results.users.find(u => String(u.id) === String(chatInfo.userId) || String(u.user_id) === String(chatInfo.userId)) || results.users[0])
+                                : results.users[0];
+                        }
+                    }
+
+                    if (userRecord?.email) {
+                        attendees.push(userRecord.email);
+                        this.app?.logger?.log('📧 Found attendee email for calendar invite:', userRecord.email);
+                    } else {
+                        this.app?.logger?.warn('📧 No email found for:', chatInfo.name);
+                    }
+                } catch (e) {
+                    this.app?.logger?.warn('Could not resolve attendee email:', e.message);
+                }
+            }
+
+            this.showSnackbar('Creating Google Meet...', 'info');
+
+            const { meetLink } = await this.app.googleMeetManager.createInstantMeeting(meetingTitle, durationMinutes, startTime, attendees, description);
+
+            const inviteText = timeStr
+                ? `Join my Google Meet at ${timeStr} (${durationMinutes} min): `
+                : null; // null = use settings default invite text
+            await this.insertMeetLinkIntoChat(meetLink, anchorEl, inviteText);
+
+        } catch (error) {
+            this.app?.logger?.error('Failed to schedule Google Meet:', error);
+            if (error.message === 'PERMISSION_DENIED') {
+                this.showSnackbar('Permission not granted. Please re-authenticate.', 'error');
+            } else {
+                this.showSnackbar(`Failed to schedule meeting: ${error.message}`, 'error');
             }
         }
     }
