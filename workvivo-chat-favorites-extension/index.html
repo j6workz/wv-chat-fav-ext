@@ -456,40 +456,55 @@
             </div>
 
             <div class="features-grid">
-                <!-- Feature 1: Pin Chats -->
+                <!-- Feature: Dark Mode -->
                 <div class="feature-card">
-                    <div class="feature-icon">📌</div>
-                    <h3>Pin Your Favorite Chats</h3>
-                    <p>Keep your most important conversations at your fingertips. Pinned chats appear in a carousel at the top of your sidebar for instant access.</p>
+                    <div class="feature-icon">🌙</div>
+                    <h3>Dark Mode</h3>
+                    <p>Full dark theme that covers every corner of WorkVivo chat — message bubbles, sidebar, panels, headers, and dropdowns. Follows your OS preference automatically or toggle it manually.</p>
 
                     <div class="feature-steps">
                         <h4>How to Use:</h4>
                         <ol>
-                            <li>Open any chat conversation in WorkVivo</li>
-                            <li>Hover over the chat avatar in the <strong>chat header</strong> (top of the chat window)</li>
-                            <li>Click the 📌 pin icon that appears</li>
-                            <li>Chat moves to the pinned carousel at the top of sidebar</li>
-                            <li>Click the pin icon again to unpin</li>
+                            <li>Dark mode activates automatically based on your OS setting</li>
+                            <li>To override: click the floating button → theme toggle icon</li>
+                            <li>Or go to Options → Appearance → Dark Mode</li>
+                            <li>Choose: Auto (follow OS), Light, or Dark</li>
                         </ol>
                     </div>
                 </div>
 
-                <!-- Feature 1b: Custom Status Updates -->
+                <!-- Feature: Google Meet Integration -->
                 <div class="feature-card">
-                    <div class="feature-icon">💬</div>
-                    <h3>Custom Status Updates</h3>
-                    <p>NEW: Let your colleagues know what you're up to! Set your custom status with any emoji and text message. Status appears in sidebar and chat headers with optional auto-expiry.</p>
+                    <div class="feature-icon">🎥</div>
+                    <h3>Google Meet Integration</h3>
+                    <p>Start or schedule a Google Meet directly from any WorkVivo chat. Add a title, description, and optional Google Calendar invite — all without leaving WorkVivo.</p>
 
                     <div class="feature-steps">
                         <h4>How to Use:</h4>
                         <ol>
-                            <li>Click your avatar in the sidebar (top left)</li>
-                            <li>Choose an emoji that represents your status</li>
-                            <li>Type your custom message (e.g., "🏖️ On vacation")</li>
-                            <li>Set expiry time: 30m, 1h, 4h, Today, This week, or Never</li>
-                            <li>Click "Set Status" to save</li>
-                            <li>Your status shows next to your avatar and in chat headers</li>
-                            <li>Click "Clear Status" anytime to remove it</li>
+                            <li>Open any chat conversation</li>
+                            <li>Click the Google Meet icon in the chat toolbar</li>
+                            <li>Choose "Start now" or pick a scheduled time</li>
+                            <li>Optionally add a title and description</li>
+                            <li>Toggle "Add to Google Calendar" to send invites</li>
+                            <li>Click Create — the Meet link is shared in chat automatically</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Feature 1: Pin Chats -->
+                <div class="feature-card">
+                    <div class="feature-icon">📌</div>
+                    <h3>Quick Pin</h3>
+                    <p>Keep your most important conversations at your fingertips. Click the avatar in any DM chat header to instantly pin or unpin — pinned chats appear in a carousel at the top of your sidebar.</p>
+
+                    <div class="feature-steps">
+                        <h4>How to Use:</h4>
+                        <ol>
+                            <li>Open any direct message conversation</li>
+                            <li>Click the avatar in the chat header (top left of the chat)</li>
+                            <li>Chat is pinned and moves to the carousel at the top of sidebar</li>
+                            <li>Click the avatar again to unpin</li>
                         </ol>
                     </div>
                 </div>
@@ -574,19 +589,16 @@
                 <!-- Feature 5: Pinned Carousel -->
                 <div class="feature-card">
                     <div class="feature-icon">🎠</div>
-                    <h3>Pinned Chat Display</h3>
-                    <p>All your pinned chats displayed in your choice of layout: horizontal carousel, 3-column grid, or 4-column grid. Drag avatars to reorder, click to open instantly.</p>
+                    <h3>Pinned Chat Carousel</h3>
+                    <p>All your pinned chats displayed in a horizontal carousel at the top of the sidebar. Click any avatar to jump straight into that conversation.</p>
 
                     <div class="feature-steps">
                         <h4>How to Use:</h4>
                         <ol>
-                            <li>Pinned chats automatically appear at the top</li>
-                            <li><strong>NEW:</strong> Choose layout in Options: Carousel, 3-column grid, or 4-column grid</li>
-                            <li>Carousel: Scroll horizontally or use arrow buttons</li>
-                            <li>Grid: See all chats at once in organized columns</li>
-                            <li>Drag avatars to reorder your pinned chats (works in all layouts)</li>
-                            <li>Click any chat avatar to open conversation</li>
-                            <li>Hover to see full name and pin icon</li>
+                            <li>Pinned chats automatically appear at the top of the sidebar</li>
+                            <li>Scroll horizontally or use the arrow buttons to browse</li>
+                            <li>Click any chat avatar to open the conversation</li>
+                            <li>Hover to see the full name</li>
                         </ol>
                     </div>
                 </div>
@@ -798,8 +810,6 @@
                         <li>Search widget opens</li>
                         <li>Searches performed</li>
                         <li>Chat clicks</li>
-                        <li>Chats pinned</li>
-                        <li>Database entries</li>
                         <li>Cache hit rate</li>
                     </ul>
                 </div>
@@ -809,18 +819,13 @@
                     <h3>Customization Options</h3>
                     <p>Fine-tune the extension to match your workflow preferences.</p>
                     <ul style="margin-top: 12px; color: #6b7280; font-size: 14px;">
-                        <li><strong>NEW v2.8:</strong> Search panel toggle (enable/disable channel search)</li>
-                        <li><strong>NEW v2.8:</strong> Override search button (use extension's search instead of WorkVivo's)</li>
-                        <li>Pinned chats layout (Carousel, 3-col grid, 4-col grid)</li>
-                        <li>Feature toggles (Drafts, Mentions, Threads, Search Panel)</li>
-                        <li>Debug logging control</li>
+                        <li>Dark mode (Auto / Light / Dark)</li>
+                        <li>Feature toggles (Quick Pin, Quick Info, Mentions, Threads, Search Panel, Google Meet)</li>
                         <li>Custom floating button color</li>
                         <li>Floating button first-click behavior</li>
-                        <li>Drag-to-reorder pinned chats</li>
-                        <li>Show/hide scrollbar in sidebar</li>
-                        <li>Show/hide pin indicators</li>
-                        <li>Auto-collapse pinned carousel</li>
                         <li>Snackbar notifications</li>
+                        <li>Debug logging control</li>
+                        <li>Override search button</li>
                     </ul>
                 </div>
 
@@ -960,7 +965,7 @@
                     <a href="#top">Back to Top</a>
                 </div>
                 <div class="footer-info">
-                    <p><strong>WorkVivo Chat Favorites v3.3.8</strong></p>
+                    <p><strong>WorkVivo Chat Favorites v3.5.0</strong></p>
                     <p style="margin-top: 8px;">Developed by j6 | Email: j6workz@gmail.com</p>
                     <p style="margin-top: 8px; opacity: 0.6;">
                         Privacy-first productivity extension for WorkVivo Chat

@@ -128,23 +128,26 @@
         }
 
         .changelog-list li {
-            padding: 12px 0;
+            padding: 16px 0;
             border-bottom: 1px solid #f3f4f6;
-            color: #4b5563;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
         }
 
         .changelog-list li:last-child {
             border-bottom: none;
         }
 
-        .changelog-list li::before {
-            content: "✓";
-            color: #10b981;
-            font-weight: bold;
-            flex-shrink: 0;
+        .changelog-list li strong {
+            display: block;
+            font-size: 16px;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .changelog-list li span {
+            display: block;
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.6;
         }
 
         .footer {
@@ -219,12 +222,30 @@
                 <h2>What's New</h2>
             </div>
             <ul class="changelog-list">
-                <li><strong>🌙 Dark Mode:</strong> Full dark theme with automatic OS detection or manual override — covers chat area, bubbles, sidebar, panels, and headers</li>
-                <li><strong>ⓘ Quick Info:</strong> Info button in DM chat headers now works independently — stays visible even when Availability Status is turned off</li>
-                <li><strong>📌 Quick Pin:</strong> Simplified pin feature — click the avatar in any DM chat header to instantly pin or unpin chats</li>
-                <li><strong>🎥 Google Meet:</strong> Unified meeting picker with schedule, title, description, and optional calendar invite in one flow</li>
-                <li><strong>🔍 Message Search:</strong> Improved with pagination and wildcard search guidance</li>
-                <li><strong>🛡️ Feature Stability:</strong> Draft and Custom Status features disabled from v3.4.0 onwards as WorkVivo now ships these natively</li>
+                <li>
+                    <strong>🌙 Dark Mode</strong>
+                    <span>Full dark theme with automatic OS detection or manual override — covers chat area, bubbles, sidebar, panels, and headers.</span>
+                </li>
+                <li>
+                    <strong>ⓘ Quick Info</strong>
+                    <span>Info button in DM chat headers now works independently — stays visible even when Availability Status is turned off.</span>
+                </li>
+                <li>
+                    <strong>📌 Quick Pin</strong>
+                    <span>Simplified pin feature — click the avatar in any DM chat header to instantly pin or unpin chats.</span>
+                </li>
+                <li>
+                    <strong>🎥 Google Meet</strong>
+                    <span>Unified meeting picker with schedule, title, description, and optional calendar invite in one flow.</span>
+                </li>
+                <li>
+                    <strong>🔍 Message Search</strong>
+                    <span>Improved with pagination and wildcard search guidance.</span>
+                </li>
+                <li>
+                    <strong>🛡️ Feature Stability</strong>
+                    <span>Draft and Custom Status features disabled from v3.4.0 onwards as WorkVivo now ships these natively.</span>
+                </li>
             </ul>
         </div>
 
