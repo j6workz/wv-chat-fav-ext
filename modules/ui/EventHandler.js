@@ -48,7 +48,7 @@ WVFavs.EventHandler = new (class EventHandler {
 
                         try {
                             // Use APIManager.getChannelInfo which properly handles script context
-                            const channelData = await this.app.APIManager.getChannelInfo(currentChannel);
+                            const channelData = await WVFavs.APIManager.getChannelInfo(currentChannel);
 
                             if (channelData && channelData.name) {
                                 this.app?.logger?.log(`✅ [RACE-FIX] Got channel data from API:`, channelData.name);
@@ -684,7 +684,7 @@ WVFavs.EventHandler = new (class EventHandler {
                 if (!chatName || chatName.trim() === '') {
                     try {
                         // Try to get channel info from API to check if it's a self-channel
-                        const channelInfo = await this.app.APIManager?.getChannelInfo(chatId);
+                        const channelInfo = await WVFavs.APIManager?.getChannelInfo(chatId);
                         if (channelInfo && channelInfo.custom_type === 'self_channel') {
                             // Get display name for self-channel
                             chatName = await this.app.smartUserDatabase?.getSelfChannelDisplayName(channelInfo);
@@ -845,6 +845,11 @@ WVFavs.EventHandler = new (class EventHandler {
                         </svg>
                         <span>Settings</span>
                     </button>
+                    <button class="wv-favorites-quick-search-theme-btn" title="Toggle dark mode" data-theme-mode="${WVFavs.ThemeManager ? WVFavs.ThemeManager.currentMode : 'auto'}">
+                        <svg class="wv-theme-icon-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                        <svg class="wv-theme-icon-dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                        <span class="wv-theme-label">Auto</span>
+                    </button>
                     <button class="wv-favorites-quick-search-native-btn" title="Open WorkVivo's native search">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="8"></circle>
@@ -857,6 +862,16 @@ WVFavs.EventHandler = new (class EventHandler {
         `;
 
         document.body.appendChild(modal);
+
+        // Sync theme button icon/label to current mode
+        const themeBtn = modal.querySelector('.wv-favorites-quick-search-theme-btn');
+        if (themeBtn && WVFavs?.ThemeManager) {
+            const mode = WVFavs.ThemeManager.currentMode;
+            themeBtn.dataset.themeMode = mode;
+            const label = themeBtn.querySelector('.wv-theme-label');
+            if (label) label.textContent = { auto: 'Auto', dark: 'Dark', light: 'Light' }[mode] || 'Auto';
+            this._syncThemeBtn(themeBtn, mode);
+        }
 
         // Trigger animation
         requestAnimationFrame(() => {
@@ -940,6 +955,24 @@ WVFavs.EventHandler = new (class EventHandler {
                 if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
                     chrome.runtime.sendMessage({ action: 'openOptionsPage' });
                 }
+                return;
+            }
+
+            // Handle dark mode toggle click
+            if (e.target.closest('.wv-favorites-quick-search-theme-btn')) {
+                e.stopPropagation();
+                const btn = e.target.closest('.wv-favorites-quick-search-theme-btn');
+                const tm = WVFavs?.ThemeManager;
+                if (!tm) return;
+                // Cycle: auto → dark → light → auto
+                const next = { auto: 'dark', dark: 'light', light: 'auto' };
+                const labels = { auto: 'Auto', dark: 'Dark', light: 'Light' };
+                const newMode = next[tm.currentMode] || 'auto';
+                tm.setMode(newMode);
+                btn.dataset.themeMode = newMode;
+                const label = btn.querySelector('.wv-theme-label');
+                if (label) label.textContent = labels[newMode];
+                this._syncThemeBtn(btn, newMode);
                 return;
             }
 
@@ -1064,6 +1097,13 @@ WVFavs.EventHandler = new (class EventHandler {
         // Load initial results (all pinned and recent chats)
         this.app?.logger?.debug('🚀 Loading initial search results...');
         this.performSearch('');
+    }
+
+    _syncThemeBtn(btn, mode) {
+        const autoIcon = btn.querySelector('.wv-theme-icon-auto');
+        const darkIcon = btn.querySelector('.wv-theme-icon-dark');
+        if (autoIcon) autoIcon.style.display = (mode === 'auto' || mode === 'light') ? 'block' : 'none';
+        if (darkIcon) darkIcon.style.display = mode === 'dark' ? 'block' : 'none';
     }
 
     closeQuickSearch(source = 'unknown') {

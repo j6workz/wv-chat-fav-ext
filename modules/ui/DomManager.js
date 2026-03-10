@@ -4098,6 +4098,7 @@ WVFavs.DomManager = new (class DomManager {
 
         // Footer with date range and Load Older button
         const footer = document.createElement('div');
+        footer.className = 'wv-thread-panel-footer';
         footer.style.cssText = `
             padding: 10px;
             border-top: 1px solid #e5e7eb;

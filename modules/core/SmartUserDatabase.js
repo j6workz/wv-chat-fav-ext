@@ -2261,7 +2261,7 @@ WVFavs.SmartUserDatabase = class SmartUserDatabase {
 
             // CRITICAL FIX: Use Sendbird API via APIManager instead of WorkVivo search endpoint
             // WorkVivo search endpoint (/api/chat/search/channels/members) is for SEARCH, not channel lookup!
-            const channelData = await this.app.APIManager.getChannelInfo(channelUrl);
+            const channelData = await WVFavs.APIManager.getChannelInfo(channelUrl);
 
             if (!channelData || !channelData.channel_url) {
                 this.logger.warn(`⚠️ [VERIFY] No channel data returned from Sendbird API`);

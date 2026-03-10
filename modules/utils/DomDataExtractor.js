@@ -86,7 +86,7 @@ WVFavs.DomDataExtractor = new (class DomDataExtractor {
     }
 
     extractChatNameFromHeader(chatHeader) {
-        let chatNameElement = chatHeader.querySelector('p.tw-mr-4.tw-truncate');
+        let chatNameElement = chatHeader.querySelector('p.tw-mr-2.tw-truncate');
         if (chatNameElement && chatNameElement.textContent.trim()) {
             return chatNameElement.textContent.trim();
         }
