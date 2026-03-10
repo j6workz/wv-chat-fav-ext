@@ -65,13 +65,13 @@ class PopupManager {
             'enableSearchPanel',
             'enableDrafts',
             'enableStatusUpdates',
+            'enableQuickInfo',
             'overrideSearchButton',
             'showSnackbars',
             'autoRedirectToChat',
             'floatingWidgetEnabled',
             'enableGoogleMeet',
             'showPinnedSidebar',
-            'showPinIndicator',
             'adasEnabled'
         ];
 
@@ -93,13 +93,13 @@ class PopupManager {
             'enableSearchPanel',
             'enableDrafts',
             'enableStatusUpdates',
+            'enableQuickInfo',
             'overrideSearchButton',
             'showSnackbars',
             'autoRedirectToChat',
             'floatingWidgetEnabled',
             'enableGoogleMeet',
             'showPinnedSidebar',
-            'showPinIndicator',
             'adasEnabled'
         ];
 

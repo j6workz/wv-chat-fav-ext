@@ -94,17 +94,14 @@ class OptionsManager {
             const result = await chrome.storage.sync.get(['workvivoSettings']);
             // Use default settings
             const defaultSettings = {
-                showScrollbar: true,
-                showPinIndicator: true,
                 showPinnedSidebar: true,
-                pinnedChatsLayout: 'carousel',
-                autoCollapse: true,
                 debugLogging: false,
                 enableDrafts: true,
                 enableMentionsPanel: true,
                 enableThreadsPanel: true,
                 enableSearchPanel: true,
                 enableStatusUpdates: true,
+                enableQuickInfo: true,
                 overrideSearchButton: true,
                 showSnackbars: true,
                 windowsModifierKey: 'ctrl',
@@ -117,23 +114,21 @@ class OptionsManager {
                 googleMeetConfirmBeforeCreate: false,
                 analyticsEnabled: false,
                 shareUsageData: false,
-                errorReporting: true
+                errorReporting: true,
+                darkTheme: 'auto'
             };
             this.settings = { ...defaultSettings, ...result.workvivoSettings };
             console.log('Options settings loaded:', this.settings);
 
             // Update UI elements
-            document.getElementById('showScrollbar').checked = this.settings.showScrollbar;
-            document.getElementById('showPinIndicator').checked = this.settings.showPinIndicator;
             document.getElementById('showPinnedSidebar').checked = this.settings.showPinnedSidebar;
-            document.getElementById('pinnedChatsLayout').value = this.settings.pinnedChatsLayout || 'carousel';
-            document.getElementById('autoCollapse').checked = this.settings.autoCollapse;
             document.getElementById('debugLogging').checked = this.settings.debugLogging;
             document.getElementById('enableDrafts').checked = this.settings.enableDrafts !== false;
             document.getElementById('enableMentionsPanel').checked = this.settings.enableMentionsPanel !== false;
             document.getElementById('enableThreadsPanel').checked = this.settings.enableThreadsPanel !== false;
             document.getElementById('enableSearchPanel').checked = this.settings.enableSearchPanel !== false;
             document.getElementById('enableStatusUpdates').checked = this.settings.enableStatusUpdates !== false;
+            document.getElementById('enableQuickInfo').checked = this.settings.enableQuickInfo !== false;
             document.getElementById('overrideSearchButton').checked = this.settings.overrideSearchButton || false;
             document.getElementById('showSnackbars').checked = this.settings.showSnackbars;
             document.getElementById('windowsModifierKey').value = this.settings.windowsModifierKey;
@@ -141,6 +136,12 @@ class OptionsManager {
             document.getElementById('floatingWidgetFirstClick').value = this.settings.floatingWidgetFirstClick || 'recents';
             document.getElementById('floatingButtonColor').value = this.settings.floatingButtonColor || '#007ACC';
             document.getElementById('autoRedirectToChat').checked = this.settings.autoRedirectToChat || false;
+
+            // Appearance
+            const darkThemeSelect = document.getElementById('darkTheme');
+            if (darkThemeSelect) {
+                darkThemeSelect.value = this.settings.darkTheme || 'auto';
+            }
 
             // Google Meet settings
             const googleMeetInviteTextInput = document.getElementById('googleMeetInviteText');
@@ -266,17 +267,14 @@ class OptionsManager {
             const oldSettings = { ...this.settings };
 
             const settings = {
-                showScrollbar: document.getElementById('showScrollbar').checked,
-                showPinIndicator: document.getElementById('showPinIndicator').checked,
                 showPinnedSidebar: document.getElementById('showPinnedSidebar').checked,
-                pinnedChatsLayout: document.getElementById('pinnedChatsLayout').value,
-                autoCollapse: document.getElementById('autoCollapse').checked,
                 debugLogging: document.getElementById('debugLogging').checked,
                 enableDrafts: document.getElementById('enableDrafts').checked,
                 enableMentionsPanel: document.getElementById('enableMentionsPanel').checked,
                 enableThreadsPanel: document.getElementById('enableThreadsPanel').checked,
                 enableSearchPanel: document.getElementById('enableSearchPanel').checked,
                 enableStatusUpdates: document.getElementById('enableStatusUpdates').checked,
+                enableQuickInfo: document.getElementById('enableQuickInfo').checked,
                 overrideSearchButton: document.getElementById('overrideSearchButton').checked,
                 showSnackbars: document.getElementById('showSnackbars').checked,
                 windowsModifierKey: document.getElementById('windowsModifierKey').value,
@@ -284,6 +282,7 @@ class OptionsManager {
                 floatingWidgetFirstClick: document.getElementById('floatingWidgetFirstClick').value,
                 floatingButtonColor: document.getElementById('floatingButtonColor').value,
                 autoRedirectToChat: document.getElementById('autoRedirectToChat').checked,
+                darkTheme: document.getElementById('darkTheme')?.value || 'auto',
                 googleMeetInviteText: document.getElementById('googleMeetInviteText')?.value || '',
                 googleMeetDuration: parseInt(document.getElementById('googleMeetDuration')?.value) || 30,
                 googleMeetConfirmBeforeCreate: document.getElementById('googleMeetConfirmBeforeCreate')?.checked || false,
@@ -762,17 +761,14 @@ class OptionsManager {
         try {
             // Reset to default settings
             const defaultSettings = {
-                showScrollbar: true,
-                showPinIndicator: true,
                 showPinnedSidebar: true,
-                pinnedChatsLayout: 'carousel',
-                autoCollapse: true,
                 debugLogging: false,
                 enableDrafts: true,
                 enableMentionsPanel: true,
                 enableThreadsPanel: true,
                 enableSearchPanel: true,
                 enableStatusUpdates: true,
+                enableQuickInfo: true,
                 overrideSearchButton: true,
                 showSnackbars: true,
                 windowsModifierKey: 'ctrl',
@@ -1168,11 +1164,6 @@ class OptionsManager {
             toggle.addEventListener('change', () => {
                 // Handle master/dependent toggle relationships
                 this.handleMasterToggleChange(toggle, toggle.checked);
-
-                // Update dependent options visibility when main sidebar toggle changes
-                if (toggle.id === 'showPinnedSidebar') {
-                    this.updateSidebarOptionsVisibility();
-                }
                 this.saveSettings();
             });
         });

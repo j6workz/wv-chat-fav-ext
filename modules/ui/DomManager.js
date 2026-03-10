@@ -18,6 +18,7 @@ WVFavs.DomManager = new (class DomManager {
         this.app = app;
         console.log('🔧 [STATUS] DomManager.app set, statusDialog exists:', !!app?.statusDialog);
         this.setupRealtimeBadgeUpdates();
+        this.setupInfoButtonListener();
     }
 
     /**
@@ -1042,8 +1043,6 @@ WVFavs.DomManager = new (class DomManager {
             this.app?.logger?.warn('⚠️ Could not get WorkVivo pin state, defaulting to unpinned:', err.message);
         }
 
-        const showPinIndicatorSetting = this.app.settings.get('showPinIndicator');
-
         this.app?.logger?.log('📌 Pin status check:', {
             chatName: chatInfo.name,
             isPinned,
@@ -1052,15 +1051,6 @@ WVFavs.DomManager = new (class DomManager {
 
         avatarContainer.style.position = 'relative';
         avatarContainer.setAttribute('data-chat-id', chatInfo.id);
-
-        if (isPinned && showPinIndicatorSetting) {
-            this.app?.logger?.log('📌 Chat is pinned and showPinIndicator is enabled - adding badge to header avatar');
-            this.addPinIndicatorToHeaderAvatar(avatarContainer);
-        } else if (isPinned && !showPinIndicatorSetting) {
-            this.app?.logger?.log('📌 Chat is pinned but showPinIndicator is disabled - skipping badge');
-        } else if (!isPinned) {
-            this.app?.logger?.log('📌 Chat is not pinned - no badge needed');
-        }
 
         const pinOverlay = document.createElement('div');
         pinOverlay.className = 'wv-favorites-header-overlay';
@@ -1864,6 +1854,127 @@ WVFavs.DomManager = new (class DomManager {
     }
 
     /**
+     * Listen to channel changes and manage the info button independently of StatusManager.
+     * Only active when StatusManager is disabled (enableStatusUpdates = false).
+     * When StatusManager IS enabled, it drives the info button via displayRecipientStatusInHeader.
+     */
+    setupInfoButtonListener() {
+        let debounceTimer = null;
+
+        window.addEventListener('wv-channel-changed', (event) => {
+            // If Quick Info is disabled, do nothing
+            if (!this.app?.settings?.get('enableQuickInfo')) return;
+            // If StatusManager is running, it handles the info button
+            if (this.app?.statusManager) return;
+
+            const { currentChannel } = event.detail;
+
+            if (debounceTimer) clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(async () => {
+                await this.handleInfoButtonForChannel(currentChannel);
+            }, 200);
+        });
+    }
+
+    /**
+     * Add or remove the info button for a channel URL (used when StatusManager is off).
+     * @param {string} channelUrl
+     */
+    async handleInfoButtonForChannel(channelUrl) {
+        try {
+            if (!channelUrl) return;
+
+            const messageSection = document.querySelector('[data-testid="message-section"]');
+            if (!messageSection) return;
+
+            const chatHeader = messageSection.querySelector('.tw-p-4.tw-border-b');
+            if (!chatHeader) return;
+
+            const chat = await this.app?.smartUserDB?.getChatByChannelUrl?.(channelUrl);
+
+            if (!chat || chat.type !== 'user') {
+                // Group chat or unknown — remove any stale info button
+                chatHeader.querySelectorAll('.wv-header-profile-link').forEach(el => el.remove());
+                return;
+            }
+
+            // DM: resolve userId using the same priority as StatusManager
+            let userId = null;
+            if (chat.userId && /^\d+$/.test(String(chat.userId))) {
+                userId = String(chat.userId);
+            } else if (chat.user_id && /^\d+$/.test(String(chat.user_id))) {
+                userId = String(chat.user_id);
+            } else if (chat.id && /^\d+$/.test(String(chat.id))) {
+                userId = String(chat.id);
+            }
+
+            if (userId) {
+                this.addInfoButtonToChatHeaderName(chatHeader, userId);
+            }
+        } catch (error) {
+            console.error('❌ [STATUS] Error handling info button for channel:', error);
+        }
+    }
+
+    /**
+     * Add a clickable info icon next to the user name in the chat header.
+     * Only shown for direct (1:1) chats. Called by StatusManager after userId is resolved.
+     * @param {HTMLElement} chatHeader
+     * @param {string} userId - The resolved recipient user ID (numeric string)
+     */
+    addInfoButtonToChatHeaderName(chatHeader, userId) {
+        if (!chatHeader?.isConnected || !userId) return;
+
+        // Remove any existing info button to avoid duplicates
+        chatHeader.querySelectorAll('.wv-header-profile-link').forEach(el => el.remove());
+
+        const nameElement = chatHeader.querySelector('p.tw-mr-2.tw-truncate');
+        if (!nameElement) return;
+
+        const host = window.location.host;
+        const profileUrl = `https://${host}/directory/people/${userId}`;
+
+        const infoBtn = document.createElement('button');
+        infoBtn.className = 'wv-header-profile-link';
+        infoBtn.title = 'View profile';
+        infoBtn.style.cssText = `
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: none;
+            border-radius: 4px;
+            cursor: pointer;
+            opacity: 0.45;
+            transition: opacity 0.15s, background 0.15s;
+            color: inherit;
+            flex-shrink: 0;
+            vertical-align: middle;
+            margin-left: 4px;
+            padding: 0;
+        `;
+        infoBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+
+        infoBtn.addEventListener('mouseenter', () => {
+            infoBtn.style.opacity = '0.9';
+            infoBtn.style.background = 'rgba(100,116,139,0.12)';
+        });
+        infoBtn.addEventListener('mouseleave', () => {
+            infoBtn.style.opacity = '0.45';
+            infoBtn.style.background = '';
+        });
+        infoBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            window.open(profileUrl, '_blank');
+        });
+
+        nameElement.parentElement.insertBefore(infoBtn, nameElement.nextSibling);
+    }
+
+    /**
      * Update mentions button badge
      * @param {number} count - The number of unread mentions
      */
@@ -2154,7 +2265,7 @@ WVFavs.DomManager = new (class DomManager {
             }
 
             // Find the recipient name element
-            const nameElement = chatHeader.querySelector('p.tw-mr-4.tw-truncate');
+            const nameElement = chatHeader.querySelector('p.tw-mr-2.tw-truncate');
             if (!nameElement) {
                 console.log('⚠️ [STATUS] Name element not found in chat header');
                 return;
@@ -2178,33 +2289,35 @@ WVFavs.DomManager = new (class DomManager {
                 }
             }
 
+            // Clean up any existing wrappers first — ensures nameElement is in the flex-row parent
+            // before we insert the info button (old wrapper is flex-column, would put button below name)
+            chatHeader.querySelectorAll('.wv-chat-header-name-status-wrapper').forEach(wrapper => {
+                if (wrapper.parentElement && wrapper.querySelector('p.tw-mr-2.tw-truncate')) {
+                    const name = wrapper.querySelector('p.tw-mr-2.tw-truncate');
+                    wrapper.parentElement.insertBefore(name, wrapper);
+                }
+                wrapper.remove();
+            });
+            chatHeader.querySelectorAll('.wv-recipient-status-display').forEach(el => el.remove());
+
+            // Add the info button for DMs if Quick Info is enabled — userId is resolved by StatusManager at this point
+            if (this.app?.settings?.get('enableQuickInfo')) {
+                const resolvedUserId = String(this.app?.statusManager?.currentRecipientId || '');
+                if (resolvedUserId) {
+                    this.addInfoButtonToChatHeaderName(chatHeader, resolvedUserId);
+                }
+            }
+
             // Format status text
             const statusText = this.app.userIdentity?.formatStatusDisplay(statusData);
 
             console.log('📊 [STATUS] Status text to display:', statusText);
 
-            // If no status to display, clear any existing status and return
+            // If no status to display, return (wrapper already cleaned, button already added)
             if (!statusText) {
                 console.log('⚠️ [STATUS] No status to display, clearing...');
-                this.clearRecipientStatusFromHeader();
                 return;
             }
-
-            // First, clean up any existing status displays in the entire chat header
-            // This handles cases where React re-renders the header
-            const existingStatuses = chatHeader.querySelectorAll('.wv-recipient-status-display');
-            existingStatuses.forEach(status => status.remove());
-
-            // Also remove any old wrappers
-            const existingWrappers = chatHeader.querySelectorAll('.wv-chat-header-name-status-wrapper');
-            existingWrappers.forEach(wrapper => {
-                // Move name element back to parent before removing wrapper
-                if (wrapper.parentElement && wrapper.querySelector('p.tw-mr-4.tw-truncate')) {
-                    const name = wrapper.querySelector('p.tw-mr-4.tw-truncate');
-                    wrapper.parentElement.insertBefore(name, wrapper);
-                }
-                wrapper.remove();
-            });
 
             // Now create fresh wrapper structure
             const wrapper = document.createElement('div');
@@ -2256,11 +2369,9 @@ WVFavs.DomManager = new (class DomManager {
      */
     clearRecipientStatusFromHeader() {
         try {
-            const statusDisplay = document.querySelector('.wv-recipient-status-display');
-            if (statusDisplay) {
-                statusDisplay.remove();
-                console.log('🗑️ [STATUS] Recipient status cleared from chat header');
-            }
+            document.querySelectorAll('.wv-recipient-status-display').forEach(el => el.remove());
+            document.querySelectorAll('.wv-header-profile-link').forEach(el => el.remove());
+            console.log('🗑️ [STATUS] Recipient status cleared from chat header');
         } catch (error) {
             console.error('❌ [STATUS] Error clearing recipient status:', error);
         }
@@ -2985,7 +3096,7 @@ WVFavs.DomManager = new (class DomManager {
      * Show floating schedule-meeting picker near the anchor button
      * @param {HTMLElement} anchorEl - The schedule button element
      */
-    showScheduleMeetingPicker(anchorEl) {
+    async showScheduleMeetingPicker(anchorEl) {
         const existing = document.getElementById('wv-schedule-meet-picker');
         if (existing) { existing.remove(); return; }
 
@@ -2999,7 +3110,42 @@ WVFavs.DomManager = new (class DomManager {
             { label: '1 hr',   value: 60 },
             { label: 'Custom', value: 'custom' }
         ];
+
         const chatInfo = window.WVFavs?.DomDataExtractor?.extractActiveSidebarChatInfo();
+
+        // Detect group chat using the DB.
+        // Rules (in priority order):
+        //   1. userId set on record  → definitely DM
+        //   2. is_distinct === true  → verified DM
+        //   3. member_count > 2      → definitely group
+        //   4. Anything else         → default to DM (safer: avoid false positives)
+        // NOTE: is_distinct defaults to false for unverified records, so we cannot
+        // use isGroup() (which checks is_distinct !== true) as a positive group signal.
+        let isGroupChat = false;
+        try {
+            const channelUrl = this.app.threadManager?.getCurrentChannel();
+            console.log('🔍 [MEET-DEBUG] channelUrl:', channelUrl);
+            if (channelUrl && this.app.smartUserDB) {
+                const chatRecord = await this.app.smartUserDB.getChatByChannelUrl(channelUrl);
+                console.log('🔍 [MEET-DEBUG] chatRecord:', chatRecord ? {
+                    name: chatRecord.name, type: chatRecord.type,
+                    is_distinct: chatRecord.is_distinct, member_count: chatRecord.member_count,
+                    userId: chatRecord.userId, user_id: chatRecord.user_id, isVerified: chatRecord.isVerified
+                } : 'NOT FOUND');
+                if (chatRecord) {
+                    // Validate user IDs are numeric (channel URLs are truthy but not valid user IDs)
+                    const isNumericId = (id) => id != null && /^\d+$/.test(String(id));
+                    const hasUserId = isNumericId(chatRecord.userId) || isNumericId(chatRecord.user_id);
+                    if (hasUserId || chatRecord.is_distinct === true) {
+                        isGroupChat = false; // confirmed DM — userId and is_distinct are reliable
+                    } else if (chatRecord.member_count && chatRecord.member_count > 2) {
+                        isGroupChat = true;  // confirmed group — member_count is reliable
+                    }
+                    // type:'channel' alone is NOT used — DOM extraction corrupts type on DM records
+                }
+            }
+            console.log('🔍 [MEET-DEBUG] isGroupChat result:', isGroupChat);
+        } catch (e) { console.error('🔍 [MEET-DEBUG] Error:', e); }
 
         // Non-linear snap map: 0–60% of track covers 5–60 min, 60–100% covers 60–180 min
         const snapMap = [
@@ -3016,7 +3162,7 @@ WVFavs.DomManager = new (class DomManager {
 
         let selectedStart = 0;
         let selectedDuration = 30;
-        let sendCalendarInvite = true;
+        let sendCalendarInvite = !isGroupChat;
         let isDragging = false;
 
         // ── Helpers ───────────────────────────────────────────────────────
@@ -3338,13 +3484,16 @@ WVFavs.DomManager = new (class DomManager {
 
         // ── Calendar invite toggle ────────────────────────────────────────
         const toggleRow = document.createElement('label');
-        toggleRow.style.cssText = 'display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:14px;user-select:none;';
+        toggleRow.style.cssText = `display:flex;align-items:center;gap:8px;margin-bottom:${isGroupChat ? '6px' : '14px'};user-select:none;${isGroupChat ? 'opacity:0.45;cursor:not-allowed;' : 'cursor:pointer;'}`;
 
         const toggleCheckbox = document.createElement('input');
         toggleCheckbox.type = 'checkbox';
         toggleCheckbox.checked = sendCalendarInvite;
-        toggleCheckbox.style.cssText = 'width:14px;height:14px;accent-color:#1a73e8;cursor:pointer;flex-shrink:0;';
-        toggleCheckbox.addEventListener('change', () => { sendCalendarInvite = toggleCheckbox.checked; });
+        toggleCheckbox.disabled = isGroupChat;
+        toggleCheckbox.style.cssText = `width:14px;height:14px;accent-color:#1a73e8;flex-shrink:0;cursor:${isGroupChat ? 'not-allowed' : 'pointer'};`;
+        if (!isGroupChat) {
+            toggleCheckbox.addEventListener('change', () => { sendCalendarInvite = toggleCheckbox.checked; });
+        }
 
         const toggleLabelEl = document.createElement('span');
         toggleLabelEl.style.cssText = 'font-size:12px;color:#475569;';
@@ -3353,6 +3502,13 @@ WVFavs.DomManager = new (class DomManager {
         toggleRow.appendChild(toggleCheckbox);
         toggleRow.appendChild(toggleLabelEl);
         picker.appendChild(toggleRow);
+
+        if (isGroupChat) {
+            const groupDisclaimer = document.createElement('div');
+            groupDisclaimer.style.cssText = 'font-size:11px;color:#9ca3af;margin-bottom:14px;display:flex;align-items:center;gap:5px;';
+            groupDisclaimer.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;color:#f59e0b;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>Calendar invites are not available for group chats</span>`;
+            picker.appendChild(groupDisclaimer);
+        }
 
         // ── Create button ─────────────────────────────────────────────────
         const createButton = document.createElement('button');
@@ -6000,31 +6156,6 @@ WVFavs.DomManager = new (class DomManager {
 
             await this.app.setupPinButtonWithStateVerification(chatHeader);
         }, 100);
-    }
-
-    addPinIndicatorToHeaderAvatar(avatarContainer) {
-        if (avatarContainer.querySelector('.wv-favorites-header-pin-indicator')) {
-            this.app?.logger?.log('📌 Pin indicator already exists on chat header avatar');
-            return;
-        }
-
-        this.app?.logger?.log('📌 Adding pin indicator to chat header avatar');
-        const indicator = document.createElement('div');
-        indicator.className = 'wv-favorites-header-pin-indicator';
-        indicator.innerHTML = `
-            <svg width="8" height="8" viewBox="0 0 14 14" fill="white">
-                <path d="M8.5 1.5L6.5 3.5L4.5 3L3 4.5L5.5 7L1.5 11L2.5 12L6.5 8L9 10.5L10.5 9L10 7L12 5L8.5 1.5Z"/>
-            </svg>
-        `;
-
-        avatarContainer.appendChild(indicator);
-        // Only log successful pin indicator additions in debug mode
-        if (this.app.settings?.get('debugLogging')) {
-            this.app?.logger?.debug('✅ Pin indicator added to chat header avatar successfully');
-        }
-
-        // Initialize debug functions on first run
-        this.initializeDebugFunctions();
     }
 
     // Name-based matching function with 99% similarity threshold

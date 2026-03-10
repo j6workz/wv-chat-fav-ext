@@ -9,6 +9,7 @@ WVFavs.Settings = new (class Settings {
             enableSearchPanel: true,         // Search panel in sidebar
             enableDrafts: true,              // Draft messages feature
             enableStatusUpdates: true,       // Availability status updates feature
+            enableQuickInfo: true,           // Quick Info button in DM chat header
 
             // Feature Options
             overrideSearchButton: true,      // Override search button (dependent on enableSearchPanel)
@@ -18,16 +19,17 @@ WVFavs.Settings = new (class Settings {
             // UI Options
             showSnackbars: true,             // Show action notifications
             showScrollbar: true,             // Show scrollbar in panels
-            showPinIndicator: true,          // Show pin icon on pinned chats
-            showPinnedSidebar: true,         // Display pinned chats section in sidebar
+            showPinnedSidebar: true,         // Display pinned chats section in sidebar (Quick Pin)
             floatingWidgetEnabled: true,     // Show floating search button
 
             // Layout & Behavior
             pinnedChatsLayout: 'carousel',   // 'carousel', 'grid-3', 'grid-4'
-            autoCollapse: true,              // Auto-collapse panels
             autoRedirectToChat: true,        // Auto-redirect to chat page when using extension outside chat
             floatingWidgetFirstClick: 'recents', // 'recents' or 'search'
             floatingButtonColor: '#007ACC',  // Floating button color
+
+            // Appearance
+            darkTheme: 'auto',               // 'auto' (follow OS), 'light', 'dark'
 
             // System
             debugLogging: false,             // Enable debug logging

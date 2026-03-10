@@ -39,9 +39,7 @@ chrome.runtime.onInstalled.addListener((details) => {
             workvivoFavorites: [],
             workvivoSettings: {
                 showScrollbar: true,
-                showPinIndicator: true,
                 showPinnedSidebar: true,
-                autoCollapse: false,
                 debugLogging: false,
                 showSnackbars: true,
                 windowsModifierKey: 'ctrl', // 'alt', 'ctrl', or 'both'

@@ -61,6 +61,18 @@
       "minVersion": null,
       "maxVersion": null,
       "message": null
+    },
+    "quickPin": {
+      "enabled": true,
+      "minVersion": null,
+      "maxVersion": null,
+      "message": null
+    },
+    "quickInfo": {
+      "enabled": true,
+      "minVersion": null,
+      "maxVersion": null,
+      "message": null
     }
   },
   "announcements": [],

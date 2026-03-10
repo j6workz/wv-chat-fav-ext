@@ -482,25 +482,6 @@
             <span>Loading...</span>
         </div>
 
-        <div class="stats">
-            <div class="stat-item">
-                <div id="currentlyPinned" class="stat-number">0</div>
-                <div class="stat-label">Pinned Chats</div>
-            </div>
-            <div class="stat-item">
-                <div id="searchesPerformed" class="stat-number">0</div>
-                <div class="stat-label">Searches</div>
-            </div>
-            <div class="stat-item">
-                <div id="chatClicks" class="stat-number">0</div>
-                <div class="stat-label">Chat Clicks</div>
-            </div>
-            <div class="stat-item">
-                <div id="usersInDatabase" class="stat-number">0</div>
-                <div class="stat-label">Users in DB</div>
-            </div>
-        </div>
-
         <div class="section">
             <div class="section-title">⚙️ Feature Toggles</div>
             <div class="toggles-section">
@@ -588,6 +569,18 @@
                     </label>
                 </div>
 
+                <!-- Quick Info -->
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <div class="toggle-label">Quick Info</div>
+                        <div class="toggle-description">Show profile link button (ⓘ) in DM chat headers</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-enableQuickInfo" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
                 <!-- Google Meet Integration -->
                 <div class="toggle-item">
                     <div class="toggle-info">
@@ -650,26 +643,14 @@
                     </label>
                 </div>
 
-                <!-- Show Pinned Sidebar -->
+                <!-- Quick Pin -->
                 <div class="toggle-item">
                     <div class="toggle-info">
-                        <div class="toggle-label">Show Pinned Sidebar</div>
-                        <div class="toggle-description">Display pinned chats section in sidebar</div>
+                        <div class="toggle-label">Quick Pin</div>
+                        <div class="toggle-description">Pin chats to the top of your sidebar</div>
                     </div>
                     <label class="toggle-switch">
                         <input type="checkbox" id="toggle-showPinnedSidebar" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-
-                <!-- Show Pin Indicator -->
-                <div class="toggle-item">
-                    <div class="toggle-info">
-                        <div class="toggle-label">Show Pin Indicator</div>
-                        <div class="toggle-description">Show pin icon on pinned chats</div>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="toggle-showPinIndicator" checked>
                         <span class="toggle-slider"></span>
                     </label>
                 </div>

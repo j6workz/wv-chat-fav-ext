@@ -875,6 +875,49 @@
                                 </label>
                             </div>
                         </div>
+
+                        <!-- Quick Info -->
+                        <div class="setting-item-compact">
+                            <div class="setting-info">
+                                <div class="setting-label">Quick Info</div>
+                                <div class="setting-description">Show a profile link button (ⓘ) next to the name in DM chat headers</div>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle">
+                                    <input type="checkbox" id="enableQuickInfo" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Quick Pin -->
+                        <div class="setting-item-compact">
+                            <div class="setting-info">
+                                <div class="setting-label">Quick Pin</div>
+                                <div class="setting-description">Pin chats by clicking on the avatar in the Chat Header</div>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle">
+                                    <input type="checkbox" id="showPinnedSidebar" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Dark Mode -->
+                        <div class="setting-item-compact">
+                            <div class="setting-info">
+                                <div class="setting-label">Dark Mode</div>
+                                <div class="setting-description">Theme for extension and WorkVivo app</div>
+                            </div>
+                            <div class="setting-control">
+                                <select id="darkTheme" class="dropdown">
+                                    <option value="auto">Auto (follow OS)</option>
+                                    <option value="light">Light</option>
+                                    <option value="dark">Dark</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -951,87 +994,6 @@
                                     </div>
                                     <div style="font-size: 10px; color: #6b7280; margin-top: 6px;">
                                         💡 <strong>Tip:</strong> Visit any chat page to automatically save its URL, or click "Edit" to set a custom URL.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="settings-group">
-                    <div class="settings-group-title">📌 Pinned Chats Display</div>
-                    <div class="settings-grid">
-                        <!-- Show Pinned Sidebar with all nested options inside -->
-                        <div class="setting-item-compact setting-item-full-width" style="flex-direction: column; align-items: stretch;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                                <div class="setting-info">
-                                    <div class="setting-label">Show Pinned Sidebar</div>
-                                    <div class="setting-description">Display pinned chats section at top of sidebar</div>
-                                </div>
-                                <div class="setting-control">
-                                    <label class="toggle">
-                                        <input type="checkbox" id="showPinnedSidebar" checked data-master-for="pinnedChatsLayout,autoCollapse,showScrollbar,showPinIndicator">
-                                        <span class="slider"></span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!-- Nested options inside parent box -->
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                                <!-- Layout Type -->
-                                <div style="padding: 8px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid #007bff; display: flex; justify-content: space-between; align-items: center;">
-                                    <div class="setting-info">
-                                        <div class="setting-label" style="font-size: 11px;">Layout Type</div>
-                                        <div class="setting-description" style="font-size: 10px;">Display style</div>
-                                    </div>
-                                    <div class="setting-control">
-                                        <select id="pinnedChatsLayout" class="dropdown" data-depends-on="showPinnedSidebar" style="font-size: 11px; padding: 4px 8px; min-width: 100px;">
-                                            <option value="carousel">Carousel</option>
-                                            <option value="grid-3">Grid 3</option>
-                                            <option value="grid-4">Grid 4</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- Auto-collapse -->
-                                <div style="padding: 8px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid #007bff; display: flex; justify-content: space-between; align-items: center;">
-                                    <div class="setting-info">
-                                        <div class="setting-label" style="font-size: 11px;">Auto-collapse</div>
-                                        <div class="setting-description" style="font-size: 10px;">Collapse when empty</div>
-                                    </div>
-                                    <div class="setting-control">
-                                        <label class="toggle-small">
-                                            <input type="checkbox" id="autoCollapse" checked data-depends-on="showPinnedSidebar">
-                                            <span class="slider"></span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <!-- Show Scrollbar -->
-                                <div style="padding: 8px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid #007bff; display: flex; justify-content: space-between; align-items: center;">
-                                    <div class="setting-info">
-                                        <div class="setting-label" style="font-size: 11px;">Show Scrollbar</div>
-                                        <div class="setting-description" style="font-size: 10px;">Bottom scrollbar in carousel</div>
-                                    </div>
-                                    <div class="setting-control">
-                                        <label class="toggle-small">
-                                            <input type="checkbox" id="showScrollbar" checked data-depends-on="showPinnedSidebar">
-                                            <span class="slider"></span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <!-- Pin Indicator -->
-                                <div style="padding: 8px; background: #f8f9fa; border-radius: 4px; border-left: 3px solid #007bff; display: flex; justify-content: space-between; align-items: center;">
-                                    <div class="setting-info">
-                                        <div class="setting-label" style="font-size: 11px;">Pin Indicator</div>
-                                        <div class="setting-description" style="font-size: 10px;">Green pin icon on avatars</div>
-                                    </div>
-                                    <div class="setting-control">
-                                        <label class="toggle-small">
-                                            <input type="checkbox" id="showPinIndicator" checked data-depends-on="showPinnedSidebar">
-                                            <span class="slider"></span>
-                                        </label>
                                     </div>
                                 </div>
                             </div>

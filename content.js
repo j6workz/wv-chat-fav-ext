@@ -33,6 +33,7 @@ class WorkVivoFavorites {
 
             // SmartUserDatabase will use its internal logger wrapper
             this.smartUserDB = new WVFavs.SmartUserDatabase(WVFavs.Constants.USER_DB_TTL);
+            this.smartUserDB.app = this; // give SmartUserDB access to APIManager for channel verification
 
             this.storageManager = WVFavs.StorageManager;
             this.pinnedChats = new Map(); // Initialize as empty Map
@@ -572,6 +573,17 @@ class WorkVivoFavorites {
             console.error('❌ [STATUS] Failed to load settings:', error);
         }
 
+        // Initialize ThemeManager (dark mode)
+        try {
+            if (WVFavs.ThemeManager) {
+                await WVFavs.ThemeManager.init(this);
+                this.themeManager = WVFavs.ThemeManager;
+                console.log('✅ [STATUS] ThemeManager initialized, theme:', WVFavs.ThemeManager.getTheme());
+            }
+        } catch (error) {
+            console.error('❌ [STATUS] Failed to initialize ThemeManager:', error);
+        }
+
         // Initialize Feature Stability Manager (remote feature control)
         console.log('🛡️ [STATUS] Initializing FeatureStabilityManager...');
         try {
@@ -961,6 +973,16 @@ class WorkVivoFavorites {
         }
         this.logger.debug('👥 [SM-11] StatusManager section complete');
 
+        // Apply feature stability overrides to settings before DomManager reads them
+        if (!this.isFeatureEnabled('quickPin', 'showPinnedSidebar')) {
+            this.settings.settings.showPinnedSidebar = false;
+            this.logger.log('⏸️ Quick Pin disabled by feature stability');
+        }
+        if (!this.isFeatureEnabled('quickInfo', 'enableQuickInfo')) {
+            this.settings.settings.enableQuickInfo = false;
+            this.logger.log('⏸️ Quick Info disabled by feature stability');
+        }
+
         // Initialize DomManager with app instance
         // IMPORTANT: This must be called AFTER StatusDialog and StatusManager are initialized
         // because DomManager's makeAvatarAndNameClickable() needs this.app.statusDialog
@@ -1239,6 +1261,11 @@ class WorkVivoFavorites {
                     await WVFavs.DomManager.addMentionsButtonToChatHeader(chatHeader);
                 }
 
+                // Add profile info icon for direct chats
+                if (WVFavs.DomManager.addInfoButtonToChatHeaderName) {
+                    WVFavs.DomManager.addInfoButtonToChatHeaderName(chatHeader);
+                }
+
                 return;
             }
 
@@ -1264,6 +1291,11 @@ class WorkVivoFavorites {
         // Also add mentions button
         if (WVFavs.DomManager.addMentionsButtonToChatHeader) {
             await WVFavs.DomManager.addMentionsButtonToChatHeader(chatHeader);
+        }
+
+        // Add profile info icon for direct chats
+        if (WVFavs.DomManager.addInfoButtonToChatHeaderName) {
+            WVFavs.DomManager.addInfoButtonToChatHeaderName(chatHeader);
         }
     }
 
@@ -1829,6 +1861,11 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
                             debugLogging: request.settings.debugLogging || false
                         }
                     }));
+
+                    // Apply theme change immediately (settings already persisted above)
+                    if (WVFavs.ThemeManager && request.settings.darkTheme !== undefined) {
+                        WVFavs.ThemeManager.applyMode(request.settings.darkTheme);
+                    }
 
                     // Refresh pinned chats UI to apply layout changes
                     if (WVFavs && WVFavs.DomManager) {

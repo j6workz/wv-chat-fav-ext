@@ -968,28 +968,6 @@ button.tw-block.tw-w-full.tw-p-2.tw-rounded-lg {
     background: rgba(220, 38, 38, 0.85);
 }
 
-/* Header Avatar Pin Indicator */
-.wv-favorites-header-pin-indicator {
-    position: absolute;
-    bottom: 0px;
-    right: -3px;
-    width: 12px;
-    height: 12px;
-    background: #00a300;
-    border: 2px solid white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    pointer-events: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.wv-favorites-header-pin-indicator svg {
-    width: 6px;
-    height: 6px;
-}
 
 /* Sidebar Avatar Hover Overlays */
 .wv-favorites-sidebar-overlay {
@@ -1505,6 +1483,30 @@ button.tw-block.tw-w-full.tw-p-2.tw-rounded-lg {
     flex-shrink: 0;
 }
 
+.wv-favorites-quick-search-theme-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.wv-favorites-quick-search-theme-btn:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+    color: #111827;
+}
+
+.wv-favorites-quick-search-theme-btn svg {
+    flex-shrink: 0;
+}
+
 /* Search for more button - Simple and theme-friendly */
 .wv-favorites-search-for-more-container {
     padding: 8px 16px;
@@ -1561,110 +1563,9 @@ button.tw-block.tw-w-full.tw-p-2.tw-rounded-lg {
     opacity: 0.6;
 }
 
-/* Dark mode support for quick search */
-@media (prefers-color-scheme: dark) {
-    .wv-favorites-quick-search-modal {
-        background: #1f2937;
-        color: #f9fafb;
-    }
+/* Dark mode for quick search — controlled via html.wv-dark-mode (ThemeManager) */
 
-    .wv-favorites-quick-search-input {
-        background: #374151;
-        border-color: #4b5563;
-        color: #f9fafb;
-    }
-
-    .wv-favorites-quick-search-input:focus {
-        border-color: #60a5fa;
-        background: #4b5563;
-        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
-    }
-
-    .wv-favorites-quick-search-section-title {
-        background: #374151;
-        color: #9ca3af;
-        border-bottom-color: #4b5563;
-    }
-
-    .wv-favorites-quick-search-item:hover {
-        background: #374151;
-    }
-
-    .wv-favorites-quick-search-item.selected {
-        background: #1e40af;
-        border-left-color: #60a5fa;
-    }
-
-    .wv-favorites-quick-search-name {
-        color: #f9fafb;
-    }
-
-    .wv-favorites-quick-search-meta {
-        color: #9ca3af;
-    }
-
-    .wv-favorites-quick-search-hint {
-        background: #374151;
-        border-top-color: #4b5563;
-        color: #9ca3af;
-    }
-
-    .wv-favorites-quick-search-native-btn {
-        background: #4b5563;
-        border-color: #6b7280;
-        color: #f9fafb;
-    }
-
-    .wv-favorites-quick-search-native-btn:hover {
-        background: #374151;
-        border-color: #9ca3af;
-        color: #ffffff;
-    }
-
-    .wv-favorites-quick-search-settings-btn {
-        background: #4b5563;
-        border-color: #6b7280;
-        color: #f9fafb;
-    }
-
-    .wv-favorites-quick-search-settings-btn:hover {
-        background: #374151;
-        border-color: #9ca3af;
-        color: #ffffff;
-    }
-
-    /* Dark mode styles for action buttons */
-    .wv-favorites-quick-search-email-btn,
-    .wv-favorites-quick-search-info-btn {
-        color: #9ca3af;
-    }
-
-    .wv-favorites-quick-search-email-btn:hover,
-    .wv-favorites-quick-search-info-btn:hover {
-        background: rgba(255, 255, 255, 0.08);
-        color: #f9fafb;
-    }
-}
-
-/* Dark mode support - adjust colors based on WorkVivo's theme */
-@media (prefers-color-scheme: dark) {
-    .wv-favorites-pin-btn,
-    .wv-favorites-unpin-btn {
-        background: rgba(31, 41, 55, 0.9); /* Tailwind gray-800 with opacity */
-        color: #9ca3af; /* Tailwind gray-400 */
-    }
-
-    .wv-favorites-pin-btn:hover,
-    .wv-favorites-unpin-btn:hover {
-        background: rgba(31, 41, 55, 1);
-        color: #f9fafb; /* Tailwind gray-50 */
-    }
-
-    .wv-favorites-pin-btn.wv-favorites-pinned {
-        background: rgba(30, 58, 138, 0.9); /* Tailwind blue-800 with opacity */
-        color: #93c5fd; /* Tailwind blue-300 */
-    }
-}
+/* Dark mode for pin buttons — controlled via html.wv-dark-mode (ThemeManager) */
 
 /* Chat Switcher Modal Styles */
 .wv-favorites-chat-switcher-backdrop {
@@ -1869,61 +1770,7 @@ button.tw-block.tw-w-full.tw-p-2.tw-rounded-lg {
     opacity: 0.8;
 }
 
-/* Dark mode support for chat switcher */
-@media (prefers-color-scheme: dark) {
-    .wv-favorites-chat-switcher-modal {
-        background: #1f2937;
-        color: #f9fafb;
-    }
-
-    .wv-favorites-chat-switcher-header {
-        background: #374151;
-        border-bottom-color: #4b5563;
-    }
-
-    .wv-favorites-chat-switcher-title {
-        color: #f9fafb;
-    }
-
-    .wv-favorites-chat-switcher-hint {
-        color: #9ca3af;
-    }
-
-    .wv-favorites-chat-switcher-item {
-        border-bottom-color: #374151;
-    }
-
-    .wv-favorites-chat-switcher-item:hover {
-        background: #374151;
-    }
-
-    .wv-favorites-chat-switcher-name {
-        color: #f9fafb;
-    }
-
-    .wv-favorites-chat-switcher-meta {
-        color: #9ca3af;
-    }
-
-    .wv-favorites-chat-switcher-shortcut {
-        background: #374151;
-        color: #9ca3af;
-    }
-
-    .wv-favorites-chat-switcher-close {
-        background: #374151;
-        color: #9ca3af;
-    }
-
-    .wv-favorites-chat-switcher-close:hover {
-        background: #4b5563;
-        color: #f9fafb;
-    }
-
-    .wv-favorites-chat-switcher-empty {
-        color: #9ca3af;
-    }
-}
+/* Dark mode for chat switcher — controlled via html.wv-dark-mode (ThemeManager) */
 
 /* Advanced Search Enhancement Styles */
 .wv-favorites-quick-search-plus {
@@ -2170,4 +2017,213 @@ button.tw-block.tw-w-full.tw-p-2.tw-rounded-lg {
         transform: translateX(0);
         opacity: 1;
     }
+}
+
+/* ============================================================
+   EXTENSION DARK MODE — html.wv-dark-mode class
+   Controlled exclusively by ThemeManager (respects user's
+   explicit light/dark/auto preference, not just OS setting).
+   ============================================================ */
+
+/* Quick Search Modal */
+html.wv-dark-mode .wv-favorites-quick-search-modal {
+    background: #1f2937;
+    color: #f9fafb;
+}
+html.wv-dark-mode .wv-favorites-quick-search-input {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+}
+html.wv-dark-mode .wv-favorites-quick-search-input:focus {
+    border-color: #60a5fa;
+    background: #4b5563;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+html.wv-dark-mode .wv-favorites-quick-search-section-title {
+    background: #374151;
+    color: #9ca3af;
+    border-bottom-color: #4b5563;
+}
+html.wv-dark-mode .wv-favorites-quick-search-item:hover {
+    background: #374151;
+}
+html.wv-dark-mode .wv-favorites-quick-search-item.selected {
+    background: #1e40af;
+    border-left-color: #60a5fa;
+}
+html.wv-dark-mode .wv-favorites-quick-search-name {
+    color: #f9fafb;
+}
+html.wv-dark-mode .wv-favorites-quick-search-meta {
+    color: #9ca3af;
+}
+html.wv-dark-mode .wv-favorites-quick-search-hint {
+    background: #374151;
+    border-top-color: #4b5563;
+    color: #9ca3af;
+}
+html.wv-dark-mode .wv-favorites-quick-search-native-btn {
+    background: #4b5563;
+    border-color: #6b7280;
+    color: #f9fafb;
+}
+html.wv-dark-mode .wv-favorites-quick-search-native-btn:hover {
+    background: #374151;
+    border-color: #9ca3af;
+    color: #ffffff;
+}
+html.wv-dark-mode .wv-favorites-quick-search-settings-btn {
+    background: #4b5563;
+    border-color: #6b7280;
+    color: #f9fafb;
+}
+html.wv-dark-mode .wv-favorites-quick-search-settings-btn:hover {
+    background: #374151;
+    border-color: #9ca3af;
+    color: #ffffff;
+}
+html.wv-dark-mode .wv-favorites-quick-search-theme-btn {
+    background: #4b5563;
+    border-color: #6b7280;
+    color: #f9fafb;
+}
+html.wv-dark-mode .wv-favorites-quick-search-theme-btn:hover {
+    background: #374151;
+    border-color: #9ca3af;
+    color: #ffffff;
+}
+html.wv-dark-mode .wv-favorites-quick-search-email-btn,
+html.wv-dark-mode .wv-favorites-quick-search-info-btn {
+    color: #9ca3af;
+}
+html.wv-dark-mode .wv-favorites-quick-search-email-btn:hover,
+html.wv-dark-mode .wv-favorites-quick-search-info-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f9fafb;
+}
+
+/* Pin / Unpin overlays */
+html.wv-dark-mode .wv-favorites-pin-btn,
+html.wv-dark-mode .wv-favorites-unpin-btn {
+    background: rgba(31, 41, 55, 0.9);
+    color: #9ca3af;
+}
+html.wv-dark-mode .wv-favorites-pin-btn:hover {
+    background: rgba(31, 41, 55, 1);
+    color: #f9fafb;
+}
+html.wv-dark-mode .wv-favorites-unpin-btn:hover {
+    background: rgba(30, 58, 138, 0.9);
+    color: #93c5fd;
+}
+
+/* Chat Switcher Modal */
+html.wv-dark-mode .wv-favorites-chat-switcher-modal {
+    background: #1f2937;
+    color: #f9fafb;
+}
+html.wv-dark-mode .wv-favorites-chat-switcher-header {
+    background: #374151;
+    border-bottom-color: #4b5563;
+}
+html.wv-dark-mode .wv-favorites-chat-switcher-title {
+    color: #f9fafb;
+}
+html.wv-dark-mode .wv-favorites-chat-switcher-hint {
+    color: #9ca3af;
+}
+html.wv-dark-mode .wv-favorites-chat-switcher-item {
+    border-bottom-color: #374151;
+}
+html.wv-dark-mode .wv-favorites-chat-switcher-item:hover {
+    background: #374151;
+}
+html.wv-dark-mode .wv-favorites-chat-switcher-name {
+    color: #f9fafb;
+}
+html.wv-dark-mode .wv-favorites-chat-switcher-meta {
+    color: #9ca3af;
+}
+html.wv-dark-mode .wv-favorites-chat-switcher-shortcut {
+    background: #374151;
+    color: #9ca3af;
+}
+html.wv-dark-mode .wv-favorites-chat-switcher-close {
+    background: #374151;
+    color: #9ca3af;
+}
+html.wv-dark-mode .wv-favorites-chat-switcher-close:hover {
+    background: #4b5563;
+    color: #f9fafb;
+}
+html.wv-dark-mode .wv-favorites-chat-switcher-empty {
+    color: #9ca3af;
+}
+
+/* Pinned Cards */
+html.wv-dark-mode .wv-favorites-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+html.wv-dark-mode .wv-favorites-card:hover {
+    background: #334155;
+}
+html.wv-dark-mode .wv-favorites-card-name {
+    color: #e2e8f0;
+}
+
+/* Sidebar Drawer */
+html.wv-dark-mode .wv-favorites-sidebar-drawer {
+    background: #1e293b;
+    border-color: #334155;
+}
+html.wv-dark-mode .wv-favorites-drawer-header {
+    background: #1e293b;
+    border-bottom-color: #334155;
+    color: #f1f5f9;
+}
+
+/* Panels (Search, Mentions, Drafts, Threads) */
+html.wv-dark-mode .wv-panel-container,
+html.wv-dark-mode .wv-mentions-panel,
+html.wv-dark-mode .wv-search-panel,
+html.wv-dark-mode .wv-drafts-panel {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-color: #334155;
+}
+html.wv-dark-mode .wv-panel-header,
+html.wv-dark-mode .wv-panel-title {
+    background: #1e293b;
+    color: #f1f5f9;
+    border-bottom-color: #334155;
+}
+html.wv-dark-mode .wv-panel-item {
+    border-bottom-color: #334155;
+}
+html.wv-dark-mode .wv-panel-item:hover {
+    background: #334155;
+}
+
+/* Status Dialog */
+html.wv-dark-mode .wv-status-dialog-overlay {
+    background: rgba(0, 0, 0, 0.7);
+}
+html.wv-dark-mode .wv-status-dialog-content {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-color: #334155;
+}
+
+/* Floating Search Button — keep the brand gradient, just darken shadow */
+html.wv-dark-mode .wv-floating-search-button {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* Tooltip */
+html.wv-dark-mode .wv-favorites-tooltip {
+    background: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
 }
