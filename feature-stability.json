@@ -1,6 +1,6 @@
 {
-  "version": "1.0.0",
-  "lastUpdated": "2025-01-16T00:00:00Z",
+  "version": "1.1.0",
+  "lastUpdated": "2026-03-10T00:00:00Z",
   "features": {
     "webpackNavigator": {
       "enabled": true,
@@ -35,14 +35,14 @@
     "draftManager": {
       "enabled": true,
       "minVersion": null,
-      "maxVersion": null,
-      "message": null
+      "maxVersion": "3.3.9",
+      "message": "Draft messages are now available directly in WorkVivo from v3.4.0 onwards."
     },
     "statusManager": {
       "enabled": true,
       "minVersion": null,
-      "maxVersion": null,
-      "message": null
+      "maxVersion": "3.3.9",
+      "message": "Availability status is now available directly in WorkVivo from v3.4.0 onwards."
     },
     "googleMeetManager": {
       "enabled": true,
